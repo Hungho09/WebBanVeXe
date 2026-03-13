@@ -41,6 +41,9 @@ namespace Infrastructure
             });
 
             services.AddScoped<Application.Interfaces.IAuthService, Infrastructure.Services.AuthService>();
+            
+            services.AddScoped<Application.Interfaces.IBusRepository, Infrastructure.Persistence.Repositories.BusRepository>();
+            services.AddScoped<Application.Interfaces.IBusService, Application.Services.BusService>();
 
             return services;
         }
