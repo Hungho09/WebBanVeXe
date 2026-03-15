@@ -45,6 +45,10 @@ namespace Infrastructure
             services.AddScoped<Application.Interfaces.IBusRepository, Infrastructure.Persistence.Repositories.BusRepository>();
             services.AddScoped<Application.Interfaces.IBusService, Application.Services.BusService>();
 
+            // Trip Management
+            services.AddScoped<Domain.Interfaces.ITripRepository, Infrastructure.Repositories.TripRepository>();
+            services.AddScoped<Application.Interfaces.ITripService, Infrastructure.Services.TripService>();
+
             return services;
         }
     }
