@@ -1,0 +1,108 @@
+<div class="trip-container">
+  <div class="header-section">
+    <div class="title-group">
+      <h1>Quản lý chuyến đi</h1>
+      <p>Điều hành lịch trình và giá vé của các chuyến xe</p>
+    </div>
+    <div class="action-group">
+      <div class="search-box">
+        <i class="fa fa-search"></i>
+        <input type="text" placeholder="Tìm chuyến đi, biển số..." [(ngModel)]="searchTerm" (keyup)="onSearch()">
+      </div>
+      <button class="btn-primary" (click)="openAddModal()">
+        <i class="fa fa-plus"></i> Tạo chuyến mới
+      </button>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>Lộ trình</th>
+          <th>Biển số xe</th>
+          <th>Giờ đi</th>
+          <th>Giờ đến</th>
+          <th>Giá vé</th>
+          <th>Trạng thái</th>
+          <th class="actions-head">Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let trip of filteredList">
+          <td class="res-name">{{trip.routeName}}</td>
+          <td><span class="type-badge">{{trip.busPlate}}</span></td>
+          <td>{{trip.departureTime | date:'HH:mm dd/MM'}}</td>
+          <td>{{trip.arrivalTime | date:'HH:mm dd/MM'}}</td>
+          <td class="price-cell">{{trip.price | number}}đ</td>
+          <td>
+            <span [ngClass]="getStatusClass(trip.status)" class="status-badge">
+              {{trip.status}}
+            </span>
+          </td>
+          <td class="actions-cell">
+            <button class="btn-icon edit" (click)="openEditModal(trip)" title="Sửa">
+              <i class="fa fa-edit"></i>
+            </button>
+            <button class="btn-icon delete" (click)="onDelete(trip.id)" title="Xóa">
+              <i class="fa fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="filteredList.length === 0">
+          <td colspan="7" class="no-data">Không tìm thấy chuyến đi nào.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{isEditMode ? 'Cập nhật chuyến đi' : 'Tạo chuyến đi mới'}}</h2>
+        <button class="close-btn" (click)="closeModal()">&times;</button>
+      </div>
+      <form [formGroup]="tripForm" (ngSubmit)="saveTrip()">
+        <div class="form-group">
+          <label>Lộ trình </label>
+          <input type="text" formControlName="routeId" placeholder="Nhập mã lộ trình">
+        </div>
+        <div class="form-group">
+          <label>Xe </label>
+          <input type="text" formControlName="busId" placeholder="Nhập mã xe">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Thời gian đi</label>
+            <input type="datetime-local" formControlName="departureTime">
+          </div>
+          <div class="form-group">
+            <label>Thời gian đến </label>
+            <input type="datetime-local" formControlName="arrivalTime">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Giá vé </label>
+            <input type="number" formControlName="price">
+          </div>
+          <div class="form-group">
+            <label>Trạng thái </label>
+            <select formControlName="status">
+              <option value="Active">Đang hoạt động</option>
+              <option value="Completed">Hoàn thành</option>
+              <option value="Cancelled">Đã hủy</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="closeModal()">Hủy</button>
+          <button type="submit" class="btn-primary" [disabled]="tripForm.invalid">
+            {{isEditMode ? 'Lưu thay đổi' : 'Xác nhận'}}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

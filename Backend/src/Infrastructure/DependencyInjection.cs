@@ -41,6 +41,10 @@ namespace Infrastructure
             });
 
             services.AddScoped<Application.Interfaces.IAuthService, Infrastructure.Services.AuthService>();
+            
+            // Trip Management
+            services.AddScoped<Domain.Interfaces.ITripRepository, Infrastructure.Repositories.TripRepository>();
+            services.AddScoped<Application.Interfaces.ITripService, Infrastructure.Services.TripService>();
 
             return services;
         }
