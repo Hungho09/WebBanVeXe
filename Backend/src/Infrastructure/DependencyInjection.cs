@@ -49,6 +49,10 @@ namespace Infrastructure
             services.AddScoped<Domain.Interfaces.ITripRepository, Infrastructure.Repositories.TripRepository>();
             services.AddScoped<Application.Interfaces.ITripService, Infrastructure.Services.TripService>();
 
+            // Route Management
+            services.AddScoped<Domain.Interfaces.IRouteRepository, Infrastructure.Repositories.RouteRepository>();
+            services.AddScoped<Application.Interfaces.IRouteService, Infrastructure.Services.RouteService>();
+
             return services;
         }
     }
