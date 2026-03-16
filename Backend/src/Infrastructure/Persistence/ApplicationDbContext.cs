@@ -49,13 +49,16 @@ namespace Infrastructure.Persistence
                 });
             });
 
-            // Configure Route
             modelBuilder.Entity<Route>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Origin).IsRequired().HasMaxLength(200);
                 entity.Property(e => e.Destination).IsRequired().HasMaxLength(200);
-                entity.Property(e => e.Points).HasMaxLength(200);
+                entity.Property(e => e.Points).HasMaxLength(500);
+                entity.Property(e => e.DistanceKm).IsRequired();
+                entity.Property(e => e.IsActive).HasDefaultValue(true);
+                entity.Property(e => e.CreatedAt).IsRequired();
+                entity.Property(e => e.UpdatedAt).IsRequired(false);
             });
 
             // Configure Bus
