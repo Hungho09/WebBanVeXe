@@ -4,6 +4,7 @@ using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
@@ -24,7 +25,10 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<Route>> GetAllAsync()
         {
-            return await _context.Routes.ToListAsync();
+            return await _context.Routes
+                .OrderBy(r => r.Origin)
+                .ThenBy(r => r.Destination)
+                .ToListAsync();
         }
 
         public async Task AddAsync(Route route)
@@ -45,6 +49,13 @@ namespace Infrastructure.Repositories
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> ExistsAsync(string origin, string destination)
+        {
+            return await _context.Routes
+                .AnyAsync(r => r.Origin.ToLower() == origin.ToLower() 
+                    && r.Destination.ToLower() == destination.ToLower());
         }
     }
 }
