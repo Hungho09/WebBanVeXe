@@ -13,5 +13,9 @@ namespace Domain.Interfaces
         void Update(Route route);
         void Delete(Route route);
         Task SaveChangesAsync();
+<<<<<<< HEAD
+=======
+        Task<bool> ExistsAsync(string origin, string destination);
+>>>>>>> d01393e (feat(domain): [BVX-38] Implement IRouteRepository - Cài đặt giao diện IRouteRepository)
     }
 }
