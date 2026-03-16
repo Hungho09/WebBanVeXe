@@ -1,8 +1,9 @@
-using Application.Interfaces;
-using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Application.Interfaces;
+using Application.DTOs.Route;
 
 namespace Api.Controllers
 {
@@ -18,40 +19,61 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RouteDto>>> GetAll()
+        public async Task<IActionResult> GetAll()
         {
             var routes = await _routeService.GetAllRoutesAsync();
             return Ok(routes);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<RouteDto>> GetById(Guid id)
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetById(Guid id)
         {
             var route = await _routeService.GetRouteByIdAsync(id);
-            if (route == null) return NotFound();
+            if (route == null) return NotFound($"Route with ID {id} not found.");
             return Ok(route);
         }
 
         [HttpPost]
-        public async Task<ActionResult<RouteDto>> Create([FromBody] CreateRouteDto dto)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create([FromBody] CreateRouteDto createRouteDto)
         {
-            var createdRoute = await _routeService.CreateRouteAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = createdRoute.Id }, createdRoute);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            try
+            {
+                var createdRoute = await _routeService.CreateRouteAsync(createRouteDto);
+                return CreatedAtAction(nameof(GetById), new { id = createdRoute.Id }, createdRoute);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateRouteDto dto)
+        [HttpPut("{id:guid}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateRouteDto updateRouteDto)
         {
-            var success = await _routeService.UpdateRouteAsync(id, dto);
-            if (!success) return NotFound();
-            return NoContent();
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            try
+            {
+                var success = await _routeService.UpdateRouteAsync(id, updateRouteDto);
+                if (!success) return NotFound($"Route with ID {id} not found.");
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var success = await _routeService.DeleteRouteAsync(id);
-            if (!success) return NotFound();
+            if (!success) return NotFound($"Route with ID {id} not found.");
             return NoContent();
         }
     }
