@@ -76,35 +76,34 @@ export class TripManagement implements OnInit {
 
   saveTrip() {
     if (this.tripForm.valid) {
-      if (this.isEditMode && this.currentTripId) {
-        // Update logic (mock for now)
-        const index = this.tripList.findIndex(t => t.id === this.currentTripId);
-        if (index !== -1) {
-          this.tripList[index] = { 
-            ...this.tripList[index], 
-            ...this.tripForm.value 
-          };
-        }
-      } else {
-        // Add logic (mock for now)
-        const newTrip: Trip = {
-          ...this.tripForm.value,
-          id: Date.now().toString(),
-          routeName: 'New Route (Mock)', // In real app, name comes from ID lookup
-          busPlate: 'New Plate (Mock)'
-        };
-        this.tripList.push(newTrip);
-      }
+      const tripData = this.tripForm.value;
       
-      this.onSearch();
-      this.closeModal();
+      if (this.isEditMode && this.currentTripId) {
+        this.tripService.updateTrip(this.currentTripId, tripData).subscribe({
+          next: () => {
+            this.loadTrips();
+            this.closeModal();
+          },
+          error: (err) => alert('Lỗi khi cập nhật: ' + (err.error?.message || err.message))
+        });
+      } else {
+        this.tripService.createTrip(tripData).subscribe({
+          next: () => {
+            this.loadTrips();
+            this.closeModal();
+          },
+          error: (err) => alert('Lỗi khi tạo mới: ' + (err.error?.message || err.message))
+        });
+      }
     }
   }
 
   onDelete(id: string) {
     if (confirm('Bạn có chắc chắn muốn xóa chuyến đi này?')) {
-      this.tripList = this.tripList.filter(item => item.id !== id);
-      this.onSearch();
+      this.tripService.deleteTrip(id).subscribe({
+        next: () => this.loadTrips(),
+        error: (err) => alert('Lỗi khi xóa: ' + (err.error?.message || err.message))
+      });
     }
   }
 
