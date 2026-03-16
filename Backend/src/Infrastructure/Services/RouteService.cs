@@ -1,3 +1,4 @@
+using Application.DTOs.Route;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
@@ -20,7 +21,9 @@ namespace Infrastructure.Services
         public async Task<RouteDto?> GetRouteByIdAsync(Guid id)
         {
             var route = await _routeRepository.GetByIdAsync(id);
-            return route != null ? MapToDto(route) : null;
+            if (route == null) return null;
+
+            return MapToDto(route);
         }
 
         public async Task<IEnumerable<RouteDto>> GetAllRoutesAsync()
@@ -29,15 +32,29 @@ namespace Infrastructure.Services
             return routes.Select(MapToDto);
         }
 
-        public async Task<RouteDto> CreateRouteAsync(CreateRouteDto dto)
+        public async Task<RouteDto> CreateRouteAsync(CreateRouteDto createRouteDto)
         {
+            if (string.IsNullOrWhiteSpace(createRouteDto.Origin))
+                throw new ArgumentException("Origin is required.");
+            
+            if (string.IsNullOrWhiteSpace(createRouteDto.Destination))
+                throw new ArgumentException("Destination is required.");
+
+            if (createRouteDto.DistanceKm <= 0)
+                throw new ArgumentException("Distance must be greater than 0.");
+
+            var exists = await _routeRepository.ExistsAsync(createRouteDto.Origin, createRouteDto.Destination);
+            if (exists)
+                throw new Exception($"A route from {createRouteDto.Origin} to {createRouteDto.Destination} already exists.");
+
             var route = new Route
             {
                 Id = Guid.NewGuid(),
-                Origin = dto.Origin,
-                Destination = dto.Destination,
-                Points = dto.Points,
-                DistanceKm = dto.DistanceKm,
+                Origin = createRouteDto.Origin,
+                Points = createRouteDto.Points,
+                Destination = createRouteDto.Destination,
+                DistanceKm = createRouteDto.DistanceKm,
+                IsActive = true,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -47,19 +64,37 @@ namespace Infrastructure.Services
             return MapToDto(route);
         }
 
-        public async Task<bool> UpdateRouteAsync(Guid id, UpdateRouteDto dto)
+        public async Task<bool> UpdateRouteAsync(Guid id, UpdateRouteDto updateRouteDto)
         {
+            if (string.IsNullOrWhiteSpace(updateRouteDto.Origin))
+                throw new ArgumentException("Origin is required.");
+            
+            if (string.IsNullOrWhiteSpace(updateRouteDto.Destination))
+                throw new ArgumentException("Destination is required.");
+
+            if (updateRouteDto.DistanceKm <= 0)
+                throw new ArgumentException("Distance must be greater than 0.");
+
             var route = await _routeRepository.GetByIdAsync(id);
             if (route == null) return false;
 
-            route.Origin = dto.Origin;
-            route.Destination = dto.Destination;
-            route.Points = dto.Points;
-            route.DistanceKm = dto.DistanceKm;
+            // Check if changing origin/destination leads to a duplicate
+            if (route.Origin != updateRouteDto.Origin || route.Destination != updateRouteDto.Destination)
+            {
+                var exists = await _routeRepository.ExistsAsync(updateRouteDto.Origin, updateRouteDto.Destination);
+                if (exists)
+                    throw new Exception($"Another route from {updateRouteDto.Origin} to {updateRouteDto.Destination} already exists.");
+            }
+
+            route.Origin = updateRouteDto.Origin;
+            route.Points = updateRouteDto.Points;
+            route.Destination = updateRouteDto.Destination;
+            route.DistanceKm = updateRouteDto.DistanceKm;
+            route.IsActive = updateRouteDto.IsActive;
+            route.UpdatedAt = DateTime.UtcNow;
 
             _routeRepository.Update(route);
             await _routeRepository.SaveChangesAsync();
-
             return true;
         }
 
@@ -70,7 +105,6 @@ namespace Infrastructure.Services
 
             _routeRepository.Delete(route);
             await _routeRepository.SaveChangesAsync();
-
             return true;
         }
 
@@ -80,9 +114,12 @@ namespace Infrastructure.Services
             {
                 Id = route.Id,
                 Origin = route.Origin,
-                Destination = route.Destination,
                 Points = route.Points,
-                DistanceKm = route.DistanceKm
+                Destination = route.Destination,
+                DistanceKm = route.DistanceKm,
+                IsActive = route.IsActive,
+                CreatedAt = route.CreatedAt,
+                UpdatedAt = route.UpdatedAt
             };
         }
     }
