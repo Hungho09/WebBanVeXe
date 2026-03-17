@@ -73,8 +73,8 @@ namespace Infrastructure.Persistence
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Price).HasPrecision(18, 2);
-                entity.HasOne(e => e.Route).WithMany().HasForeignKey(e => e.RouteId).OnDelete(DeleteBehavior.Restrict);
-                entity.HasOne(e => e.Bus).WithMany().HasForeignKey(e => e.BusId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.Route).WithMany(r => r.Trips).HasForeignKey(e => e.RouteId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.Bus).WithMany(b => b.Trips).HasForeignKey(e => e.BusId).OnDelete(DeleteBehavior.Restrict);
             });
 
             // Configure Seat
