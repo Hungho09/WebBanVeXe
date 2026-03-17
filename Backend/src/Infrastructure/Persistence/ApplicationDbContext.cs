@@ -68,11 +68,15 @@ namespace Infrastructure.Persistence
                 entity.Property(e => e.PlateNumber).IsRequired().HasMaxLength(50);
             });
 
-            // Configure Trip
             modelBuilder.Entity<Trip>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Price).HasPrecision(18, 2);
+                entity.Property(e => e.DepartureTime).IsRequired();
+                entity.Property(e => e.ArrivalTime).IsRequired();
+                entity.Property(e => e.Price).HasPrecision(18, 2).IsRequired();
+                entity.Property(e => e.Status).HasConversion<string>().HasMaxLength(50);
+                entity.Property(e => e.CreatedAt).IsRequired();
+                entity.Property(e => e.UpdatedAt).IsRequired(false);
                 entity.HasOne(e => e.Route).WithMany(r => r.Trips).HasForeignKey(e => e.RouteId).OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne(e => e.Bus).WithMany(b => b.Trips).HasForeignKey(e => e.BusId).OnDelete(DeleteBehavior.Restrict);
             });
