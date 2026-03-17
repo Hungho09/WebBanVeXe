@@ -13,6 +13,7 @@ namespace Domain.Entities
         public decimal Price { get; set; }
         public TripStatus Status { get; set; } = TripStatus.Active;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
 
         // Navigation properties
         public Route? Route { get; set; }
