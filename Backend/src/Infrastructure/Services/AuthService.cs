@@ -51,7 +51,9 @@ namespace Infrastructure.Services
             {
                 Success = true,
                 Message = "Login successful",
-                Token = token
+                Token = token,
+                UserName = user.UserName,
+                Role = user.Role
             };
         }
 
@@ -75,7 +77,7 @@ namespace Infrastructure.Services
                 FullName = request.FullName,
                 PhoneNumber = request.PhoneNumber,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-                Role = RoleConstants.Customer, // Default role
+                Role = string.IsNullOrEmpty(request.Role) ? RoleConstants.Customer : request.Role, 
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             };
