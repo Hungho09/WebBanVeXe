@@ -2,8 +2,7 @@
   <div class="auth-card">
     <div class="auth-left">
       <div class="logo">
-        <i class="fas fa-bus-alt"></i>
-        <span>Vexere</span>
+        <img src="/assets/logo-vexere-optimized.png" alt="Logo" class="auth-logo-img">
       </div>
 
       <h2>Chào mừng trở lại</h2>
@@ -11,8 +10,8 @@
 
       <form (submit)="onLogin($event)">
         <div class="form-group">
-          <label>Email đăng nhập</label>
-          <input type="email" name="email" [(ngModel)]="loginData.email" placeholder="email@example.com" required>
+          <label>Tên tài khoản</label>
+          <input type="text" name="userName" [(ngModel)]="loginData.userName" placeholder="Nhập tên tài khoản" required>
         </div>
 
         <div class="form-group">

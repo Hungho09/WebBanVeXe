@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router'; // Thêm Router
 import { CommonModule } from '@angular/common';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FormsModule } from '@angular/forms';
@@ -16,8 +16,15 @@ export class Homepage implements AfterViewInit {
     // Auth State
     currentUser: any = null;
 
-    constructor(public authService: AuthService) {
+    constructor(
+        public authService: AuthService,
+        private router: Router // Inject Router
+    ) {
         this.currentUser = this.authService.getUser();
+    }
+
+    navigateTo(url: string) {
+        this.router.navigateByUrl(url);
     }
     
     logout() {

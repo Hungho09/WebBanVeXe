@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router'; // Thêm RouterLink
 import { Trip, TripService } from '../../services/trip.service';
 
 @Component({
   selector: 'app-trip-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink], // Thêm RouterLink
   templateUrl: './trip-management.html',
   styleUrls: ['./trip-management.css']
 })

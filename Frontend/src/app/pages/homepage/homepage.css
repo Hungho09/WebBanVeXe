@@ -44,13 +44,20 @@
 }
 
 .logo {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--primary-color);
-    text-decoration: none;
     display: flex;
     align-items: center;
-    gap: 8px;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.logo-img {
+    height: 32px; /* Kích thước nhỏ gọn cực kỳ thẩm mỹ */
+    width: auto;
+    object-fit: contain;
+}
+
+.logo:hover {
+    transform: scale(1.02);
 }
 
 .nav-actions {
@@ -411,18 +418,19 @@
     border-radius: 50px;
     border: 1.5px solid #f1f5f9;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    width: 44px; /* Chỉ hiện icon tròn lúc đầu */
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 44px;
     height: 44px;
     overflow: hidden;
     white-space: nowrap;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .hotline-box:hover {
-    width: 170px; /* Trượt rộng ra khi hover */
-    padding-right: 18px;
+    width: 180px; /* Tăng nhẹ để thoải mái hơn */
+    padding-right: 20px;
     border-color: #f48c3b;
-    box-shadow: 0 10px 20px rgba(244, 140, 59, 0.2);
+    box-shadow: 0 10px 25px rgba(244, 140, 59, 0.25);
 }
 
 .hotline-box i {
@@ -436,17 +444,22 @@
     justify-content: center;
     border-radius: 50%;
     font-size: 14px;
-    transition: all 0.3s;
+    transition: transform 0.5s ease;
+}
+
+.hotline-box:hover i {
+    transform: rotate(360deg); /* Xoay vòng tròn cho đẹp */
 }
 
 .hotline-box .number {
     margin-left: 12px;
     font-weight: 800;
     color: #f48c3b;
-    font-size: 1rem;
+    font-size: 1.05rem;
     opacity: 0;
-    transform: translateX(-10px);
-    transition: all 0.3s 0.1s; /* Delay một chút để mượt hơn */
+    transform: translateX(10px);
+    transition: all 0.4s ease 0.1s;
+    pointer-events: none; /* Tránh cản trở hover */
 }
 
 .hotline-box:hover .number {
@@ -1128,6 +1141,36 @@ input:checked+.slider:before {
 .dropdown-item.no-result {
     color: var(--text-light);
     cursor: default;
+}
+
+.pointer-cursor {
+    cursor: pointer;
+}
+
+.btn-dashboard-vip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #6a5eee 0%, #a29bfe 100%);
+    color: white !important;
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(106, 94, 238, 0.2);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn-dashboard-vip:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(106, 94, 238, 0.35);
+    background: linear-gradient(135deg, #5648e6 0%, #8e84f7 100%);
+}
+
+.btn-dashboard-vip i {
+    font-size: 16px;
 }
 
 .dropdown-item.no-result:hover {

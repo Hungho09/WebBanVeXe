@@ -1,0 +1,224 @@
+.mgmt-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 80px 40px;
+}
+
+.mgmt-card {
+  background: white;
+  border-radius: 30px;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+.mgmt-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.mgmt-table th {
+  text-align: left;
+  padding: 20px 25px;
+  background: #f8fafc;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #64748b;
+  font-weight: 800;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.mgmt-table td {
+  padding: 20px 25px;
+  border-bottom: 1px solid #f8fafc;
+  vertical-align: middle;
+}
+
+.avatar-circle {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #6a5eee 0%, #a29bfe 100%);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 18px;
+  box-shadow: 0 5px 15px rgba(106, 94, 238, 0.2);
+}
+
+.badge {
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.badge.admin { background: #fef2f2; color: #ef4444; }
+.badge.employee { background: #fffbeb; color: #f59e0b; }
+.badge.customer { background: #f0fdf4; color: #10b981; }
+
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.status-indicator.active {
+  color: #10b981;
+}
+
+.status-indicator::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #94a3b8;
+}
+
+.status-indicator.active::before {
+  background: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+.btn-primary-mgmt {
+  background: linear-gradient(135deg, #6a5eee 0%, #483ed8 100%);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 16px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 10px 20px rgba(106, 94, 238, 0.3);
+}
+
+.btn-primary-mgmt:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(106, 94, 238, 0.4);
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.btn-edit { background: #f1f5f9; color: #475569; }
+.btn-edit:hover { background: #e2e8f0; color: #0f172a; }
+
+.btn-delete { background: #fef2f2; color: #ef4444; }
+.btn-delete:hover { background: #fee2e2; color: #dc2626; }
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  z-index: 20000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-card {
+  background: white;
+  max-width: 650px;
+  width: 90%;
+  border-radius: 30px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-header {
+  padding: 25px 35px;
+  background: #f8fafc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 30px;
+  cursor: pointer;
+  color: #94a3b8;
+}
+
+.modal-body {
+  padding: 35px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #475569;
+}
+
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 14px 18px;
+  background: #f8fafc;
+  border: 2px solid #f1f5f9;
+  border-radius: 14px;
+  outline: none;
+  font-size: 15px;
+  transition: all 0.3s;
+}
+
+.form-group input:focus {
+  border-color: #6a5eee;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(106, 94, 238, 0.1);
+}
+
+.btn-cancel {
+  background: #f1f5f9;
+  padding: 12px 25px;
+  border-radius: 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-save {
+  background: #6a5eee;
+  color: white;
+  padding: 12px 35px;
+  border-radius: 14px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

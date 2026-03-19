@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -11,14 +12,25 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {
+export class Login implements OnInit {
   loginData = {
-    email: '',
+    userName: '',
     password: ''
   };
   isLoading = false;
+  returnUrl: string = '/';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService, 
+    private router: Router,
+    private route: ActivatedRoute,
+    private toastService: ToastService
+  ) {}
+
+  ngOnInit() {
+    // Get return url from route parameters or default to '/'
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+  }
 
   onLogin(event: Event) {
     event.preventDefault();
@@ -28,17 +40,20 @@ export class Login {
       next: (response) => {
         this.isLoading = false;
         if (response.success && response.token) {
-          this.authService.saveUser(response.token, response.userName, response.role);
-          alert('Đăng nhập thành công!');
-          this.router.navigate(['/']); // Redirect to home
+          const uName = response.userName || response.UserName || response['userName'] || 'Thành viên';
+          const uRole = response.role || response.Role || response['role'] || 'Customer';
+          
+          this.authService.saveUser(response.token, uName, uRole);
+          this.toastService.showSuccess(`Chào mừng trở lại, ${uName}!`);
+          this.router.navigateByUrl(this.returnUrl); 
         } else {
-          alert('Đăng nhập thất bại: ' + response.message);
+          this.toastService.showError(response.message || 'Đăng nhập thất bại');
         }
       },
       error: (error) => {
         this.isLoading = false;
-        console.error('Login error:', error);
-        alert('Lỗi: ' + (error.error?.message || 'Không thể đăng nhập'));
+        const errMsg = error.error?.message || 'Email hoặc mật khẩu không đúng';
+        this.toastService.showError(errMsg);
       }
     });
   }

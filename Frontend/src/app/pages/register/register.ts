@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-register',
@@ -11,35 +12,54 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
-export class Register {
+export class Register implements OnInit {
   registerData = {
     userName: '',
     email: '',
     password: '',
     fullName: '',
     phoneNumber: '',
-    role: 'Customer' // Default role
+    role: 'Customer'
   };
   isLoading = false;
+  returnUrl: string = '/';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService, 
+    private router: Router,
+    private route: ActivatedRoute,
+    private toastService: ToastService
+  ) {}
+
+  ngOnInit() {
+    // Get return url from route parameters or default to '/'
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+  }
 
   onRegister(event: Event) {
     event.preventDefault();
     this.isLoading = true;
     
-    console.log('Registering user:', this.registerData);
-    
     this.authService.register(this.registerData).subscribe({
       next: (response) => {
         this.isLoading = false;
-        alert('Đăng ký thành công! Vui lòng đăng nhập.');
-        this.router.navigate(['/login']);
+        if (response.success && response.token) {
+          // AUTO-LOGIN: Save the user info immediately
+          this.authService.saveUser(response.token, response.userName, response.role);
+          
+          // Professional Toast
+          this.toastService.showSuccess('Đăng ký và Đăng nhập thành công! Chào mừng bạn gia nhập Vexere.');
+          
+          // Redirect to the previous page the user was trying to access
+          this.router.navigateByUrl(this.returnUrl);
+        } else {
+          this.toastService.showError(response.message || 'Đăng ký thất bại');
+        }
       },
       error: (error) => {
         this.isLoading = false;
-        console.error('Registration failed:', error);
-        alert('Đăng ký thất bại: ' + (error.error?.message || 'Lỗi hệ thống'));
+        const errMsg = error.error?.message || 'Lỗi hệ thống khi đăng ký';
+        this.toastService.showError(errMsg);
       }
     });
   }
