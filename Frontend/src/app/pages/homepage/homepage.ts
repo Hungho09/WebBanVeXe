@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'app-homepage',
@@ -12,6 +13,18 @@ import { FormsModule } from '@angular/forms';
     styleUrl: './homepage.css',
 })
 export class Homepage implements AfterViewInit {
+    // Auth State
+    currentUser: any = null;
+
+    constructor(public authService: AuthService) {
+        this.currentUser = this.authService.getUser();
+    }
+    
+    logout() {
+        this.authService.logout();
+        this.currentUser = null;
+        window.location.reload();
+    }
     // Custom DatePicker State
     showCustomCalendar = false;
     isLunarMode = false;
@@ -192,23 +205,50 @@ export class Homepage implements AfterViewInit {
             this.calendarDays.push({ empty: true });
         }
 
+        // Bảng mốc bắt đầu các tháng âm lịch năm 2026 (Bính Ngọ)
+        const lunarMilestones = [
+            { start: new Date(2026, 0, 19), month: 12, year: 2025 },
+            { start: new Date(2026, 1, 17), month: 1, year: 2026 },
+            { start: new Date(2026, 2, 19), month: 2, year: 2026 },
+            { start: new Date(2026, 3, 17), month: 3, year: 2026 },
+            { start: new Date(2026, 4, 16), month: 4, year: 2026 },
+            { start: new Date(2026, 5, 15), month: 5, year: 2026 },
+            { start: new Date(2026, 6, 14), month: 6, year: 2026 },
+            { start: new Date(2026, 7, 13), month: 7, year: 2026 },
+            { start: new Date(2026, 8, 11), month: 8, year: 2026 },
+            { start: new Date(2026, 9, 11), month: 9, year: 2026 },
+            { start: new Date(2026, 10, 9), month: 10, year: 2026 },
+            { start: new Date(2026, 11, 9), month: 11, year: 2026 },
+        ];
+
         // Current month's days
         for (let i = 1; i <= lastDay.getDate(); i++) {
             const date = new Date(year, month, i);
             const isToday = this.isSameDay(date, new Date());
             const isSelected = this.isSameDay(date, this.selectedDate);
 
-            // Tạm tính ngày âm (Lunar) cơ bản - Bạn có thể thay bằng thư viện 'lunar-javascript' sau
-            // Ở đây tôi dùng một mock logic đơn giản cho demo
-            const lunarDay = (i % 29) + 1; // MOCK Day
-            const lunarMonth = month + 1;
+            // Tìm tháng âm lịch phù hợp cho ngày này
+            let currentMilestone = lunarMilestones[0];
+            for (const m of lunarMilestones) {
+                if (date >= m.start) {
+                    currentMilestone = m;
+                } else {
+                    break;
+                }
+            }
+
+            const diffInTime = date.getTime() - currentMilestone.start.getTime();
+            const diffInDays = Math.round(diffInTime / (1000 * 3600 * 24));
+            
+            const lunarDayNum = diffInDays + 1;
+            const lunarMonthNum = currentMilestone.month;
 
             this.calendarDays.push({
                 day: i,
                 date: date,
                 isToday,
                 isSelected,
-                lunar: `${lunarDay}/${lunarMonth}`
+                lunar: lunarDayNum === 1 ? `${lunarDayNum}/${lunarMonthNum}` : `${lunarDayNum}`
             });
         }
     }
