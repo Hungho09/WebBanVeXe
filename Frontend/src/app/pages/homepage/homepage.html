@@ -60,15 +60,13 @@
                     <!-- Trip Type Selection -->
                     <div class="trip-type">
                         <label class="radio-label" [class.active]="tripType === 'oneWay'"
-                            (click)="setTripType('oneWay')">
-                            <input type="radio" name="tripType" [checked]="tripType === 'oneWay'"
-                                (change)="setTripType('oneWay')">
+                            (click)="setTripType('oneWay', $event)">
+                            <input type="radio" name="tripType" [checked]="tripType === 'oneWay'">
                             <span class="custom-radio"></span> Một chiều
                         </label>
                         <label class="radio-label" [class.active]="tripType === 'roundTrip'"
-                            (click)="setTripType('roundTrip')">
-                            <input type="radio" name="tripType" [checked]="tripType === 'roundTrip'"
-                                (change)="setTripType('roundTrip')">
+                            (click)="setTripType('roundTrip', $event)">
+                            <input type="radio" name="tripType" [checked]="tripType === 'roundTrip'">
                             <span class="custom-radio"></span> Khứ hồi
                         </label>
                     </div>
@@ -128,15 +126,58 @@
                                 <div class="cal-title">Ngày đi <i class="fas fa-chevron-left"></i> <i
                                         class="fas fa-chevron-right"></i></div>
                                 <label class="btn-month-mini" style="cursor: pointer; position: relative; margin: 0;"
-                                    (click)="showDatePicker(dateInput)">
+                                    (click)="toggleCustomCalendar()">
                                     <i class="far fa-calendar"></i> {{ currentMonthYearStr }}
-                                    <input #dateInput type="date" id="native-date-btn"
-                                        style="opacity: 0; position: absolute; left: 0; top: 0; width: 100%; height: 100%; cursor: pointer;"
-                                        (change)="onNativeDateChange($event)">
                                 </label>
+
+                                <!-- Custom Calendar Popup -->
+                                <div class="custom-calendar-popup" *ngIf="showCustomCalendar" (click)="$event.stopPropagation()">
+                                    <div class="calendar-nav">
+                                        <button (click)="prevMonth()"><i class="fas fa-chevron-left"></i></button>
+                                        <div class="current-month">
+                                            {{ calendarLang === 'vi' ? monthNames.vi[viewDate.getMonth()] : monthNames.en[viewDate.getMonth()] }}, {{ viewDate.getFullYear() }}
+                                        </div>
+                                        <button (click)="nextMonth()"><i class="fas fa-chevron-right"></i></button>
+                                    </div>
+
+                                    <div class="calendar-grid">
+                                        <div class="weekday" *ngFor="let day of (calendarLang === 'vi' ? weekDays.vi : weekDays.en)">
+                                            {{ day }}
+                                        </div>
+                                        <div class="calendar-day" *ngFor="let day of calendarDays" 
+                                            [class.empty]="day.empty"
+                                            [class.today]="day.isToday"
+                                            [class.selected]="day.isSelected"
+                                            (click)="selectCalendarDate(day)">
+                                            <span class="solar">{{ day.day }}</span>
+                                            <span class="lunar" *ngIf="calendarLang === 'vi' && isLunarMode && !day.empty">
+                                                {{ day.lunar }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="calendar-footer">
+                                        <div class="lang-switch">
+                                            <button [class.active]="calendarLang === 'en'" (click)="calendarLang = 'en'; generateCalendar()">EN</button>
+                                            <button [class.active]="calendarLang === 'vi'" (click)="calendarLang = 'vi'; generateCalendar()">VI</button>
+                                        </div>
+                                        <div class="lunar-toggle" *ngIf="calendarLang === 'vi'">
+                                            <label class="switch">
+                                                <input type="checkbox" [(ngModel)]="isLunarMode">
+                                                <span class="slider round"></span>
+                                            </label>
+                                            <span>Hiển thị lịch âm</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <!-- Scrollable wrapper -->
-                            <div class="dates-scroll-wrapper" #scrollWrapper>
+                            <div class="dates-scroll-wrapper" #scrollWrapper 
+                                [class.dragging]="isDragging"
+                                (mousedown)="onMouseDown($event)" 
+                                (mousemove)="onMouseMove($event)" 
+                                (mouseup)="onMouseUp()" 
+                                (mouseleave)="onMouseUp()">
                                 <div class="weeks-row">
                                     <div class="week-group" *ngFor="let group of datesGroupList">
                                         <div class="dates-row-mini">
