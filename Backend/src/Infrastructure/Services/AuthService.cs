@@ -27,7 +27,8 @@ namespace Infrastructure.Services
 
         public async Task<AuthResponseDto> LoginAsync(LoginRequestDto request)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            // Cho phép đăng nhập bằng cả Username hoặc Email
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == request.UserName || u.Email == request.UserName);
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             {
                 return new AuthResponseDto
@@ -85,10 +86,14 @@ namespace Infrastructure.Services
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
+            var token = GenerateJwtToken(user);
             return new AuthResponseDto
             {
                 Success = true,
-                Message = "Registration successful"
+                Message = "Registration successful",
+                Token = token,
+                UserName = user.UserName,
+                Role = user.Role
             };
         }
 
