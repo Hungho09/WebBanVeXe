@@ -1,1 +1,73 @@
-<p>register works!</p>
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-left">
+      <div class="logo">
+        <i class="fas fa-bus-alt"></i>
+        <span>Vexere</span>
+      </div>
+
+      <h2 style="font-size: 2.5em;">Tạo tài khoản mới</h2>
+      <p class="subtitle">Đăng ký ngay để nhận ưu đãi và quản lý chuyến đi của bạn.</p>
+
+      <form (submit)="onRegister($event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Họ và tên</label>
+            <input type="text" name="fullName" [(ngModel)]="registerData.fullName" placeholder="Nguyễn Văn A" required>
+          </div>
+          <div class="form-group">
+            <label>Số điện thoại</label>
+            <input type="tel" name="phoneNumber" [(ngModel)]="registerData.phoneNumber" placeholder="0987xxx" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tên đăng nhập</label>
+            <input type="text" name="userName" [(ngModel)]="registerData.userName" placeholder="user123" required>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" [(ngModel)]="registerData.email" placeholder="email@example.com" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Mật khẩu</label>
+            <input type="password" name="password" [(ngModel)]="registerData.password" placeholder="••••••••" required>
+          </div>
+          <div class="form-group">
+            <label>Loại tài khoản (Phân quyền)</label>
+            <select name="role" [(ngModel)]="registerData.role">
+              <option value="Customer">Khách hàng (Customer)</option>
+              <option value="Employee">Nhân viên (Employee)</option>
+              <option value="Admin">Quản trị viên (Admin)</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" [disabled]="isLoading">
+          {{ isLoading ? 'Đang đăng ký...' : 'Đăng ký tài khoản' }}
+        </button>
+
+        <p class="auth-footer">
+          Bạn đã có tài khoản? <a [routerLink]="['/login']">Đăng nhập</a>
+        </p>
+      </form>
+    </div>
+
+    <div class="auth-right-reg">
+      <div class="illustration-box">
+         <svg width="240" height="180" viewBox="0 0 240 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="240" height="180" rx="20" fill="white" fill-opacity="0.1"/>
+            <path d="M50 140H190M70 140V120C70 108.954 78.9543 100 90 100H150C161.046 100 170 108.954 170 120V140M120 40C136.569 40 150 53.4315 150 70C150 86.5685 136.569 100 120 100C103.431 100 90 86.5685 90 70C90 53.4315 103.431 40 120 40Z" stroke="white" stroke-width="8" stroke-linecap="round"/>
+         </svg>
+      </div>
+      <div class="overlay-text">
+        <h3>Chào mừng bạn mới!</h3>
+        <p>Gia nhập cộng đồng Vexere để trải nghiệm sớm các tiện ích đặt vé thông minh.</p>
+      </div>
+    </div>
+  </div>
+</div>

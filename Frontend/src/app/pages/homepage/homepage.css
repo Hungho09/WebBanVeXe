@@ -149,8 +149,12 @@
 
 /* Hero Section */
 .hero-section {
-    padding: 100px 0 140px;
-    background: linear-gradient(135deg, var(--primary-color), #8ea6fc);
+    padding: 100px 0 180px;
+    /* Tăng padding để hở hình nền đẹp hơn */
+    background: linear-gradient(rgba(106, 94, 238, 0.4), rgba(255, 255, 255, 0)), url('/assets/hero_bg.png');
+    background-size: cover;
+    background-position: center bottom;
+    background-repeat: no-repeat;
     position: relative;
     text-align: center;
     border-top-left-radius: 60px;
@@ -189,7 +193,7 @@
     margin: -50px auto;
     box-shadow: 0px 20px 50px rgba(106, 97, 211, 0.15);
     position: absolute;
-    bottom: -70px;
+    bottom: -85px;
     left: 50%;
     transform: translateX(-50%);
     width: 95%;
@@ -385,7 +389,7 @@
     right: 0;
     width: 330px;
     background: white;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     border-radius: 15px;
     padding: 20px;
     z-index: 1000;
@@ -397,6 +401,57 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+}
+
+.hotline-box {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    padding: 6px;
+    border-radius: 50px;
+    border: 1.5px solid #f1f5f9;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 44px; /* Chỉ hiện icon tròn lúc đầu */
+    height: 44px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.hotline-box:hover {
+    width: 170px; /* Trượt rộng ra khi hover */
+    padding-right: 18px;
+    border-color: #f48c3b;
+    box-shadow: 0 10px 20px rgba(244, 140, 59, 0.2);
+}
+
+.hotline-box i {
+    flex-shrink: 0;
+    color: white;
+    background: #f48c3b;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.hotline-box .number {
+    margin-left: 12px;
+    font-weight: 800;
+    color: #f48c3b;
+    font-size: 1rem;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s 0.1s; /* Delay một chút để mượt hơn */
+}
+
+.hotline-box:hover .number {
+    opacity: 1;
+    transform: translateX(0);
 }
 
 .calendar-nav button {
@@ -469,7 +524,7 @@
 }
 
 .selected .lunar {
-    color: rgba(255,255,255,0.8);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .calendar-footer {
@@ -502,7 +557,7 @@
 .lang-switch button.active {
     background: white;
     color: var(--primary-color);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .lunar-toggle {
@@ -552,11 +607,11 @@
     border-radius: 50%;
 }
 
-input:checked + .slider {
+input:checked+.slider {
     background-color: var(--success);
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
     transform: translateX(16px);
 }
 
@@ -565,22 +620,28 @@ input:checked + .slider:before {
     width: 100%;
     max-width: 325px;
     padding-bottom: 5px;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
     scroll-behavior: smooth;
     scroll-snap-type: x mandatory;
     cursor: grab;
-    user-select: none; /* Ngăn bôi đen văn bản khi đang kéo */
+    user-select: none;
+    /* Ngăn bôi đen văn bản khi đang kéo */
 }
 
 .dates-scroll-wrapper.dragging {
     cursor: grabbing;
-    scroll-behavior: auto; /* Tắt smooth scroll khi đang kéo để mượt hơn */
-    scroll-snap-type: none; /* Tắt snap khi đang kéo */
+    scroll-behavior: auto;
+    /* Tắt smooth scroll khi đang kéo để mượt hơn */
+    scroll-snap-type: none;
+    /* Tắt snap khi đang kéo */
 }
 
 .dates-scroll-wrapper::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and Opera */
+    display: none;
+    /* Chrome, Safari and Opera */
 }
 
 .weeks-row {

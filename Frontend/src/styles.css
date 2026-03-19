@@ -122,3 +122,74 @@ body {
 .card-shadow {
     box-shadow: var(--shadow-light);
 }
+
+/* Navbar Global Styles */
+.navbar {
+    height: 72px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.mr-1 { margin-right: 4px; }
+.mr-2 { margin-right: 8px; }
+.mr-3 { margin-right: 12px; }
+.mr-4 { margin-right: 16px; }
+
+.auth-box {
+    gap: 12px;
+}
+
+.btn-login-new {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
+    padding: 8px 16px;
+    font-size: 0.95rem;
+}
+
+.btn-register-new {
+    background: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f8fafc;
+    padding: 5px 5px 5px 15px;
+    border-radius: 30px;
+    border: 1px solid #e2e8f0;
+}
+
+.badge {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.badge.admin { background: #fee2e2; color: #dc2626; }
+.badge.employee { background: #fef9c3; color: #ca8a04; }
+.badge.customer { background: #dcfce7; color: #16a34a; }
+
+.btn-logout-new {
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ef4444;
+}

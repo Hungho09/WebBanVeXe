@@ -12,32 +12,34 @@
 
             <!-- Right Actions -->
             <div class="nav-actions flex items-center">
-                <!-- Resource Management Link -->
-                <a routerLink="/resource" class="nav-link-resource mr-4" style="text-decoration: none; color: #4b5563; font-weight: 500; font-size: 0.95rem;">
-                    <i class="fas fa-tasks mr-1"></i> Quản lý vận chuyển
-                </a>
-
-                <!-- Trip Management Link -->
-                <a routerLink="/trip" class="nav-link-resource mr-4" style="text-decoration: none; color: #4b5563; font-weight: 500; font-size: 0.95rem;">
-                    <i class="fas fa-route mr-1"></i> Quản lý chuyến đi
-                </a>
+                <!-- Trip & Resource links (Roles-based access) -->
+                <ng-container *ngIf="authService.isLoggedIn() && (currentUser.role === 'Admin' || currentUser.role === 'Employee')">
+                    <a routerLink="/trip" class="nav-link-resource mr-3">
+                        <i class="fas fa-route"></i> Quản lý chuyến
+                    </a>
+                </ng-container>
 
                 <!-- Hotline Box -->
-                <div class="hotline-box" (click)="toggleHotline()">
-                    <div class="icon-circle">
-                        <i class="fas fa-phone-alt"></i>
-                    </div>
-                    <div class="text-info">
-                        <span class="label">Hotline 24/7</span>
-                        <span class="number" [class.show]="showingHotline">1900 1009</span>
-                        <span class="number-hidden" [class.hide]="showingHotline">Click để xem</span>
-                    </div>
+                <div class="hotline-box" style="cursor: pointer; margin-right: 15px;">
+                    <i class="fas fa-phone-alt"></i>
+                    <span class="number">1900 1009</span>
                 </div>
 
-                <!-- Login Button -->
-                <a routerLink="/login" class="btn-login">
-                    <i class="far fa-user flex"></i> Đăng nhập
-                </a>
+                <!-- Auth Buttons / User Profile -->
+                <div class="auth-box flex items-center">
+                    <ng-container *ngIf="!authService.isLoggedIn()">
+                        <a routerLink="/login" class="btn-login-new">Đăng nhập</a>
+                        <a routerLink="/register" class="btn-register-new">Đăng ký</a>
+                    </ng-container>
+
+                    <ng-container *ngIf="authService.isLoggedIn()">
+                        <div class="user-profile">
+                            <span class="welcome">Xin chào, <b>{{ currentUser.userName }}</b></span>
+                            <span class="badge" [ngClass]="currentUser.role.toLowerCase()">{{ currentUser.role }}</span>
+                            <button (click)="logout()" class="btn-logout-new">Đăng xuất</button>
+                        </div>
+                    </ng-container>
+                </div>
             </div>
         </div>
     </header>
