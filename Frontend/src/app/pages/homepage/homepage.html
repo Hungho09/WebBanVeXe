@@ -3,7 +3,7 @@
     <!-- ===============================
        1. HEADER 
   ================================= -->
-    <header class="navbar">
+    <header class="navbar" [class.scrolled]="isScrolled">
         <div class="container flex justify-between items-center h-full">
             <!-- Logo Codenhalam -->
             <div class="logo flex items-center pointer-cursor" (click)="navigateTo('/')">
@@ -32,7 +32,7 @@
                 <!-- Hotline Box -->
                 <div class="hotline-box" style="cursor: pointer; margin-right: 15px;">
                     <i class="fas fa-phone-alt"></i>
-                    <span class="number">1900 1009</span>
+                    <span class="number">0397279236</span>
                 </div>
 
                 <!-- Auth Buttons / User Profile -->
@@ -61,6 +61,8 @@
 
         <!-- Hero Banner with Large Search Box -->
         <section class="hero-section">
+            <div class="hero-bg-fader" [style.background-image]="'url(\'' + bgImageUrl + '\')'"></div>
+            <div class="hero-bg-overlay"></div>
             <div class="container hero-container">
                 <h1 class="hero-title">Cái gì không làm được thì mình vừa khóc vừa làm
                     <span>Codenhalam-WebBanVeXe</span>
@@ -228,9 +230,9 @@
         <!-- Popular Routes Section -->
         <section class="popular-routes">
             <div class="container">
-                <div class="section-title">
-                    <h2>Tuyến Đường Phổ Biến</h2>
-                    <p>Khám phá những điểm đến được yêu thích nhất trong tuần</p>
+                <div class="section-title left-align">
+                    <h2>🔥 Tuyến Đường Phổ Biến</h2>
+                    <p>Những chuyến đi khởi hành trong ngày</p>
                 </div>
 
                 <div class="route-grid">
@@ -295,8 +297,9 @@
             <div class="container dual-cols">
                 <!-- Offers -->
                 <div class="promotions">
-                    <div class="section-title">
-                        <h2>Ưu Đãi Nổi Bật</h2>
+                    <div class="section-title left-align">
+                        <h2>🎁 Ưu Đãi Nổi Bật</h2>
+                        <p>Khám phá các ưu đãi độc quyền dành riêng cho bạn</p>
                     </div>
                     <div class="promo-box flex items-center">
                         <div class="promo-icon"><i class="fas fa-gift"></i></div>
@@ -319,8 +322,11 @@
 
                 <!-- News -->
                 <div class="news">
-                    <div class="section-title">
-                        <h2>Thông Báo Mới</h2>
+                    <div class="news-list-box">
+                        <div class="section-title left-align">
+                            <h2>📢 Thông Báo Mới</h2>
+                            <p>Cập nhật tin tức và thông tin từ Codenhalam</p>
+                        </div>
                     </div>
                     <ul class="news-list">
                         <li>
@@ -336,6 +342,106 @@
                             <a href="#">Cảnh báo tình trạng lừa đảo bán vé xe ảo trên mạng</a>
                         </li>
                     </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="testimonials">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Khách Hàng Nói Gì Về Chúng Tôi</h2>
+                    <p>Những chia sẻ chân thực từ những người đã đồng hành cùng Codenhalam</p>
+                </div>
+                <div class="testimonial-carousel">
+                    <!-- Member Card 1 -->
+                    <div class="testimonial-card">
+                        <div class="user-info-flex">
+                            <div class="user-img-box">
+                                <img src="/assets/avatar/theanh.jpg" alt="theanh">
+                            </div>
+                            <div class="user-meta">
+                                <h3>Nguyễn Hồ Thế Anh</h3>
+                                <span>Chủ tịch HĐQT</span>
+                            </div>
+                        </div>
+                        <div class="user-comment">
+                            <p>"Lần đầu đồng hành cùng Codenhalam, tôi thực sự ấn tượng bởi tầm nhìn mang lại trải
+                                nghiệm tiện lợi tối đa cho mọi chuyến hành trình xuyên suốt Bắc - Nam."</p>
+                        </div>
+                    </div>
+
+                    <!-- Member Card 2 -->
+                    <div class="testimonial-card">
+                        <div class="user-info-flex">
+                            <div class="user-img-box">
+                                <i class="fas fa-user-ninja fa-3x"></i>
+                            </div>
+                            <div class="user-meta">
+                                <h3>Shark Phi</h3>
+                                <span>Giám đốc BSSC</span>
+                            </div>
+                        </div>
+                        <div class="user-comment">
+                            <p>"Các đối tác của Vexere đều là những hãng xe lớn, có uy tín nên tôi hoàn toàn yên tâm khi
+                                lựa chọn đặt vé cho bản thân và gia đình. Tốc độ thanh toán siêu nhanh!"</p>
+                        </div>
+                    </div>
+
+                    <!-- Member Card 3 -->
+                    <div class="testimonial-card">
+                        <div class="user-info-flex">
+                            <div class="user-img-box">
+                                <img src="/assets/avatar/theanh.jpg" alt="theanh">
+                            </div>
+                            <div class="user-meta">
+                                <h3>Nguyễn Hồ Thế Anh</h3>
+                                <span>Tổng Giám Đốc</span>
+                            </div>
+                        </div>
+                        <div class="user-comment">
+                            <p>"Chúng tôi cam kết không ngừng đổi mới công nghệ để nâng cao chất lượng phục vụ, biến mỗi
+                                chuyến xe khách trở thành một hành trình thư giãn nhất."</p>
+                        </div>
+                    </div>
+
+                    <!-- Member Card 4 -->
+                    <div class="testimonial-card">
+                        <div class="user-info-flex">
+                            <div class="user-img-box">
+                                <img src="/assets/avatar/theanh.jpg" alt="theanh">
+                            </div>
+                            <div class="user-meta">
+                                <h3>Nguyễn Hồ Thế Anh</h3>
+                                <span>Giám đốc Công nghệ</span>
+                            </div>
+                        </div>
+                        <div class="user-comment">
+                            <p>"Hệ thống đặt vé thời gian thực kết hợp AI sẽ giúp tối ưu hóa lựa chọn cho khách hàng,
+                                mang lại sự tiện lợi chỉ sau một cú chạm nhẹ nhàng."</p>
+                        </div>
+                    </div>
+
+                    <!-- Member Card 5 -->
+                    <div class="testimonial-card">
+                        <div class="user-info-flex">
+                            <div class="user-img-box">
+                                <img src="/assets/avatar/theanh.jpg" alt="theanh">
+                            </div>
+                            <div class="user-meta">
+                                <h3>Nguyễn Hồ Thế Anh</h3>
+                                <span>Giám đốc Vận hành</span>
+                            </div>
+                        </div>
+                        <div class="user-comment">
+                            <p>"Sự hài lòng của quý khách trên từng dặm đường là thước đo chính xác nhất cho thành công
+                                của đội ngũ vận hành Codenhalam - Gắn kết mọi chuyến đi."</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="dot-indicator">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
                 </div>
             </div>
         </section>
