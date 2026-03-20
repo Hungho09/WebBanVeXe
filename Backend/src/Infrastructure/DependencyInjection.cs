@@ -53,6 +53,9 @@ namespace Infrastructure
             services.AddScoped<Domain.Interfaces.IRouteRepository, Infrastructure.Repositories.RouteRepository>();
             services.AddScoped<Application.Interfaces.IRouteService, Infrastructure.Services.RouteService>();
 
+            // Seat Management
+            services.AddScoped<Application.Interfaces.ISeatService, Infrastructure.Services.SeatService>();
+
             return services;
         }
     }
