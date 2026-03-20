@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink, Router } from '@angular/router'; // Thêm Router
 import { CommonModule } from '@angular/common';
 import { ScrollingModule } from '@angular/cdk/scrolling';
@@ -12,9 +12,15 @@ import { AuthService } from '../../services/auth.service';
     templateUrl: './homepage.html',
     styleUrl: './homepage.css',
 })
-export class Homepage implements AfterViewInit {
+export class Homepage implements AfterViewInit, OnInit, OnDestroy {
+    // Rotating Backgrounds
+    heroBgImages: string[] = ['bg.png', 'bg2.png', 'bg3.png', 'bg4.png', 'bg5.png', 'bg7.png', 'bg8.png', 'bg9.png', 'bg10.png'];
+    currentBgIndex: number = 0;
+    bgInterval: any;
+
     // Auth State
     currentUser: any = null;
+    isScrolled = false; // Trạng thái lăn chuột để đổi màu Header
 
     constructor(
         public authService: AuthService,
@@ -23,10 +29,15 @@ export class Homepage implements AfterViewInit {
         this.currentUser = this.authService.getUser();
     }
 
+    @HostListener('window:scroll', [])
+    onWindowScroll() {
+        this.isScrolled = window.scrollY > 50;
+    }
+
     navigateTo(url: string) {
         this.router.navigateByUrl(url);
     }
-    
+
     logout() {
         this.authService.logout();
         this.currentUser = null;
@@ -80,7 +91,7 @@ export class Homepage implements AfterViewInit {
             event.preventDefault(); // Stop radio button triggering click again through bubble
             event.stopPropagation();
         }
-        
+
         if (this.tripType === type) {
             // Toggle to the other type if the active one is clicked again
             this.tripType = (type === 'oneWay') ? 'roundTrip' : 'oneWay';
@@ -121,6 +132,28 @@ export class Homepage implements AfterViewInit {
 
     ngOnInit() {
         this.generateDates(new Date());
+        this.startBgRotation();
+    }
+
+    ngOnDestroy() {
+        if (this.bgInterval) {
+            clearInterval(this.bgInterval);
+        }
+    }
+
+    startBgRotation() {
+        this.bgInterval = setInterval(() => {
+            this.currentBgIndex = (this.currentBgIndex + 1) % this.heroBgImages.length;
+        }, 5000); // 5s total to allow slow 3s transition
+    }
+
+    get bgImageUrl(): string {
+        return `/assets/${this.heroBgImages[this.currentBgIndex]}`;
+    }
+
+    get nextBgImageUrl(): string {
+        const nextIdx = (this.currentBgIndex + 1) % this.heroBgImages.length;
+        return `/assets/${this.heroBgImages[nextIdx]}`;
     }
 
     ngAfterViewInit() {
@@ -246,7 +279,7 @@ export class Homepage implements AfterViewInit {
 
             const diffInTime = date.getTime() - currentMilestone.start.getTime();
             const diffInDays = Math.round(diffInTime / (1000 * 3600 * 24));
-            
+
             const lunarDayNum = diffInDays + 1;
             const lunarMonthNum = currentMilestone.month;
 
