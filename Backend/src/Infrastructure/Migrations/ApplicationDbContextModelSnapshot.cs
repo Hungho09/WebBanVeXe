@@ -277,6 +277,37 @@ namespace Infrastructure.Migrations
                     b.ToTable("Seats");
                 });
 
+            modelBuilder.Entity("Domain.Entities.SeatTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("BusType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ColumnNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Floor")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RowNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SeatNumber")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SeatTemplates");
+                });
+
             modelBuilder.Entity("Domain.Entities.Trip", b =>
                 {
                     b.Property<Guid>("Id")
