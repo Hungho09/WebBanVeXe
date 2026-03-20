@@ -1,6 +1,6 @@
 /* Premium Login Styles */
 :root {
-  --primary-color: #6a5eee;
+  --primary-color: #F19E8E;
   --secondary-color: #ff9d00;
   --bg-color: #f7f9fc;
   --text-main: #1a1a24;
@@ -149,7 +149,7 @@ h2 {
 
 .auth-right {
   flex: 0.9;
-  background: linear-gradient(225deg, #7467ef 0%, #5c4bfa 100%);
+  background: linear-gradient(225deg, #F19E8E 0%, #e08d7d 100%);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -161,12 +161,22 @@ h2 {
 }
 
 .illustration-box {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 50px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 30px;
   border-radius: 40px;
   margin-bottom: 40px;
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-illustration {
+    width: 280px;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
 }
 
 .overlay-text h3 {

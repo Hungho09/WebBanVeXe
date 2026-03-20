@@ -11,12 +11,12 @@
 }
 
 :root {
-    --primary-color: #7C8AE8;     /* Lavender Blue - Chủ đạo */
+    --primary-color: #F19E8E;     /* Salmon Pink - Concept Chủ đạo */
     --bg-color: #F5F7FF;          /* Nền xanh cực nhẹ */
     --text-color: #2D3436;
     --text-light: #8b8f9e;
     --white: #ffffff;
-    --accent-orange: #F19E8E;    /* Salmon Pink - Điểm nhấn */
+    --accent-orange: #7C8AE8;    /* Lavender Blue - Làm điểm phụ */
     --accent-blue: #A7BFE8;      /* Sky Blue */
     --success: #2bc155;
     --danger: #f43b3b;

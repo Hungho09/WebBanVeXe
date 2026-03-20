@@ -1,6 +1,6 @@
 /* Modern UI colors and variables */
 :root {
-  --primary-color: #6a5eee;
+  --primary-color: #F19E8E;
   --secondary-color: #ff9d00;
   --bg-color: #f7f9fc;
   --text-main: #1a1a24;
@@ -101,16 +101,16 @@ h2 {
 }
 
 .form-group input:focus, .form-group select:focus {
-  border-color: #f48c3b;
+  border-color: #F19E8E;
   background: white;
-  box-shadow: 0 0 0 6px rgba(244, 140, 59, 0.1);
+  box-shadow: 0 0 0 6px rgba(241, 158, 142, 0.1);
 }
 
 .btn-primary {
   width: 100%;
-  padding: 22px;
+  padding: 18px;
   margin-top: 50px;
-  background: linear-gradient(135deg, #f48c3b 0%, #fa6e12 100%);
+  background: linear-gradient(135deg, #F19E8E 0%, #e08d7d 100%);
   color: white;
   border: none;
   border-radius: 20px;
@@ -118,7 +118,7 @@ h2 {
   font-weight: 800;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 15px 30px -10px rgba(244, 140, 59, 0.5);
+  box-shadow: 0 15px 30px -10px rgba(241, 158, 142, 0.5);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -131,7 +131,7 @@ h2 {
 
 .btn-primary:active {
   transform: translateY(0) scale(0.97);
-  box-shadow: 0 10px 20px -5px rgba(244, 140, 59, 0.4);
+  box-shadow: 0 10px 20px -5px rgba(241, 158, 142, 0.4);
 }
 
 .btn-primary:active {
@@ -154,7 +154,7 @@ h2 {
 
 .auth-right-reg {
   flex: 0.8;
-  background: linear-gradient(225deg, #7467ef 0%, #5c4bfa 100%);
+  background: linear-gradient(225deg, #F19E8E 0%, #e08d7d 100%);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -177,12 +177,22 @@ h2 {
 }
 
 .illustration-box {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 40px;
-  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 30px;
+  border-radius: 40px;
   margin-bottom: 40px;
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-illustration {
+    width: 280px;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
 }
 
 .illustration-box img {

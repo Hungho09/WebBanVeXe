@@ -859,6 +859,9 @@ input:checked+.slider:before {
 }
 
 .btn-login-new {
+    display: flex; /* Đã thêm flex để icon và text nằm ngang */
+    align-items: center;
+    gap: 10px;
     color: white;
     font-weight: 500;
     text-decoration: none;
@@ -877,6 +880,9 @@ input:checked+.slider:before {
 }
 
 .btn-register-new {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     color: white;
     font-weight: 500;
     text-decoration: none;
@@ -898,9 +904,15 @@ input:checked+.slider:before {
     border: 1.5px solid white; /* Khi click mới hiện "ô" */
 }
 
+.btn-icon {
+    height: 20px;
+    width: auto;
+    object-fit: contain;
+    margin-right: 2px;
+}
+
 .btn-search-new {
-    background-color: var(--accent-orange);
-    /* Chuyển sang màu nhấn Salmon Pink rực rỡ */
+    background-color: var(--primary-color);
     color: white;
     border: none;
     padding: 18px 45px;
@@ -953,7 +965,7 @@ input:checked+.slider:before {
 }
 
 .route-card {
-    background: rgba(196, 190, 255, 0.384);
+    background: white;
     border-radius: var(--radius-lg);
     overflow: hidden;
     box-shadow: var(--shadow-light);
@@ -1026,8 +1038,7 @@ input:checked+.slider:before {
     display: flex;
     gap: 20px;
     font-size: 14.5px;
-    color: #4d0f9ea9;
-    /* color: var(--text-light); */
+    color: var(--text-light);
 }
 
 /* Offers & News Section */
@@ -1052,7 +1063,7 @@ input:checked+.slider:before {
 .promo-icon {
     width: 50px;
     height: 50px;
-    background: rgba(106, 94, 238, 0.1);
+    background: rgba(241, 158, 142, 0.1);
     color: var(--primary-color);
     border-radius: 12px;
     display: flex;
@@ -1063,7 +1074,7 @@ input:checked+.slider:before {
 }
 
 .promo-icon.bg-orange {
-    background: rgba(244, 140, 59, 0.1);
+    background: rgba(124, 138, 232, 0.1);
     color: var(--accent-orange);
 }
 
