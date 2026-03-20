@@ -1,8 +1,9 @@
 <div class="auth-container">
   <div class="auth-card">
     <div class="auth-left">
-      <div class="logo">
-        <img src="/assets/logo-vexere-optimized.png" alt="Logo" class="auth-logo-img">
+      <div class="logo pointer-cursor" (click)="navigateTo('/')">
+        <img src="/assets/bus.png" alt="Logo" class="auth-logo-img" style="height: 45px;">
+        <span style="font-family: Arial; font-weight: 800; font-size: 1.4rem; color: var(--primary-color); margin-left: 10px;">Codenhalam</span>
       </div>
 
       <h2>Chào mừng trở lại</h2>
@@ -31,7 +32,7 @@
         </button>
 
         <p class="auth-footer">
-          Chưa có tài khoản? <a [routerLink]="['/register']">Đăng ký mới</a>
+          Chưa có tài khoản? <a (click)="navigateTo('/register')" class="pointer-cursor">Đăng ký mới</a>
         </p>
       </form>
     </div>

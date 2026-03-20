@@ -36,6 +36,10 @@ export class Register implements OnInit {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
+  navigateTo(url: string) {
+    this.router.navigateByUrl(url);
+  }
+
   onRegister(event: Event) {
     event.preventDefault();
     this.isLoading = true;

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router'; // Thêm RouterLink
+import { Router, RouterLink } from '@angular/router'; // Thêm Router
 import { Trip, TripService } from '../../services/trip.service';
 
 @Component({
@@ -21,7 +21,11 @@ export class TripManagement implements OnInit {
   isEditMode = false;
   currentTripId: string | null = null;
 
-  constructor(private fb: FormBuilder, private tripService: TripService) {
+  constructor(
+    private fb: FormBuilder, 
+    private tripService: TripService,
+    private router: Router // Inject Router
+  ) {
     this.tripForm = this.fb.group({
       routeId: ['', Validators.required],
       busId: ['', Validators.required],
@@ -30,6 +34,10 @@ export class TripManagement implements OnInit {
       price: [0, [Validators.required, Validators.min(0)]],
       status: ['Active', Validators.required]
     });
+  }
+
+  navigateTo(url: string) {
+    this.router.navigateByUrl(url);
   }
 
   ngOnInit() {

@@ -36,7 +36,7 @@
 ============================== */
 .navbar {
     height: 80px;
-    background-color: white;
+    background: linear-gradient(90deg, #ffffff, #ffdfc6, #f48c3b);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
     position: sticky;
     top: 0;
@@ -51,7 +51,8 @@
 }
 
 .logo-img {
-    height: 32px; /* Kích thước nhỏ gọn cực kỳ thẩm mỹ */
+    height: 32px;
+    /* Kích thước nhỏ gọn cực kỳ thẩm mỹ */
     width: auto;
     object-fit: contain;
 }
@@ -151,41 +152,97 @@
    2. BODY 
 ============================== */
 .main-content {
+    padding: 15px;
+    background: linear-gradient(0deg, #d4d0fc, #ffffff, #6a5eee);
     flex: 1;
 }
 
 /* Hero Section */
+/* Hiệu ứng Ken Burns cho hình nền sống động */
+@keyframes kenBurnsEffect {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.08);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
 .hero-section {
-    padding: 100px 0 180px;
-    /* Tăng padding để hở hình nền đẹp hơn */
-    background: linear-gradient(rgba(106, 94, 238, 0.4), rgba(255, 255, 255, 0)), url('/assets/hero_bg.png');
+    padding: 110px 0 200px;
+    background: linear-gradient(rgba(106, 94, 238, 0.35), rgba(0, 0, 0, 0.5)), url('/assets/cattrang.gif');
     background-size: cover;
-    background-position: center bottom;
-    background-repeat: no-repeat;
+    background-position: center;
     position: relative;
+    overflow: hidden;
+    /* Quan trọng để không thấy viền khi phóng to ảnh */
     text-align: center;
     border-top-left-radius: 60px;
-    border-bottom-left-radius: 0px;
     border-bottom-right-radius: 100px;
 }
 
+/* Lớp giả chứa hình nền để chuyển động độc lập */
+.hero-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: inherit;
+    z-index: -1;
+    animation: kenBurnsEffect 30s ease-in-out infinite alternate;
+}
+
+.logo-slogan {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #5648e6, #5648e6, #5648e6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+    font-family: 'Arial Black', sans-serif;
+    margin-left: 10px;
+}
+
+.logo-img {
+    height: 50px !important;
+    /* To lên theo yêu cầu */
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
+    transition: transform 0.3s ease;
+}
+
 .hero-title {
-    font-family: Arial;
+    font-family: Arial, sans-serif;
     font-size: 46px;
-    font-style: bold;
-    color: white;
-    margin-bottom: 15px;
     font-weight: 700;
+    color: white;
+    margin-bottom: 20px;
+    /* Hiệu ứng viền (Stroke) cực mạnh để nổi bật trên nền ảnh */
+    text-shadow:
+        -2px -2px 0 #6996f7,
+        2px -2px 0 #6a5eee,
+        -2px 2px 0 #ada6fa,
+        2px 2px 0 #ada6fa,
+        3px 3px 15px rgba(255, 255, 255, 0.8);
 }
 
 .hero-title span {
-    color: rgba(247, 174, 78, 0.9);
+    color: #5648e6;
+    /*color: rgba(247, 174, 78, 0.9);*/
 }
 
 .hero-subtitle {
     color: rgba(255, 255, 255, 0.9);
-    font-size: 18px;
-    margin-bottom: 50px;
+    font-size: 20px;
+    margin-bottom: 40px;
 }
 
 /* ====== New Search Container ====== */
@@ -427,7 +484,8 @@
 }
 
 .hotline-box:hover {
-    width: 180px; /* Tăng nhẹ để thoải mái hơn */
+    width: 180px;
+    /* Tăng nhẹ để thoải mái hơn */
     padding-right: 20px;
     border-color: #f48c3b;
     box-shadow: 0 10px 25px rgba(244, 140, 59, 0.25);
@@ -448,7 +506,8 @@
 }
 
 .hotline-box:hover i {
-    transform: rotate(360deg); /* Xoay vòng tròn cho đẹp */
+    transform: rotate(360deg);
+    /* Xoay vòng tròn cho đẹp */
 }
 
 .hotline-box .number {
@@ -459,7 +518,8 @@
     opacity: 0;
     transform: translateX(10px);
     transition: all 0.4s ease 0.1s;
-    pointer-events: none; /* Tránh cản trở hover */
+    pointer-events: none;
+    /* Tránh cản trở hover */
 }
 
 .hotline-box:hover .number {

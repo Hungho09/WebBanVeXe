@@ -6,21 +6,25 @@
     <header class="navbar">
         <div class="container flex justify-between items-center h-full">
             <!-- Logo Codenhalam -->
-            <a routerLink="/" class="logo">
-                <img src="/assets/logo-vexere-optimized.png" alt="Logo" class="logo-img">
-            </a>
+            <div class="logo flex items-center pointer-cursor" (click)="navigateTo('/')">
+                <img src="/assets/bus.png" alt="Logo" class="logo-img">
+                <span class="logo-slogan ml-2">Codenhalam - WebBanVeXe</span>
+            </div>
 
             <!-- Right Actions -->
             <div class="nav-actions flex items-center">
                 <ng-container *ngIf="authService.isLoggedIn()">
-                    <a *ngIf="currentUser.role === 'Admin' || currentUser.role === 'Employee'" (click)="navigateTo('/trip')" class="nav-link-resource mr-4 pointer-cursor">
+                    <a *ngIf="currentUser.role === 'Admin' || currentUser.role === 'Employee'"
+                        (click)="navigateTo('/trip')" class="nav-link-resource mr-4 pointer-cursor">
                         <i class="fas fa-route"></i> Quản lý chuyến
                     </a>
-                    <a *ngIf="currentUser.role === 'Admin'" (click)="navigateTo('/user-management')" class="nav-link-resource mr-4 pointer-cursor">
+                    <a *ngIf="currentUser.role === 'Admin'" (click)="navigateTo('/user-management')"
+                        class="nav-link-resource mr-4 pointer-cursor">
                         <i class="fas fa-users-cog"></i> Quản lý tài khoản
                     </a>
                     <!-- Nút Dashboard VIP cho Admin -->
-                    <a *ngIf="currentUser.role === 'Admin'" (click)="navigateTo('/dashboard')" class="btn-dashboard-vip mr-4">
+                    <a *ngIf="currentUser.role === 'Admin'" (click)="navigateTo('/dashboard')"
+                        class="btn-dashboard-vip mr-4">
                         <i class="fas fa-chart-line"></i> Dashboard
                     </a>
                 </ng-container>
@@ -34,8 +38,8 @@
                 <!-- Auth Buttons / User Profile -->
                 <div class="auth-box flex items-center">
                     <ng-container *ngIf="!authService.isLoggedIn()">
-                        <a routerLink="/login" class="btn-login-new">Đăng nhập</a>
-                        <a routerLink="/register" class="btn-register-new">Đăng ký</a>
+                        <button (click)="navigateTo('/login')" class="btn-login-new">Đăng nhập</button>
+                        <button (click)="navigateTo('/register')" class="btn-register-new">Đăng ký</button>
                     </ng-container>
 
                     <ng-container *ngIf="authService.isLoggedIn()">
@@ -58,7 +62,9 @@
         <!-- Hero Banner with Large Search Box -->
         <section class="hero-section">
             <div class="container hero-container">
-                <h1 class="hero-title">Cái gì không làm được thì mình vừa khóc vừa làm <span>Codenhalam</span></h1>
+                <h1 class="hero-title">Cái gì không làm được thì mình vừa khóc vừa làm
+                    <span>Codenhalam-WebBanVeXe</span>
+                </h1>
                 <p class="hero-subtitle">Đặt vé xe khách trực tuyến dễ dàng, nhanh chóng và an toàn nhất</p>
 
                 <!-- Big Search Box -->
@@ -139,26 +145,28 @@
                                 </label>
 
                                 <!-- Custom Calendar Popup -->
-                                <div class="custom-calendar-popup" *ngIf="showCustomCalendar" (click)="$event.stopPropagation()">
+                                <div class="custom-calendar-popup" *ngIf="showCustomCalendar"
+                                    (click)="$event.stopPropagation()">
                                     <div class="calendar-nav">
                                         <button (click)="prevMonth()"><i class="fas fa-chevron-left"></i></button>
                                         <div class="current-month">
-                                            {{ calendarLang === 'vi' ? monthNames.vi[viewDate.getMonth()] : monthNames.en[viewDate.getMonth()] }}, {{ viewDate.getFullYear() }}
+                                            {{ calendarLang === 'vi' ? monthNames.vi[viewDate.getMonth()] :
+                                            monthNames.en[viewDate.getMonth()] }}, {{ viewDate.getFullYear() }}
                                         </div>
                                         <button (click)="nextMonth()"><i class="fas fa-chevron-right"></i></button>
                                     </div>
 
                                     <div class="calendar-grid">
-                                        <div class="weekday" *ngFor="let day of (calendarLang === 'vi' ? weekDays.vi : weekDays.en)">
+                                        <div class="weekday"
+                                            *ngFor="let day of (calendarLang === 'vi' ? weekDays.vi : weekDays.en)">
                                             {{ day }}
                                         </div>
-                                        <div class="calendar-day" *ngFor="let day of calendarDays" 
-                                            [class.empty]="day.empty"
-                                            [class.today]="day.isToday"
-                                            [class.selected]="day.isSelected"
-                                            (click)="selectCalendarDate(day)">
+                                        <div class="calendar-day" *ngFor="let day of calendarDays"
+                                            [class.empty]="day.empty" [class.today]="day.isToday"
+                                            [class.selected]="day.isSelected" (click)="selectCalendarDate(day)">
                                             <span class="solar">{{ day.day }}</span>
-                                            <span class="lunar" *ngIf="calendarLang === 'vi' && isLunarMode && !day.empty">
+                                            <span class="lunar"
+                                                *ngIf="calendarLang === 'vi' && isLunarMode && !day.empty">
                                                 {{ day.lunar }}
                                             </span>
                                         </div>
@@ -166,8 +174,10 @@
 
                                     <div class="calendar-footer">
                                         <div class="lang-switch">
-                                            <button [class.active]="calendarLang === 'en'" (click)="calendarLang = 'en'; generateCalendar()">EN</button>
-                                            <button [class.active]="calendarLang === 'vi'" (click)="calendarLang = 'vi'; generateCalendar()">VI</button>
+                                            <button [class.active]="calendarLang === 'en'"
+                                                (click)="calendarLang = 'en'; generateCalendar()">EN</button>
+                                            <button [class.active]="calendarLang === 'vi'"
+                                                (click)="calendarLang = 'vi'; generateCalendar()">VI</button>
                                         </div>
                                         <div class="lunar-toggle" *ngIf="calendarLang === 'vi'">
                                             <label class="switch">
@@ -180,12 +190,9 @@
                                 </div>
                             </div>
                             <!-- Scrollable wrapper -->
-                            <div class="dates-scroll-wrapper" #scrollWrapper 
-                                [class.dragging]="isDragging"
-                                (mousedown)="onMouseDown($event)" 
-                                (mousemove)="onMouseMove($event)" 
-                                (mouseup)="onMouseUp()" 
-                                (mouseleave)="onMouseUp()">
+                            <div class="dates-scroll-wrapper" #scrollWrapper [class.dragging]="isDragging"
+                                (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)"
+                                (mouseup)="onMouseUp()" (mouseleave)="onMouseUp()">
                                 <div class="weeks-row">
                                     <div class="week-group" *ngFor="let group of datesGroupList">
                                         <div class="dates-row-mini">
@@ -342,9 +349,10 @@
         <div class="container footer-grid">
             <!-- Col 1 -->
             <div class="foot-col">
-                <a routerLink="/" class="logo foot-logo">
-                    <i class="fas fa-bus-alt"></i> Codenhalam
-                </a>
+                <div (click)="navigateTo('/')" class="logo foot-logo pointer-cursor">
+                    <img src="/assets/bus.png" alt="Logo" style="height: 25px; margin-right: 8px;">
+                    Codenhalam-WebBanVeXe
+                </div>
                 <p class="foot-desc">Hệ thống đặt vé xe khách trực tuyến tiên phong, mang lại trải nghiệm tiện lợi và an
                     toàn cho mọi chuyến đi.</p>
                 <div class="socials">

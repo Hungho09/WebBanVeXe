@@ -32,6 +32,10 @@ export class Login implements OnInit {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
+  navigateTo(url: string) {
+    this.router.navigateByUrl(url);
+  }
+
   onLogin(event: Event) {
     event.preventDefault();
     this.isLoading = true;

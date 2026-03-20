@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router'; // Thêm RouterLink
+import { Router, RouterLink } from '@angular/router'; // Thêm Router
 import { UserService, User } from '../../services/user.service';
 import { ToastService } from '../../services/toast.service';
 
@@ -31,8 +31,13 @@ export class UserManagement implements OnInit {
 
   constructor(
     private userService: UserService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private router: Router // Inject Router
   ) {}
+
+  navigateTo(url: string) {
+    this.router.navigateByUrl(url);
+  }
 
   ngOnInit() {
     this.loadUsers();
