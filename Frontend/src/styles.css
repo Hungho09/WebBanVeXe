@@ -1,14 +1,23 @@
-/* You can add global styles to this file, and also import other style files */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+/* Nhập phông chữ Inter - Phông chữ tốt nhất hiện nay cho Tiếng Việt (không bao giờ lỗi dấu) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif; /* Thay đổi phông chữ toàn diện để hết lỗi dấu */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
 
 :root {
-    --primary-color: #6a5eee;
-    --bg-color: #e5e9f5;
-    --text-color: #333333;
+    --primary-color: #7C8AE8;     /* Lavender Blue - Chủ đạo */
+    --bg-color: #F5F7FF;          /* Nền xanh cực nhẹ */
+    --text-color: #2D3436;
     --text-light: #8b8f9e;
     --white: #ffffff;
-    --accent-orange: #f48c3b;
-    --accent-blue: #3b8cf4;
+    --accent-orange: #F19E8E;    /* Salmon Pink - Điểm nhấn */
+    --accent-blue: #A7BFE8;      /* Sky Blue */
     --success: #2bc155;
     --danger: #f43b3b;
     --shadow-light: 4px 4px 15px rgba(0, 0, 0, 0.03);
@@ -16,13 +25,6 @@
     --radius-xl: 30px;
     --radius-lg: 20px;
     --radius-md: 12px;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
 }
 
 body {
