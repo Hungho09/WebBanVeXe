@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Domain.Entities
 {
@@ -12,5 +13,7 @@ namespace Domain.Entities
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
+
+        public ICollection<Trip> Trips { get; set; } = new List<Trip>();
     }
 }

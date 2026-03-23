@@ -14,6 +14,8 @@ namespace Application.DTOs.Trip
         public DateTime ArrivalTime { get; set; }
         public decimal Price { get; set; }
         public string Status { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 
     public class CreateTripDto

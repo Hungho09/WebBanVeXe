@@ -87,6 +87,7 @@ namespace Infrastructure.Services
             trip.ArrivalTime = dto.ArrivalTime;
             trip.Price = dto.Price;
             trip.Status = dto.Status;
+            trip.UpdatedAt = DateTime.UtcNow;
 
             _tripRepository.Update(trip);
             await _tripRepository.SaveChangesAsync();
@@ -115,7 +116,9 @@ namespace Infrastructure.Services
                 DepartureTime = trip.DepartureTime,
                 ArrivalTime = trip.ArrivalTime,
                 Price = trip.Price,
-                Status = trip.Status.ToString()
+                Status = trip.Status.ToString(),
+                CreatedAt = trip.CreatedAt,
+                UpdatedAt = trip.UpdatedAt
             };
         }
     }
