@@ -1,18 +1,13 @@
 import { Component } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
   currentDate = new Date();
-
-  constructor(private router: Router) {}
-
-  navigateTo(url: string) {
-    this.router.navigateByUrl(url);
-  }
 }

@@ -1,239 +1,88 @@
-<div class="dashboard-wrapper">
-    <!-- Left Sidebar -->
-    <aside class="sidebar">
-        <div class="logo-box pointer-cursor" (click)="navigateTo('/')">
-            <img src="/assets/bus.png" alt="Logo" style="height: 40px; margin-right: 10px;">
-            <span style="color: white; font-weight: 800; font-size: 1.2rem;">Codenhalam-WebBanVeXe</span>
+<div class="dashboard-content">
+    <div class="hero-card">
+        <div class="hero-left">
+            <h1>Chào buổi sáng, <span>Admin</span></h1>
+            <p>Chúc bạn một ngày làm việc hiệu quả!</p>
         </div>
-        <nav class="nav-links">
-            <a (click)="navigateTo('/homepage')" title="Trang chủ"><i class="fas fa-home"></i></a>
-            <a (click)="navigateTo('/user-management')" title="Quản lý tài khoản"><i class="fas fa-users-cog"></i></a>
-            <a (click)="navigateTo('/trip')" title="Quản lý chuyến"><i class="fas fa-route"></i></a>
-            <a href="#"><i class="fas fa-calendar-check"></i></a>
-            <a href="#"><i class="fas fa-envelope"></i></a>
-            <a href="#"><i class="fas fa-cog"></i></a>
-        </nav>
-        <div class="logout">
-            <a (click)="navigateTo('/login')"><i class="fas fa-sign-out-alt"></i></a>
-        </div>
-    </aside>
+        <div class="hero-image"></div>
+    </div>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <header class="top-nav">
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search bookings...">
-            </div>
-            <div class="nav-actions">
-                <span class="dropdown">Booking History <i class="fas fa-chevron-down"></i></span>
-                <button class="btn-new">+ Add Booking</button>
-            </div>
-        </header>
-
-        <div class="hero-card">
-            <div class="hero-left">
-                <h1>Good Morning, <span>Admin</span></h1>
-                <p>Have a nice day at work</p>
-            </div>
-            <div class="hero-image">
-                <!-- Abstract vector illustration placeholder -->
-            </div>
+    <!-- Stats Cards -->
+    <div class="stats-section">
+        <div class="stats-header">
+            <h3>Báo cáo tuần này</h3>
+            <span class="dropdown-small">Tuần qua <i class="fas fa-chevron-down"></i></span>
         </div>
 
-        <!-- Stats Cards -->
-        <div class="stats-section">
-            <div class="stats-header">
-                <h3>Weekly Reports</h3>
-                <span class="dropdown-small">Last week <i class="fas fa-chevron-down"></i></span>
+        <div class="cards-grid">
+            <div class="stat-card active-card">
+                <div class="icon-wrapper bg-blue"><i class="fas fa-users"></i></div>
+                <span class="stat-label">Tổng hành khách</span>
+                <span class="stat-value text-white">580</span>
             </div>
 
-            <div class="cards-grid">
-                <div class="stat-card active-card">
-                    <div class="icon-wrapper bg-blue"><i class="fas fa-users"></i></div>
-                    <span class="stat-label">Total Passengers</span>
-                    <span class="stat-value text-white">580</span>
-                </div>
+            <div class="stat-card">
+                <div class="icon-wrapper bg-orange"><i class="fas fa-phone-alt"></i></div>
+                <span class="stat-label">Cuộc gọi hỗ trợ</span>
+                <span class="stat-value">356</span>
+            </div>
 
-                <div class="stat-card">
-                    <div class="icon-wrapper bg-orange"><i class="fas fa-phone-alt"></i></div>
-                    <span class="stat-label">Phone Calls</span>
-                    <span class="stat-value">356</span>
-                </div>
+            <div class="stat-card">
+                <div class="icon-wrapper bg-teal"><i class="fas fa-calendar-alt"></i></div>
+                <span class="stat-label">Vé đã đặt</span>
+                <span class="stat-value">288</span>
+            </div>
 
-                <div class="stat-card">
-                    <div class="icon-wrapper bg-teal"><i class="fas fa-calendar-alt"></i></div>
-                    <span class="stat-label">Bookings</span>
-                    <span class="stat-value">288</span>
-                </div>
-
-                <div class="stat-card">
-                    <div class="icon-wrapper bg-purple"><i class="fas fa-envelope-open-text"></i></div>
-                    <span class="stat-label">Unread Mail</span>
-                    <span class="stat-value">05</span>
-                </div>
-
-                <div class="stat-card empty-card">
-                    <i class="fas fa-plus"></i>
-                </div>
+            <div class="stat-card">
+                <div class="icon-wrapper bg-purple"><i class="fas fa-envelope-open-text"></i></div>
+                <span class="stat-label">Tin nhắn mới</span>
+                <span class="stat-value">05</span>
             </div>
         </div>
+    </div>
 
-        <!-- Data Table -->
-        <div class="table-section">
-            <div class="table-header">
-                <h3>Recent Bookings</h3>
-                <span class="dropdown-small">Last week <i class="fas fa-chevron-down"></i></span>
-            </div>
-
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name <i class="fas fa-sort"></i></th>
-                            <th>Location <i class="fas fa-sort"></i></th>
-                            <th>Date <i class="fas fa-sort"></i></th>
-                            <th>Time <i class="fas fa-sort"></i></th>
-                            <th>Status <i class="fas fa-sort"></i></th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <div class="user-info"><img src="https://i.pravatar.cc/150?img=11" alt="avatar"> David
-                                    Laid</div>
-                            </td>
-                            <td>New York</td>
-                            <td>25 Jun 2026</td>
-                            <td>01:00 PM</td>
-                            <td><i class="fas fa-clock text-danger"></i></td>
-                            <td><i class="fas fa-ellipsis-h"></i></td>
-                        </tr>
-                        <tr class="active-row">
-                            <td>
-                                <div class="user-info"><img src="https://i.pravatar.cc/150?img=5" alt="avatar"> Shopie
-                                    Rose</div>
-                            </td>
-                            <td>Down Town</td>
-                            <td>24 Jun 2026</td>
-                            <td>05:00 PM</td>
-                            <td><i class="fas fa-check text-white"></i></td>
-                            <td><i class="fas fa-ellipsis-h text-white"></i></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="user-info"><img src="https://i.pravatar.cc/150?img=8" alt="avatar"> Chris
-                                    Evans</div>
-                            </td>
-                            <td>Los Angeles</td>
-                            <td>23 Jun 2026</td>
-                            <td>11:00 AM</td>
-                            <td><i class="fas fa-check text-success"></i></td>
-                            <td><i class="fas fa-ellipsis-h"></i></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
-
-    <!-- Right Sidebar -->
-    <aside class="right-panel">
-        <div class="top-profile">
-            <div class="icon-group">
-                <i class="fas fa-cog"></i>
-                <div class="notification"><i class="fas fa-bell"></i><span class="dot"></span></div>
-            </div>
-            <div class="profile-info">
-                <div class="name">Admin Smith</div>
-                <div class="role">View profile</div>
-            </div>
-            <img src="https://i.pravatar.cc/150?img=33" alt="Dr Smith" class="profile-img">
+    <!-- Data Table -->
+    <div class="table-section">
+        <div class="table-header">
+            <h3>Các đơn đặt vé gần đây</h3>
+            <span class="dropdown-small">Xem tất cả <i class="fas fa-chevron-down"></i></span>
         </div>
 
-        <div class="calendar-section">
-            <div class="section-label">Schedule Calendar <i class="fas fa-chevron-left"></i> <i
-                    class="fas fa-chevron-right"></i></div>
-            <button class="btn-month"><i class="far fa-calendar"></i> Jun</button>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Khách hàng</th>
+                        <th>Hành trình</th>
+                        <th>Ngày đi</th>
+                        <th>Số hiệu xe</th>
+                        <th>Trạng thái</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="user-info"><img src="https://i.pravatar.cc/150?img=11" alt="avatar"> Nguyễn Văn A</div>
+                        </td>
+                        <td>Hà Nội - Hải Phòng</td>
+                        <td>25/06/2026</td>
+                        <td>29B-12345</td>
+                        <td><span class="badge customer">Thành công</span></td>
+                        <td><i class="fas fa-ellipsis-h cursor-pointer"></i></td>
+                    </tr>
+                    <tr class="active-row">
+                        <td>
+                            <div class="user-info"><img src="https://i.pravatar.cc/150?img=5" alt="avatar"> Trần Thị B</div>
+                        </td>
+                        <td>Hải Phòng - Hà Nội</td>
+                        <td>24/06/2026</td>
+                        <td>15A-67890</td>
+                        <td><span class="badge customer text-white border-white">Thành công</span></td>
+                        <td><i class="fas fa-ellipsis-h text-white cursor-pointer"></i></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-
-        <div class="dates-slider">
-            <div class="date-item"><span class="day">Mon</span><span class="num">23</span><span class="dot-red"></span>
-            </div>
-            <div class="date-item"><span class="day">Tue</span><span class="num">24</span></div>
-            <div class="date-item"><span class="day">Wed</span><span class="num">25</span><span
-                    class="dots-teal">...</span></div>
-            <div class="date-item active"><span class="day">Thu</span><span class="num">26</span></div>
-            <div class="date-item"><span class="day">Fri</span><span class="num">27</span></div>
-            <div class="date-item"><span class="day">Sat</span><span class="num">28</span></div>
-            <div class="date-item"><span class="day">Sun</span><span class="num">29</span><span
-                    class="dots-mix">..</span></div>
-        </div>
-
-        <div class="monthly-reports">
-            <div class="section-label">Monthly Reports</div>
-            <div class="reports-slider">
-                <div class="report-card active">
-                    <div class="ava"><img src="https://i.pravatar.cc/150?img=12" alt=""></div>
-                    <h4>Tommy Anderson</h4>
-                    <p>Follow-up</p>
-                    <div class="time">Next 08:00</div>
-                </div>
-                <div class="report-card">
-                    <div class="ava"><img src="https://i.pravatar.cc/150?img=20" alt=""></div>
-                    <h4>Maria Garcia</h4>
-                    <p>New booking</p>
-                    <div class="time">09:00</div>
-                </div>
-                <div class="report-card">
-                    <div class="ava"><img src="https://i.pravatar.cc/150?img=15" alt=""></div>
-                    <h4>James Johnson</h4>
-                    <p>New booking</p>
-                    <div class="time">10:00</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="chart-section">
-            <div class="section-header">
-                <div class="section-label">Number of Bookings</div>
-                <span class="dropdown-small">Last week <i class="fas fa-chevron-down"></i></span>
-            </div>
-            <div class="chart-card">
-                <!-- Abstract bars representation -->
-                <div class="bar-chart">
-                    <div class="bar-col">
-                        <div class="bar-fill purple" style="height: 60%"></div>
-                        <span class="day">Mon</span>
-                    </div>
-                    <div class="bar-col">
-                        <div class="bar-fill orange" style="height: 30%"></div>
-                        <div class="bar-fill purple" style="height: 80%"></div>
-                        <span class="day">Tue</span>
-                    </div>
-                    <div class="bar-col">
-                        <div class="bar-fill purple" style="height: 40%"></div>
-                        <span class="day">Wed</span>
-                    </div>
-                    <div class="bar-col">
-                        <div class="bar-fill orange" style="height: 45%"></div>
-                        <div class="bar-fill purple" style="height: 70%"></div>
-                        <span class="day">Thu</span>
-                    </div>
-                    <div class="bar-col">
-                        <div class="bar-fill orange" style="height: 20%"></div>
-                        <div class="bar-fill purple" style="height: 50%"></div>
-                        <span class="day">Fri</span>
-                    </div>
-                    <div class="bar-col">
-                        <div class="bar-fill orange" style="height: 15%"></div>
-                        <div class="bar-fill purple" style="height: 35%"></div>
-                        <span class="day">Sat</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </aside>
+    </div>
 </div>
