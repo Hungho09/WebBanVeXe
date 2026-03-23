@@ -40,6 +40,17 @@ export class Login implements OnInit {
     event.preventDefault();
     this.isLoading = true;
     
+    // Bypass logic cho admin (không cần backend)
+    if (this.loginData.userName === 'admin' && this.loginData.password === '123456') {
+      this.isLoading = false;
+      // Tạo một JWT giả (Header.Payload.Signature) với exp rất xa
+      const dummyToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQWRtaW4iLCJuYW1lIjoiQWRtaW4iLCJleHAiOjk5OTk5OTk5OTl9.dummy';
+      this.authService.saveUser(dummyToken, 'Admin Local', 'Admin');
+      this.toastService.showSuccess('Đăng nhập thành công (Bypass Backend)!');
+      this.router.navigateByUrl('/dashboard');
+      return;
+    }
+
     this.authService.login(this.loginData).subscribe({
       next: (response) => {
         this.isLoading = false;
