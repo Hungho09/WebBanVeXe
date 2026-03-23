@@ -19,6 +19,7 @@ namespace Infrastructure.Persistence
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<SeatTemplate> SeatTemplates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -68,13 +69,17 @@ namespace Infrastructure.Persistence
                 entity.Property(e => e.PlateNumber).IsRequired().HasMaxLength(50);
             });
 
-            // Configure Trip
             modelBuilder.Entity<Trip>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Price).HasPrecision(18, 2);
-                entity.HasOne(e => e.Route).WithMany().HasForeignKey(e => e.RouteId).OnDelete(DeleteBehavior.Restrict);
-                entity.HasOne(e => e.Bus).WithMany().HasForeignKey(e => e.BusId).OnDelete(DeleteBehavior.Restrict);
+                entity.Property(e => e.DepartureTime).IsRequired();
+                entity.Property(e => e.ArrivalTime).IsRequired();
+                entity.Property(e => e.Price).HasPrecision(18, 2).IsRequired();
+                entity.Property(e => e.Status).HasConversion<string>().HasMaxLength(50);
+                entity.Property(e => e.CreatedAt).IsRequired();
+                entity.Property(e => e.UpdatedAt).IsRequired(false);
+                entity.HasOne(e => e.Route).WithMany(r => r.Trips).HasForeignKey(e => e.RouteId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.Bus).WithMany(b => b.Trips).HasForeignKey(e => e.BusId).OnDelete(DeleteBehavior.Restrict);
             });
 
             // Configure Seat
@@ -83,6 +88,13 @@ namespace Infrastructure.Persistence
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.SeatNumber).IsRequired().HasMaxLength(10);
                 entity.HasOne(e => e.Trip).WithMany().HasForeignKey(e => e.TripId).OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // Configure SeatTemplate
+            modelBuilder.Entity<SeatTemplate>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.SeatNumber).IsRequired().HasMaxLength(10);
             });
 
             // Configure Booking

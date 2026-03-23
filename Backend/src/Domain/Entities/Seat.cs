@@ -11,6 +11,7 @@ namespace Domain.Entities
         public int RowNumber { get; set; }
         public int ColumnNumber { get; set; }
         public int Floor { get; set; }
+        public SeatType Type { get; set; } = SeatType.Normal;
         public SeatStatus Status { get; set; } = SeatStatus.Available;
         public DateTime? LockExpirationTime { get; set; }
 

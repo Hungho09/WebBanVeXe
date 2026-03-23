@@ -1,14 +1,23 @@
-/* You can add global styles to this file, and also import other style files */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+/* Nhập phông chữ Inter - Phông chữ tốt nhất hiện nay cho Tiếng Việt (không bao giờ lỗi dấu) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif; /* Thay đổi phông chữ toàn diện để hết lỗi dấu */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
 
 :root {
-    --primary-color: #6a5eee;
-    --bg-color: #e5e9f5;
-    --text-color: #333333;
+    --primary-color: #F19E8E;     /* Salmon Pink - Concept Chủ đạo */
+    --bg-color: #F5F7FF;          /* Nền xanh cực nhẹ */
+    --text-color: #2D3436;
     --text-light: #8b8f9e;
     --white: #ffffff;
-    --accent-orange: #f48c3b;
-    --accent-blue: #3b8cf4;
+    --accent-orange: #7C8AE8;    /* Lavender Blue - Làm điểm phụ */
+    --accent-blue: #A7BFE8;      /* Sky Blue */
     --success: #2bc155;
     --danger: #f43b3b;
     --shadow-light: 4px 4px 15px rgba(0, 0, 0, 0.03);
@@ -16,13 +25,6 @@
     --radius-xl: 30px;
     --radius-lg: 20px;
     --radius-md: 12px;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
 }
 
 body {
@@ -75,6 +77,10 @@ body {
     height: 100%;
 }
 
+.flex-1 {
+    flex: 1;
+}
+
 .font-semibold {
     font-weight: 600;
 }
@@ -121,4 +127,250 @@ body {
 
 .card-shadow {
     box-shadow: var(--shadow-light);
+}
+
+.mt-4 { margin-top: 1rem; }
+.mt-6 { margin-top: 1.5rem; }
+.mt-8 { margin-top: 2rem; }
+.mt-10 { margin-top: 2.5rem; }
+.mt-12 { margin-top: 3rem; }
+
+.mb-4 { margin-bottom: 1rem; }
+.mb-10 { margin-bottom: 2.5rem; }
+
+.px-8 { padding-left: 2rem; padding-right: 2rem; }
+
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+
+.text-2xl { font-size: 1.5rem; }
+.text-3xl { font-size: 1.875rem; }
+.font-extrabold { font-weight: 800; }
+.font-medium { font-weight: 500; }
+
+.text-slate-800 { color: #1e293b; }
+.text-slate-500 { color: #64748b; }
+.text-slate-400 { color: #94a3b8; }
+
+/* --- GLOBAL ADMIN LAYOUT (From Dashboard) --- */
+.dashboard-wrapper {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--bg-color);
+}
+
+.sidebar {
+    width: 100px;
+    background-color: var(--primary-color);
+    border-top-right-radius: var(--radius-xl);
+    border-bottom-right-radius: var(--radius-xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 0;
+    box-shadow: 10px 0 30px rgba(106, 94, 238, 0.2);
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.logo-box {
+    width: 50px;
+    height: 50px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 24px;
+    margin-bottom: 50px;
+    overflow: hidden;
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 100%;
+}
+
+.nav-links a {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 20px;
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 15px 0;
+    transition: all 0.3s;
+    position: relative;
+    cursor: pointer;
+}
+
+.nav-links a.active,
+.nav-links a:hover {
+    color: white;
+}
+
+.nav-links a.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 30px;
+    background-color: white;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.logout {
+    margin-top: auto;
+}
+
+.logout a {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 20px;
+    transition: all 0.3s;
+}
+
+.logout a:hover {
+    color: white;
+}
+
+.main-content {
+    flex: 1;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-shrink: 0;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    width: 300px;
+}
+
+.search-bar i {
+    color: #94a3b8;
+    margin-right: 10px;
+}
+
+.search-bar input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 14px;
+    color: var(--text-color);
+    width: 100%;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.dropdown {
+    color: var(--primary-color);
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn-new {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(106, 94, 238, 0.2);
+}
+
+/* Navbar Global Styles */
+.navbar {
+    height: 72px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.mr-1 { margin-right: 4px; }
+.mr-2 { margin-right: 8px; }
+.mr-3 { margin-right: 12px; }
+.mr-4 { margin-right: 16px; }
+
+.auth-box {
+    gap: 12px;
+}
+
+.btn-login-new {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
+    padding: 8px 16px;
+    font-size: 0.95rem;
+}
+
+.btn-register-new {
+    background: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f8fafc;
+    padding: 5px 5px 5px 15px;
+    border-radius: 30px;
+    border: 1px solid #e2e8f0;
+}
+
+.badge {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.badge.admin { background: #fee2e2; color: #dc2626; }
+.badge.employee { background: #fef9c3; color: #ca8a04; }
+.badge.customer { background: #dcfce7; color: #16a34a; }
+
+.btn-logout-new {
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ef4444;
 }

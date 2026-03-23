@@ -4,6 +4,7 @@ namespace Domain.Enums
     {
         Available = 0,
         Locked = 1,
-        Booked = 2
+        Booked = 2,
+        Maintenance = 3
     }
 }

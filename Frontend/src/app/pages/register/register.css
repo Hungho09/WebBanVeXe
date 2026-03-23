@@ -1,165 +1,229 @@
-/* Import the same styles from login for consistency, plus additions for register */
+/* Modern UI colors and variables */
+:root {
+  --primary-color: #F19E8E;
+  --secondary-color: #ff9d00;
+  --bg-color: #f7f9fc;
+  --text-main: #1a1a24;
+  --text-light: #6b7280;
+  --radius-xl: 24px;
+  --radius-md: 12px;
+  --shadow-premium: 0 25px 50px -12px rgba(106, 94, 238, 0.15);
+}
+
 .auth-container {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--bg-color);
-    padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8edff 100%);
+  padding: 40px 20px;
 }
 
 .auth-card {
-    display: flex;
-    background: white;
-    border-radius: var(--radius-xl);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-    max-width: 1000px;
-    /* slightly wider for register */
-    width: 100%;
+  display: flex;
+  background: white;
+  border-radius: 40px; /* Bo cong nhiều hơn cực sang */
+  box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  max-width: 1400px; /* Form thật to và thoáng */
+  width: 95%;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  min-height: 800px;
 }
 
 .auth-left {
-    flex: 1;
-    padding: 40px 50px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.form-row {
-    display: flex;
-    gap: 15px;
-    width: 100%;
-}
-
-.form-row .form-group {
-    flex: 1;
-    margin-bottom: 15px;
+  flex: 1.4;
+  padding: 80px 100px; /* Không gian thở tối đa */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .logo {
-    color: var(--primary-color);
-    font-size: 24px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 35px;
+}
+
+.auth-logo-img {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.auth-logo-img:hover {
+  transform: scale(1.05);
 }
 
 h2 {
-    font-size: 32px;
-    font-weight: 700;
-    color: #1a1a24;
-    margin-bottom: 10px;
+  font-size: 48px;
+  font-weight: 900;
+  color: #1a1a24;
+  margin-bottom: 20px;
+  letter-spacing: -2px;
 }
 
-p {
-    color: var(--text-light);
-    font-size: 14px;
-    margin-bottom: 25px;
+.subtitle {
+  color: #64748b;
+  font-size: 19px;
+  margin-bottom: 60px;
+}
+
+.form-row {
+  display: flex;
+  gap: 40px; /* Tách rời 2 cột form */
+  margin-bottom: 30px;
+}
+
+.form-group {
+  flex: 1;
 }
 
 .form-group label {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    margin-bottom: 6px;
-    color: #555;
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #1e293b;
 }
 
-.form-group input {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1px solid #e0e4f0;
-    border-radius: var(--radius-md);
-    outline: none;
-    font-size: 14px;
-    transition: all 0.3s;
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 18px 25px; /* Input to và dễ bấm */
+  background: #f8fafc;
+  border: 2.5px solid #f1f5f9;
+  border-radius: 18px;
+  outline: none;
+  font-size: 16px;
+  color: #1e293b;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.form-group input:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(106, 94, 238, 0.1);
+.form-group input:focus, .form-group select:focus {
+  border-color: #F19E8E;
+  background: white;
+  box-shadow: 0 0 0 6px rgba(241, 158, 142, 0.1);
 }
 
 .btn-primary {
-    width: 100%;
-    padding: 14px;
-    margin-top: 10px;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: var(--radius-md);
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: var(--shadow-hover);
+  width: 100%;
+  padding: 18px;
+  margin-top: 50px;
+  background: linear-gradient(135deg, #F19E8E 0%, #e08d7d 100%);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 20px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 15px 30px -10px rgba(241, 158, 142, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .btn-primary:hover {
-    background-color: #5648e6;
-    transform: translateY(-2px);
+  transform: translateY(-5px);
+  box-shadow: 0 25px 40px -12px rgba(244, 140, 59, 0.6);
+  filter: brightness(1.05);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 10px 20px -5px rgba(241, 158, 142, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
 }
 
 .auth-footer {
-    margin-top: 25px;
-    text-align: center;
-    margin-bottom: 0;
+  margin-top: 30px;
+  text-align: center;
+  font-size: 15px;
+  color: var(--text-light);
 }
 
 .auth-footer a {
-    color: var(--primary-color);
-    text-decoration: none;
-    font-weight: 600;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 700;
+  margin-left: 5px;
 }
 
 .auth-right-reg {
-    flex: 1;
-    background: linear-gradient(to bottom, #7467ef, #5c4bfa);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-    padding: 30px;
-    color: white;
-    text-align: center;
+  flex: 0.8;
+  background: linear-gradient(225deg, #F19E8E 0%, #e08d7d 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
+  color: white;
+  text-align: center;
+  position: relative;
 }
 
-.illustration-reg {
-    width: 100%;
-    height: 50%;
-    background: url('https://img.freepik.com/free-vector/booking-travel-ticket-online-concept_1150-59757.jpg?w=740');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    mix-blend-mode: color-burn;
+.auth-right-reg::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 300px;
+  height: 300px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
 }
 
-.overlay-text {
-    margin-top: 20px;
+.illustration-box {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 30px;
+  border-radius: 40px;
+  margin-bottom: 40px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-illustration {
+    width: 280px;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
+}
+
+.illustration-box img {
+    max-width: 100%;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
 }
 
 .overlay-text h3 {
-    font-size: 24px;
-    margin-bottom: 10px;
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 15px;
 }
 
 .overlay-text p {
-    color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+  font-size: 15px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .auth-right-reg {
         display: none;
     }
+}
 
-    .form-row {
-        flex-direction: column;
-        gap: 0;
-    }
+@media (max-width: 640px) {
+  .auth-left {
+    padding: 40px 30px;
+  }
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
 }
