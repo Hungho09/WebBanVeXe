@@ -57,16 +57,4 @@ export class BookingService {
   unlockSeat(seatId: string): Observable<any> {
     return this.http.post(`api/trip/seats/${seatId}/unlock`, {});
   }
-
-  requestCancel(id: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}/request-cancel`, {});
-  }
-
-  approveCancel(id: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}/approve-cancel`, {});
-  }
-
-  getPendingCancellations(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/pending-cancellations`);
-  }
 }

@@ -1,157 +1,88 @@
-<div class="dashboard-wrapper">
-    <!-- Left Sidebar -->
-    <aside class="sidebar">
-        <div class="logo-box pointer-cursor" (click)="navigateTo('/')">
-            <img src="/assets/bus.png" alt="Logo" style="height: 40px; margin-right: 10px;">
-            <span style="color: white; font-weight: 800; font-size: 1.2rem;">Codenhalam-WebBanVeXe</span>
+<div class="dashboard-content">
+    <div class="hero-card">
+        <div class="hero-left">
+            <h1>Chào buổi sáng, <span>Admin</span></h1>
+            <p>Chúc bạn một ngày làm việc hiệu quả!</p>
         </div>
-        <nav class="nav-links">
-            <a (click)="navigateTo('/homepage')" title="Trang chủ"><i class="fas fa-home"></i></a>
-            <a (click)="navigateTo('/user-management')" title="Quản lý tài khoản"><i class="fas fa-users-cog"></i></a>
-            <a (click)="navigateTo('/trip')" title="Quản lý chuyến"><i class="fas fa-route"></i></a>
-            <a href="#"><i class="fas fa-calendar-check"></i></a>
-            <a href="#"><i class="fas fa-envelope"></i></a>
-            <a href="#"><i class="fas fa-cog"></i></a>
-        </nav>
-        <div class="logout">
-            <a (click)="navigateTo('/login')"><i class="fas fa-sign-out-alt"></i></a>
-        </div>
-    </aside>
+        <div class="hero-image"></div>
+    </div>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <header class="top-nav">
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search bookings...">
-            </div>
-            <div class="nav-actions">
-                <span class="dropdown">Booking History <i class="fas fa-chevron-down"></i></span>
-                <button class="btn-new">+ Add Booking</button>
-            </div>
-        </header>
-
-        <div class="hero-card">
-            <div class="hero-left">
-                <h1>Hello, <span>{{ user?.userName || 'Traveler' }}</span></h1>
-                <p>Welcome back to your travel dashboard</p>
-            </div>
-            <div class="hero-image">
-            </div>
+    <!-- Stats Cards -->
+    <div class="stats-section">
+        <div class="stats-header">
+            <h3>Báo cáo tuần này</h3>
+            <span class="dropdown-small">Tuần qua <i class="fas fa-chevron-down"></i></span>
         </div>
 
-        <!-- Admin Table: Pending Cancellations -->
-        <div class="table-section" *ngIf="user?.role === 'Admin' && pendingCancellations.length > 0">
-            <div class="table-header">
-                <h3>Pending Cancellation Requests</h3>
-            </div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Trip</th>
-                            <th>Total Amount</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let booking of pendingCancellations">
-                            <td>{{ booking.userName }}</td>
-                            <td>Trip #{{ booking.tripId.substring(0,8) }}</td>
-                            <td>{{ booking.totalAmount | currency:'VND' }}</td>
-                            <td><span class="badge warning">Cancel Requested</span></td>
-                            <td>
-                                <button class="btn-action approve" (click)="approveCancel(booking.id)">Approve</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- My Bookings Table -->
-        <div class="table-section">
-            <div class="table-header">
-                <h3>{{ user?.role === 'Admin' ? 'All Recent Bookings' : 'My Recent Bookings' }}</h3>
+        <div class="cards-grid">
+            <div class="stat-card active-card">
+                <div class="icon-wrapper bg-blue"><i class="fas fa-users"></i></div>
+                <span class="stat-label">Tổng hành khách</span>
+                <span class="stat-value text-white">580</span>
             </div>
 
-            <div class="table-container">
-                <div *ngIf="isLoading" class="loading-state">Loading bookings...</div>
-                <div *ngIf="!isLoading && bookings.length === 0" class="empty-state">No bookings found.</div>
-                
-                <table *ngIf="!isLoading && bookings.length > 0">
-                    <thead>
-                        <tr>
-                            <th>Booking ID</th>
-                            <th>Trip</th>
-                            <th>Date</th>
-                            <th>Total Amount</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let booking of bookings">
-                            <td>#{{ booking.id.substring(0,8) }}</td>
-                            <td>Trip #{{ booking.tripId.substring(0,8) }}</td>
-                            <td>{{ booking.createdAt | date:'short' }}</td>
-                            <td>{{ booking.totalAmount | currency:'VND' }}</td>
-                            <td>
-                                <span class="badge" [ngClass]="{
-                                    'success': booking.bookingStatus === 'Paid',
-                                    'warning': booking.bookingStatus === 'Pending' || booking.bookingStatus === 'CancelRequested',
-                                    'danger': booking.bookingStatus === 'Cancelled'
-                                }">
-                                    {{ booking.bookingStatus }}
-                                </span>
-                            </td>
-                            <td>
-                                <button *ngIf="booking.bookingStatus === 'Paid' || booking.bookingStatus === 'Pending'" 
-                                        class="btn-action cancel" 
-                                        (click)="requestCancel(booking.id)">
-                                    Request Cancel
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="stat-card">
+                <div class="icon-wrapper bg-orange"><i class="fas fa-phone-alt"></i></div>
+                <span class="stat-label">Cuộc gọi hỗ trợ</span>
+                <span class="stat-value">356</span>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon-wrapper bg-teal"><i class="fas fa-calendar-alt"></i></div>
+                <span class="stat-label">Vé đã đặt</span>
+                <span class="stat-value">288</span>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon-wrapper bg-purple"><i class="fas fa-envelope-open-text"></i></div>
+                <span class="stat-label">Tin nhắn mới</span>
+                <span class="stat-value">05</span>
             </div>
         </div>
-    </main>
+    </div>
 
-    <!-- Right Sidebar -->
-    <aside class="right-panel">
-        <div class="top-profile">
-            <div class="icon-group">
-                <i class="fas fa-cog"></i>
-                <div class="notification"><i class="fas fa-bell"></i><span class="dot"></span></div>
-            </div>
-            <div class="profile-info">
-                <div class="name">{{ user?.userName }}</div>
-                <div class="role">View profile</div>
-            </div>
-            <img src="https://i.pravatar.cc/150?img=33" alt="Avatar" class="profile-img">
+    <!-- Data Table -->
+    <div class="table-section">
+        <div class="table-header">
+            <h3>Các đơn đặt vé gần đây</h3>
+            <span class="dropdown-small">Xem tất cả <i class="fas fa-chevron-down"></i></span>
         </div>
 
-        <div class="calendar-section">
-            <div class="section-label">Schedule Calendar <i class="fas fa-chevron-left"></i> <i
-                    class="fas fa-chevron-right"></i></div>
-            <button class="btn-month"><i class="far fa-calendar"></i> Jun</button>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Khách hàng</th>
+                        <th>Hành trình</th>
+                        <th>Ngày đi</th>
+                        <th>Số hiệu xe</th>
+                        <th>Trạng thái</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="user-info"><img src="https://i.pravatar.cc/150?img=11" alt="avatar"> Nguyễn Văn A</div>
+                        </td>
+                        <td>Hà Nội - Hải Phòng</td>
+                        <td>25/06/2026</td>
+                        <td>29B-12345</td>
+                        <td><span class="badge customer">Thành công</span></td>
+                        <td><i class="fas fa-ellipsis-h cursor-pointer"></i></td>
+                    </tr>
+                    <tr class="active-row">
+                        <td>
+                            <div class="user-info"><img src="https://i.pravatar.cc/150?img=5" alt="avatar"> Trần Thị B</div>
+                        </td>
+                        <td>Hải Phòng - Hà Nội</td>
+                        <td>24/06/2026</td>
+                        <td>15A-67890</td>
+                        <td><span class="badge customer text-white border-white">Thành công</span></td>
+                        <td><i class="fas fa-ellipsis-h text-white cursor-pointer"></i></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-
-        <div class="dates-slider">
-            <div class="date-item"><span class="day">Mon</span><span class="num">23</span><span class="dot-red"></span>
-            </div>
-            <div class="date-item"><span class="day">Tue</span><span class="num">24</span></div>
-            <div class="date-item"><span class="day">Wed</span><span class="num">25</span><span
-                    class="dots-teal">...</span></div>
-            <div class="date-item active"><span class="day">Thu</span><span class="num">26</span></div>
-            <div class="date-item"><span class="day">Fri</span><span class="num">27</span></div>
-            <div class="date-item"><span class="day">Sat</span><span class="num">28</span></div>
-            <div class="date-item"><span class="day">Sun</span><span class="num">29</span><span
-                    class="dots-mix">..</span></div>
-        </div>
-    </aside>
+    </div>
 </div>

@@ -83,44 +83,6 @@ namespace Infrastructure.Services
             return bookings.Select(MapToResponse);
         }
 
-        public async Task<bool> RequestCancelAsync(Guid bookingId)
-        {
-            var booking = await _bookingRepository.GetByIdAsync(bookingId);
-            if (booking == null) return false;
-
-            // Only Pending or Paid bookings can request cancellation
-            if (booking.BookingStatus != BookingStatus.Pending && booking.BookingStatus != BookingStatus.Paid)
-                return false;
-
-            // Cannot cancel after departure time
-            if (booking.Trip != null && booking.Trip.DepartureTime <= DateTime.UtcNow)
-                throw new InvalidOperationException("Cannot request cancellation after the trip has departed.");
-
-            booking.BookingStatus = BookingStatus.CancelRequested;
-            await _bookingRepository.UpdateAsync(booking);
-            return await _bookingRepository.SaveChangesAsync();
-        }
-
-        public async Task<bool> ApproveCancelAsync(Guid bookingId)
-        {
-            var booking = await _bookingRepository.GetByIdAsync(bookingId);
-            if (booking == null || booking.BookingStatus != BookingStatus.CancelRequested)
-                return false;
-
-            booking.BookingStatus = BookingStatus.Cancelled;
-
-            // Release seats
-            var seatIds = booking.BookingDetails.Select(bd => bd.SeatId).ToList();
-            var seats = await _context.Seats.Where(s => seatIds.Contains(s.Id)).ToListAsync();
-            foreach (var seat in seats)
-            {
-                seat.Status = SeatStatus.Available;
-            }
-
-            await _bookingRepository.UpdateAsync(booking);
-            return await _bookingRepository.SaveChangesAsync();
-        }
-
         public async Task<bool> CancelBookingAsync(Guid bookingId)
         {
             var booking = await _bookingRepository.GetByIdAsync(bookingId);
