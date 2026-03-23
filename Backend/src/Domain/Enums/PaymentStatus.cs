@@ -3,7 +3,7 @@ namespace Domain.Enums
     public enum PaymentStatus
     {
         Pending = 0,
-        Completed = 1,
+        Success = 1,
         Failed = 2
     }
 }

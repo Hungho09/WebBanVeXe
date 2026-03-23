@@ -7,6 +7,7 @@ import { ResourceManagement } from './pages/resource-management/resource-managem
 import { TripManagement } from './pages/trip-management/trip-management';
 import { UserManagement } from './pages/user-management/user-management';
 import { AuthGuard } from './guards/auth.guard';
+import { PaymentComponent } from './components/payment/payment.component';
 
 export const routes: Routes = [
   { 
@@ -32,6 +33,7 @@ export const routes: Routes = [
   { path: 'dashboard', component: Dashboard },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
+  { path: 'payment', component: PaymentComponent },
   { path: '**', redirectTo: 'dashboard' }
 ];
 

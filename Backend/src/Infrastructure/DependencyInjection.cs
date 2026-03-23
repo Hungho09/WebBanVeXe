@@ -17,6 +17,8 @@ namespace Infrastructure
                     configuration.GetConnectionString("DefaultConnection"),
                     b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
+            services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+
             // JWT Authentication
             var jwtSettings = configuration.GetSection("JwtSettings");
             var secret = jwtSettings.GetValue<string>("Secret");
@@ -52,6 +54,7 @@ namespace Infrastructure
             // Route Management
             services.AddScoped<Domain.Interfaces.IRouteRepository, Infrastructure.Repositories.RouteRepository>();
             services.AddScoped<Application.Interfaces.IRouteService, Infrastructure.Services.RouteService>();
+            services.AddScoped<Application.Interfaces.IPaymentService, Application.Services.PaymentService>();
 
             // Seat Management
             services.AddScoped<Application.Interfaces.ISeatService, Infrastructure.Services.SeatService>();
