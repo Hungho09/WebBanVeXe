@@ -1,0 +1,40 @@
+<div class="payment-container">
+  <h2>Thanh toán vé xe</h2>
+
+  <div *ngIf="!paymentResult" class="payment-form">
+    <p><strong>Mã vé (Booking ID):</strong> {{ bookingId || 'Chưa có' }}</p>
+    <p><strong>Số tiền cần thanh toán:</strong> {{ amount | number:'1.0-2' }} VNĐ</p>
+
+    <div class="form-group">
+      <label for="paymentMethod">Phương thức thanh toán:</label>
+      <select id="paymentMethod" [(ngModel)]="paymentMethod" class="form-control">
+        <option value="VNPAY">VNPAY</option>
+        <option value="MOMO">Ví MoMo</option>
+        <option value="CASH">Tiền mặt</option>
+      </select>
+    </div>
+
+    <button 
+      class="btn btn-primary" 
+      (click)="processPayment()" 
+      [disabled]="isProcessing || !bookingId">
+      {{ isProcessing ? 'Đang xử lý...' : 'Xác nhận thanh toán' }}
+    </button>
+    <p *ngIf="errorMessage" class="error-msg">{{ errorMessage }}</p>
+  </div>
+
+  <div *ngIf="paymentResult" class="payment-success">
+    <h3>Kết quả thanh toán</h3>
+    <p class="status success" *ngIf="paymentResult.paymentStatus === 'Success'">Thanh toán Thành Công!</p>
+    <p class="status error" *ngIf="paymentResult.paymentStatus === 'Failed'">Thanh toán Thất Bại</p>
+    
+    <div class="details">
+      <p><strong>Mã giao dịch:</strong> {{ paymentResult.transactionCode }}</p>
+      <p><strong>Trạng thái thanh toán:</strong> {{ paymentResult.paymentStatus }}</p>
+      <p><strong>Trạng thái vé:</strong> {{ paymentResult.bookingStatus }}</p>
+      <p><strong>Thời gian:</strong> {{ paymentResult.paidAt | date:'medium' }}</p>
+    </div>
+
+    <button class="btn btn-secondary" (click)="goBackToHome()">Về trang chủ</button>
+  </div>
+</div>

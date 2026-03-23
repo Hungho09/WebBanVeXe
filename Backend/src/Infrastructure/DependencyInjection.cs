@@ -52,6 +52,7 @@ namespace Infrastructure
             // Route Management
             services.AddScoped<Domain.Interfaces.IRouteRepository, Infrastructure.Repositories.RouteRepository>();
             services.AddScoped<Application.Interfaces.IRouteService, Infrastructure.Services.RouteService>();
+            services.AddScoped<Application.Interfaces.IPaymentService, Infrastructure.Services.PaymentService>();
 
             return services;
         }

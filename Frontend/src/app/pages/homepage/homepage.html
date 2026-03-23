@@ -3,41 +3,52 @@
     <!-- ===============================
        1. HEADER 
   ================================= -->
-    <header class="navbar">
+    <header class="navbar" [class.scrolled]="isScrolled">
         <div class="container flex justify-between items-center h-full">
             <!-- Logo Codenhalam -->
-            <a routerLink="/" class="logo">
-                <i class="fas fa-bus-alt"></i> Codenhalam - WebBanVeXe
-            </a>
+            <div class="logo flex items-center pointer-cursor" (click)="navigateTo('/')">
+                <img src="/assets/bus.png" alt="Logo" class="logo-img">
+                <span class="logo-slogan ml-2">Codenhalam - WebBanVeXe</span>
+            </div>
 
             <!-- Right Actions -->
             <div class="nav-actions flex items-center">
-                <!-- Resource Management Link -->
-                <a routerLink="/resource" class="nav-link-resource mr-4" style="text-decoration: none; color: #4b5563; font-weight: 500; font-size: 0.95rem;">
-                    <i class="fas fa-tasks mr-1"></i> Quản lý vận chuyển
-                </a>
-
-                <!-- Trip Management Link -->
-                <a routerLink="/trip" class="nav-link-resource mr-4" style="text-decoration: none; color: #4b5563; font-weight: 500; font-size: 0.95rem;">
-                    <i class="fas fa-route mr-1"></i> Quản lý chuyến đi
-                </a>
+                <ng-container *ngIf="authService.isLoggedIn()">
+                    <a *ngIf="currentUser.role === 'Admin' || currentUser.role === 'Employee'"
+                        (click)="navigateTo('/trip')" class="nav-link-resource mr-4 pointer-cursor">
+                        <i class="fas fa-route"></i> Quản lý chuyến
+                    </a>
+                    <a *ngIf="currentUser.role === 'Admin'" (click)="navigateTo('/user-management')"
+                        class="nav-link-resource mr-4 pointer-cursor">
+                        <i class="fas fa-users-cog"></i> Quản lý tài khoản
+                    </a>
+                    <!-- Nút Dashboard VIP cho Admin -->
+                    <a *ngIf="currentUser.role === 'Admin'" (click)="navigateTo('/dashboard')"
+                        class="btn-dashboard-vip mr-4">
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </a>
+                </ng-container>
 
                 <!-- Hotline Box -->
-                <div class="hotline-box" (click)="toggleHotline()">
-                    <div class="icon-circle">
-                        <i class="fas fa-phone-alt"></i>
-                    </div>
-                    <div class="text-info">
-                        <span class="label">Hotline 24/7</span>
-                        <span class="number" [class.show]="showingHotline">1900 1009</span>
-                        <span class="number-hidden" [class.hide]="showingHotline">Click để xem</span>
-                    </div>
+                <div class="hotline-box" style="cursor: pointer; margin-right: 15px;">
+                    <i class="fas fa-phone-alt"></i>
+                    <span class="number">0397279236</span>
                 </div>
 
-                <!-- Login Button -->
-                <a routerLink="/login" class="btn-login">
-                    <i class="far fa-user flex"></i> Đăng nhập
-                </a>
+                <div class="auth-box flex items-center">
+                    <ng-container *ngIf="!authService.isLoggedIn()">
+                        <button (click)="navigateTo('/login')" class="btn-login-new">Đăng nhập</button>
+                        <button (click)="navigateTo('/register')" class="btn-register-new">Đăng ký</button>
+                    </ng-container>
+
+                    <ng-container *ngIf="authService.isLoggedIn()">
+                        <div class="user-profile">
+                            <span class="welcome">Xin chào, <b>{{ currentUser.userName }}</b></span>
+                            <span class="badge" [ngClass]="currentUser.role.toLowerCase()">{{ currentUser.role }}</span>
+                            <button (click)="logout()" class="btn-logout-new">Đăng xuất</button>
+                        </div>
+                    </ng-container>
+                </div>
             </div>
         </div>
     </header>
@@ -49,8 +60,12 @@
 
         <!-- Hero Banner with Large Search Box -->
         <section class="hero-section">
+            <div class="hero-bg-fader" [style.background-image]="'url(\'' + bgImageUrl + '\')'"></div>
+            <div class="hero-bg-overlay"></div>
             <div class="container hero-container">
-                <h1 class="hero-title">Cái gì không làm được thì mình vừa khóc vừa làm <span>Codenhalam</span></h1>
+                <h1 class="hero-title">Cái gì không làm được thì mình vừa khóc vừa làm
+                    <span>Codenhalam-WebBanVeXe</span>
+                </h1>
                 <p class="hero-subtitle">Đặt vé xe khách trực tuyến dễ dàng, nhanh chóng và an toàn nhất</p>
 
                 <!-- Big Search Box -->
@@ -60,15 +75,13 @@
                     <!-- Trip Type Selection -->
                     <div class="trip-type">
                         <label class="radio-label" [class.active]="tripType === 'oneWay'"
-                            (click)="setTripType('oneWay')">
-                            <input type="radio" name="tripType" [checked]="tripType === 'oneWay'"
-                                (change)="setTripType('oneWay')">
+                            (click)="setTripType('oneWay', $event)">
+                            <input type="radio" name="tripType" [checked]="tripType === 'oneWay'">
                             <span class="custom-radio"></span> Một chiều
                         </label>
                         <label class="radio-label" [class.active]="tripType === 'roundTrip'"
-                            (click)="setTripType('roundTrip')">
-                            <input type="radio" name="tripType" [checked]="tripType === 'roundTrip'"
-                                (change)="setTripType('roundTrip')">
+                            (click)="setTripType('roundTrip', $event)">
+                            <input type="radio" name="tripType" [checked]="tripType === 'roundTrip'">
                             <span class="custom-radio"></span> Khứ hồi
                         </label>
                     </div>
@@ -128,15 +141,59 @@
                                 <div class="cal-title">Ngày đi <i class="fas fa-chevron-left"></i> <i
                                         class="fas fa-chevron-right"></i></div>
                                 <label class="btn-month-mini" style="cursor: pointer; position: relative; margin: 0;"
-                                    (click)="showDatePicker(dateInput)">
+                                    (click)="toggleCustomCalendar()">
                                     <i class="far fa-calendar"></i> {{ currentMonthYearStr }}
-                                    <input #dateInput type="date" id="native-date-btn"
-                                        style="opacity: 0; position: absolute; left: 0; top: 0; width: 100%; height: 100%; cursor: pointer;"
-                                        (change)="onNativeDateChange($event)">
                                 </label>
+
+                                <!-- Custom Calendar Popup -->
+                                <div class="custom-calendar-popup" *ngIf="showCustomCalendar"
+                                    (click)="$event.stopPropagation()">
+                                    <div class="calendar-nav">
+                                        <button (click)="prevMonth()"><i class="fas fa-chevron-left"></i></button>
+                                        <div class="current-month">
+                                            {{ calendarLang === 'vi' ? monthNames.vi[viewDate.getMonth()] :
+                                            monthNames.en[viewDate.getMonth()] }}, {{ viewDate.getFullYear() }}
+                                        </div>
+                                        <button (click)="nextMonth()"><i class="fas fa-chevron-right"></i></button>
+                                    </div>
+
+                                    <div class="calendar-grid">
+                                        <div class="weekday"
+                                            *ngFor="let day of (calendarLang === 'vi' ? weekDays.vi : weekDays.en)">
+                                            {{ day }}
+                                        </div>
+                                        <div class="calendar-day" *ngFor="let day of calendarDays"
+                                            [class.empty]="day.empty" [class.today]="day.isToday"
+                                            [class.selected]="day.isSelected" (click)="selectCalendarDate(day)">
+                                            <span class="solar">{{ day.day }}</span>
+                                            <span class="lunar"
+                                                *ngIf="calendarLang === 'vi' && isLunarMode && !day.empty">
+                                                {{ day.lunar }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="calendar-footer">
+                                        <div class="lang-switch">
+                                            <button [class.active]="calendarLang === 'en'"
+                                                (click)="calendarLang = 'en'; generateCalendar()">EN</button>
+                                            <button [class.active]="calendarLang === 'vi'"
+                                                (click)="calendarLang = 'vi'; generateCalendar()">VI</button>
+                                        </div>
+                                        <div class="lunar-toggle" *ngIf="calendarLang === 'vi'">
+                                            <label class="switch">
+                                                <input type="checkbox" [(ngModel)]="isLunarMode">
+                                                <span class="slider round"></span>
+                                            </label>
+                                            <span>Hiển thị lịch âm</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <!-- Scrollable wrapper -->
-                            <div class="dates-scroll-wrapper" #scrollWrapper>
+                            <div class="dates-scroll-wrapper" #scrollWrapper [class.dragging]="isDragging"
+                                (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)"
+                                (mouseup)="onMouseUp()" (mouseleave)="onMouseUp()">
                                 <div class="weeks-row">
                                     <div class="week-group" *ngFor="let group of datesGroupList">
                                         <div class="dates-row-mini">
@@ -172,9 +229,9 @@
         <!-- Popular Routes Section -->
         <section class="popular-routes">
             <div class="container">
-                <div class="section-title">
+                <div class="section-title left-align">
                     <h2>Tuyến Đường Phổ Biến</h2>
-                    <p>Khám phá những điểm đến được yêu thích nhất trong tuần</p>
+                    <p>Những chuyến đi khởi hành trong ngày</p>
                 </div>
 
                 <div class="route-grid">
@@ -239,8 +296,9 @@
             <div class="container dual-cols">
                 <!-- Offers -->
                 <div class="promotions">
-                    <div class="section-title">
+                    <div class="section-title left-align">
                         <h2>Ưu Đãi Nổi Bật</h2>
+                        <p>Khám phá các ưu đãi độc quyền dành riêng cho bạn</p>
                     </div>
                     <div class="promo-box flex items-center">
                         <div class="promo-icon"><i class="fas fa-gift"></i></div>
@@ -263,8 +321,11 @@
 
                 <!-- News -->
                 <div class="news">
-                    <div class="section-title">
-                        <h2>Thông Báo Mới</h2>
+                    <div class="news-list-box">
+                        <div class="section-title left-align">
+                            <h2>Thông Báo Mới</h2>
+                            <p>Cập nhật tin tức và thông tin từ Codenhalam</p>
+                        </div>
                     </div>
                     <ul class="news-list">
                         <li>
@@ -284,6 +345,106 @@
             </div>
         </section>
 
+        <!-- Testimonials Section -->
+        <section class="testimonials">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Khách Hàng Nói Gì Về Chúng Tôi</h2>
+                    <p>Những chia sẻ chân thực từ những người đã đồng hành cùng Codenhalam</p>
+                </div>
+                <div class="testimonial-carousel">
+                    <!-- Member Card 1 -->
+                    <div class="testimonial-card">
+                        <div class="user-info-flex">
+                            <div class="user-img-box">
+                                <img src="/assets/avatar/theanh.jpg" alt="theanh">
+                            </div>
+                            <div class="user-meta">
+                                <h3>Nguyễn Hồ Thế Anh</h3>
+                                <span>Chủ tịch HĐQT</span>
+                            </div>
+                        </div>
+                        <div class="user-comment">
+                            <p>"Lần đầu đồng hành cùng Codenhalam, tôi thực sự ấn tượng bởi tầm nhìn mang lại trải
+                                nghiệm tiện lợi tối đa cho mọi chuyến hành trình xuyên suốt Bắc - Nam."</p>
+                        </div>
+                    </div>
+
+                    <!-- Member Card 2 -->
+                    <div class="testimonial-card">
+                        <div class="user-info-flex">
+                            <div class="user-img-box">
+                                <i class="fas fa-user-ninja fa-3x"></i>
+                            </div>
+                            <div class="user-meta">
+                                <h3>Shark Phi</h3>
+                                <span>Giám đốc BSSC</span>
+                            </div>
+                        </div>
+                        <div class="user-comment">
+                            <p>"Các đối tác của Vexere đều là những hãng xe lớn, có uy tín nên tôi hoàn toàn yên tâm khi
+                                lựa chọn đặt vé cho bản thân và gia đình. Tốc độ thanh toán siêu nhanh!"</p>
+                        </div>
+                    </div>
+
+                    <!-- Member Card 3 -->
+                    <div class="testimonial-card">
+                        <div class="user-info-flex">
+                            <div class="user-img-box">
+                                <img src="/assets/avatar/theanh.jpg" alt="theanh">
+                            </div>
+                            <div class="user-meta">
+                                <h3>Nguyễn Hồ Thế Anh</h3>
+                                <span>Tổng Giám Đốc</span>
+                            </div>
+                        </div>
+                        <div class="user-comment">
+                            <p>"Chúng tôi cam kết không ngừng đổi mới công nghệ để nâng cao chất lượng phục vụ, biến mỗi
+                                chuyến xe khách trở thành một hành trình thư giãn nhất."</p>
+                        </div>
+                    </div>
+
+                    <!-- Member Card 4 -->
+                    <div class="testimonial-card">
+                        <div class="user-info-flex">
+                            <div class="user-img-box">
+                                <img src="/assets/avatar/theanh.jpg" alt="theanh">
+                            </div>
+                            <div class="user-meta">
+                                <h3>Nguyễn Hồ Thế Anh</h3>
+                                <span>Giám đốc Công nghệ</span>
+                            </div>
+                        </div>
+                        <div class="user-comment">
+                            <p>"Hệ thống đặt vé thời gian thực kết hợp AI sẽ giúp tối ưu hóa lựa chọn cho khách hàng,
+                                mang lại sự tiện lợi chỉ sau một cú chạm nhẹ nhàng."</p>
+                        </div>
+                    </div>
+
+                    <!-- Member Card 5 -->
+                    <div class="testimonial-card">
+                        <div class="user-info-flex">
+                            <div class="user-img-box">
+                                <img src="/assets/avatar/theanh.jpg" alt="theanh">
+                            </div>
+                            <div class="user-meta">
+                                <h3>Nguyễn Hồ Thế Anh</h3>
+                                <span>Giám đốc Vận hành</span>
+                            </div>
+                        </div>
+                        <div class="user-comment">
+                            <p>"Sự hài lòng của quý khách trên từng dặm đường là thước đo chính xác nhất cho thành công
+                                của đội ngũ vận hành Codenhalam - Gắn kết mọi chuyến đi."</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="dot-indicator">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <!-- ===============================
@@ -293,9 +454,10 @@
         <div class="container footer-grid">
             <!-- Col 1 -->
             <div class="foot-col">
-                <a routerLink="/" class="logo foot-logo">
-                    <i class="fas fa-bus-alt"></i> Codenhalam
-                </a>
+                <div (click)="navigateTo('/')" class="logo foot-logo pointer-cursor">
+                    <img src="/assets/bus.png" alt="Logo" style="height: 25px; margin-right: 8px;">
+                    Codenhalam-WebBanVeXe
+                </div>
                 <p class="foot-desc">Hệ thống đặt vé xe khách trực tuyến tiên phong, mang lại trải nghiệm tiện lợi và an
                     toàn cho mọi chuyến đi.</p>
                 <div class="socials">

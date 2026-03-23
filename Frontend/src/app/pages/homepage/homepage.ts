@@ -1,16 +1,62 @@
-import { Component, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, ElementRef, ViewChild, AfterViewInit, HostListener, OnInit, OnDestroy } from '@angular/core';
+import { RouterLink, Router } from '@angular/router'; // Thêm Router
 import { CommonModule } from '@angular/common';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'app-homepage',
+    standalone: true,
     imports: [RouterLink, CommonModule, ScrollingModule, FormsModule],
     templateUrl: './homepage.html',
     styleUrl: './homepage.css',
 })
-export class Homepage implements AfterViewInit {
+export class Homepage implements AfterViewInit, OnInit, OnDestroy {
+    // Rotating Backgrounds
+    heroBgImages: string[] = ['bg.png', 'bg2.png', 'bg3.png', 'bg4.png', 'bg5.png', 'bg7.png', 'bg8.png', 'bg9.png', 'bg10.png'];
+    currentBgIndex: number = 0;
+    bgInterval: any;
+
+    // Auth State
+    currentUser: any = null;
+    isScrolled = false; // Trạng thái lăn chuột để đổi màu Header
+
+    constructor(
+        public authService: AuthService,
+        private router: Router // Inject Router
+    ) {
+        this.currentUser = this.authService.getUser();
+    }
+
+    @HostListener('window:scroll', [])
+    onWindowScroll() {
+        this.isScrolled = window.scrollY > 50;
+    }
+
+    navigateTo(url: string) {
+        this.router.navigateByUrl(url);
+    }
+
+    logout() {
+        this.authService.logout();
+        this.currentUser = null;
+        window.location.reload();
+    }
+    // Custom DatePicker State
+    showCustomCalendar = false;
+    isLunarMode = false;
+    calendarLang: 'en' | 'vi' = 'vi';
+    viewDate: Date = new Date(); // Tháng đang hiển thị trên lịch
+    calendarDays: any[] = [];
+    weekDays = {
+        vi: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+        en: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    };
+    monthNames = {
+        vi: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+        en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    };
     showingHotline = false;
 
     tripType: 'oneWay' | 'roundTrip' = 'oneWay';
@@ -40,8 +86,18 @@ export class Homepage implements AfterViewInit {
         return this.provinces.filter(p => !this.destination || p.toLowerCase().includes(this.destination.toLowerCase())).filter(p => p !== this.origin);
     }
 
-    setTripType(type: 'oneWay' | 'roundTrip') {
-        this.tripType = type;
+    setTripType(type: 'oneWay' | 'roundTrip', event?: Event) {
+        if (event) {
+            event.preventDefault(); // Stop radio button triggering click again through bubble
+            event.stopPropagation();
+        }
+
+        if (this.tripType === type) {
+            // Toggle to the other type if the active one is clicked again
+            this.tripType = (type === 'oneWay') ? 'roundTrip' : 'oneWay';
+        } else {
+            this.tripType = type;
+        }
     }
 
     selectOrigin(province: string) {
@@ -76,6 +132,28 @@ export class Homepage implements AfterViewInit {
 
     ngOnInit() {
         this.generateDates(new Date());
+        this.startBgRotation();
+    }
+
+    ngOnDestroy() {
+        if (this.bgInterval) {
+            clearInterval(this.bgInterval);
+        }
+    }
+
+    startBgRotation() {
+        this.bgInterval = setInterval(() => {
+            this.currentBgIndex = (this.currentBgIndex + 1) % this.heroBgImages.length;
+        }, 5000); // 5s total to allow slow 3s transition
+    }
+
+    get bgImageUrl(): string {
+        return `/assets/${this.heroBgImages[this.currentBgIndex]}`;
+    }
+
+    get nextBgImageUrl(): string {
+        const nextIdx = (this.currentBgIndex + 1) % this.heroBgImages.length;
+        return `/assets/${this.heroBgImages[nextIdx]}`;
     }
 
     ngAfterViewInit() {
@@ -132,26 +210,138 @@ export class Homepage implements AfterViewInit {
         this.currentMonthYearStr = formatter.format(this.selectedDate);
     }
 
-    onNativeDateChange(event: any) {
-        const value = event.target.value;
-        if (value) {
-            const newDate = new Date(value);
-            this.generateDates(newDate);
+    // Navigation for Custom Calendar
+    prevMonth() {
+        this.viewDate = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth() - 1, 1);
+        this.generateCalendar();
+    }
+
+    nextMonth() {
+        this.viewDate = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth() + 1, 1);
+        this.generateCalendar();
+    }
+
+    toggleCustomCalendar() {
+        this.showCustomCalendar = !this.showCustomCalendar;
+        if (this.showCustomCalendar) {
+            this.generateCalendar();
         }
+    }
+
+    generateCalendar() {
+        const year = this.viewDate.getFullYear();
+        const month = this.viewDate.getMonth();
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+
+        // Monday is index 0 in our weekDays array
+        let startDay = firstDay.getDay() - 1;
+        if (startDay === -1) startDay = 6; // Sunday is index 6
+
+        this.calendarDays = [];
+
+        // Padding previous month's days
+        for (let i = 0; i < startDay; i++) {
+            this.calendarDays.push({ empty: true });
+        }
+
+        // Bảng mốc bắt đầu các tháng âm lịch năm 2026 (Bính Ngọ)
+        const lunarMilestones = [
+            { start: new Date(2026, 0, 19), month: 12, year: 2025 },
+            { start: new Date(2026, 1, 17), month: 1, year: 2026 },
+            { start: new Date(2026, 2, 19), month: 2, year: 2026 },
+            { start: new Date(2026, 3, 17), month: 3, year: 2026 },
+            { start: new Date(2026, 4, 16), month: 4, year: 2026 },
+            { start: new Date(2026, 5, 15), month: 5, year: 2026 },
+            { start: new Date(2026, 6, 14), month: 6, year: 2026 },
+            { start: new Date(2026, 7, 13), month: 7, year: 2026 },
+            { start: new Date(2026, 8, 11), month: 8, year: 2026 },
+            { start: new Date(2026, 9, 11), month: 9, year: 2026 },
+            { start: new Date(2026, 10, 9), month: 10, year: 2026 },
+            { start: new Date(2026, 11, 9), month: 11, year: 2026 },
+        ];
+
+        // Current month's days
+        for (let i = 1; i <= lastDay.getDate(); i++) {
+            const date = new Date(year, month, i);
+            const isToday = this.isSameDay(date, new Date());
+            const isSelected = this.isSameDay(date, this.selectedDate);
+
+            // Tìm tháng âm lịch phù hợp cho ngày này
+            let currentMilestone = lunarMilestones[0];
+            for (const m of lunarMilestones) {
+                if (date >= m.start) {
+                    currentMilestone = m;
+                } else {
+                    break;
+                }
+            }
+
+            const diffInTime = date.getTime() - currentMilestone.start.getTime();
+            const diffInDays = Math.round(diffInTime / (1000 * 3600 * 24));
+
+            const lunarDayNum = diffInDays + 1;
+            const lunarMonthNum = currentMilestone.month;
+
+            this.calendarDays.push({
+                day: i,
+                date: date,
+                isToday,
+                isSelected,
+                lunar: lunarDayNum === 1 ? `${lunarDayNum}/${lunarMonthNum}` : `${lunarDayNum}`
+            });
+        }
+    }
+
+    isSameDay(d1: Date, d2: Date) {
+        return d1.getFullYear() === d2.getFullYear() &&
+            d1.getMonth() === d2.getMonth() &&
+            d1.getDate() === d2.getDate();
+    }
+
+    selectCalendarDate(dayObj: any) {
+        if (dayObj.empty) return;
+        this.selectedDate = dayObj.date;
+        this.generateDates(dayObj.date); // Cập nhật slider bên dưới
+        this.showCustomCalendar = false;
+    }
+
+    onNativeDateChange(event: any) {
+        // ... (keep current behavior)
     }
 
     showDatePicker(dateInput: HTMLInputElement) {
-        if ('showPicker' in HTMLInputElement.prototype) {
-            try {
-                dateInput.showPicker();
-            } catch (e) {
-                // Ignore fallback
-            }
-        }
+        // Thay vì showPicker mặc định, ta dùng modal tự chế
+        this.toggleCustomCalendar();
+    }
+
+    // Drag-to-scroll Properties
+    isDragging = false;
+    startX = 0;
+    scrollLeftStart = 0;
+
+    onMouseDown(e: MouseEvent) {
+        this.isDragging = true;
+        const el = this.scrollWrapper.nativeElement;
+        this.startX = e.pageX - el.offsetLeft;
+        this.scrollLeftStart = el.scrollLeft;
+    }
+
+    onMouseUp() {
+        this.isDragging = false;
+    }
+
+    onMouseMove(e: MouseEvent) {
+        if (!this.isDragging) return;
+        e.preventDefault();
+        const el = this.scrollWrapper.nativeElement;
+        const x = e.pageX - el.offsetLeft;
+        const walk = (x - this.startX) * 1.5; // Tùy chỉnh tốc độ kéo (1.5x)
+        el.scrollLeft = this.scrollLeftStart - walk;
     }
 
     scrollToCenter() {
-        if (this.scrollWrapper) {
+        if (this.scrollWrapper && !this.isDragging) {
             const element = this.scrollWrapper.nativeElement;
             const activeItem = element.querySelector('.active');
             if (activeItem) {
