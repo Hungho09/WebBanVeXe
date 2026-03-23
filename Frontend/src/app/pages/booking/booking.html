@@ -1,0 +1,63 @@
+<div class="booking-container" *ngIf="!isLoading; else loading">
+  <div class="booking-card glass-card">
+    <div class="booking-header">
+      <h2>Booking for Trip: {{ trip?.routeName }}</h2>
+      <p class="trip-info">
+        <span><i class="fas fa-clock"></i> {{ trip?.departureTime | date:'short' }}</span>
+        <span><i class="fas fa-bus"></i> {{ trip?.busPlate }}</span>
+        <span><i class="fas fa-money-bill-wave"></i> {{ trip?.price | currency:'VND' }}/seat</span>
+      </p>
+    </div>
+
+    <div class="seat-map-container">
+      <h3>Select Your Seats</h3>
+      <div class="seat-legend">
+        <div class="legend-item"><span class="seat available"></span> Available</div>
+        <div class="legend-item"><span class="seat selected"></span> Selected</div>
+        <div class="legend-item"><span class="seat locked"></span> Locked</div>
+        <div class="legend-item"><span class="seat booked"></span> Booked</div>
+      </div>
+
+      <div class="timer-container" *ngIf="selectedSeatIds.length > 0">
+        <p>Your seats are held for: <span class="timer">{{ timerDisplay }}</span></p>
+      </div>
+
+      <div class="seat-grid">
+        <div 
+          *ngFor="let seat of seats" 
+          class="seat" 
+          [ngClass]="{
+            'available': seat.status === 'Available',
+            'locked': seat.status === 'Locked' && !isSelected(seat.id),
+            'booked': seat.status === 'Booked',
+            'selected': isSelected(seat.id)
+          }"
+          (click)="toggleSeat(seat)"
+        >
+          {{ seat.seatNumber }}
+        </div>
+      </div>
+    </div>
+
+    <div class="booking-summary">
+      <div class="summary-details">
+        <p>Selected Seats: <strong>{{ selectedSeatIds.length }}</strong></p>
+        <p>Total Amount: <span class="price">{{ totalAmount | currency:'VND' }}</span></p>
+      </div>
+      <button 
+        class="confirm-btn" 
+        [disabled]="selectedSeatIds.length === 0"
+        (click)="confirmBooking()"
+      >
+        Confirm Booking
+      </button>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Loading trip details...</p>
+  </div>
+</ng-template>
