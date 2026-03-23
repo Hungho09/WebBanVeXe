@@ -148,6 +148,67 @@
     color: rgba(255, 255, 255, 0.8);
 }
 
+/* BADGES */
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge.success {
+    background: #d1f4ec;
+    color: var(--success);
+}
+
+.badge.warning {
+    background: #fff4e5;
+    color: var(--accent-orange);
+}
+
+.badge.danger {
+    background: #ffe5e5;
+    color: var(--danger);
+}
+
+/* ACTION BUTTONS */
+.btn-action {
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s;
+}
+
+.btn-action.cancel {
+    background: var(--bg-color);
+    color: var(--danger);
+    border: 1px solid #ffe5e5;
+}
+
+.btn-action.cancel:hover {
+    background: #ffe5e5;
+}
+
+.btn-action.approve {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-action.approve:hover {
+    background: #5a4ed1;
+}
+
+.loading-state, .empty-state {
+    padding: 40px;
+    text-align: center;
+    color: var(--text-light);
+    font-style: italic;
+}
+
 .stat-value {
     font-size: 28px;
     font-weight: 700;
