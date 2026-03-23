@@ -1,14 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router'; // Thêm Router
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserService, User } from '../../services/user.service';
 import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-user-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink], // Thêm RouterLink
+  imports: [CommonModule, FormsModule], // Thêm RouterLink
   templateUrl: './user-management.html',
   styleUrl: './user-management.css'
 })
@@ -31,13 +30,9 @@ export class UserManagement implements OnInit {
 
   constructor(
     private userService: UserService,
-    private toastService: ToastService,
-    private router: Router // Inject Router
+    private toastService: ToastService
   ) {}
 
-  navigateTo(url: string) {
-    this.router.navigateByUrl(url);
-  }
 
   ngOnInit() {
     this.loadUsers();

@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router'; // Thêm Router
 import { Trip, TripService } from '../../services/trip.service';
 
 @Component({
   selector: 'app-trip-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink], // Thêm RouterLink
+  imports: [CommonModule, FormsModule, ReactiveFormsModule], // Thêm RouterLink
   templateUrl: './trip-management.html',
   styleUrls: ['./trip-management.css']
 })
@@ -23,8 +22,7 @@ export class TripManagement implements OnInit {
 
   constructor(
     private fb: FormBuilder, 
-    private tripService: TripService,
-    private router: Router // Inject Router
+    private tripService: TripService
   ) {
     this.tripForm = this.fb.group({
       routeId: ['', Validators.required],
@@ -36,9 +34,6 @@ export class TripManagement implements OnInit {
     });
   }
 
-  navigateTo(url: string) {
-    this.router.navigateByUrl(url);
-  }
 
   ngOnInit() {
     this.loadTrips();
