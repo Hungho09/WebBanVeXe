@@ -3,6 +3,7 @@ namespace Domain.Enums
     public enum SeatType
     {
         Normal = 0,
-        Vip = 1
+        VIP = 1,
+        Sleeper = 2
     }
 }

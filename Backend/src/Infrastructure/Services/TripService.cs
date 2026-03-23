@@ -12,10 +12,12 @@ namespace Infrastructure.Services
     public class TripService : ITripService
     {
         private readonly ITripRepository _tripRepository;
+        private readonly ISeatService _seatService;
 
-        public TripService(ITripRepository tripRepository)
+        public TripService(ITripRepository tripRepository, ISeatService seatService)
         {
             _tripRepository = tripRepository;
+            _seatService = seatService;
         }
 
         public async Task<TripDto?> GetTripByIdAsync(Guid id)
@@ -60,6 +62,14 @@ namespace Infrastructure.Services
 
             await _tripRepository.AddAsync(trip);
             await _tripRepository.SaveChangesAsync();
+
+            // Refresh to get navigation properties (like Bus) for seat generation
+            var createdTripWithBus = await _tripRepository.GetByIdAsync(trip.Id);
+            if (createdTripWithBus?.Bus != null)
+            {
+                // Story 2.4: Auto generate seats based on bus type
+                await _seatService.GenerateSeatsForTripAsync(trip.Id, createdTripWithBus.Bus.BusType);
+            }
 
             // Refresh to get navigation properties for the DTO
             var createdTrip = await _tripRepository.GetByIdAsync(trip.Id);
