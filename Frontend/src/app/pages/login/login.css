@@ -101,17 +101,17 @@ h2 {
 }
 
 .form-options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  font-size: 14px;
 }
 
 .forgot-link {
-    color: var(--primary-color);
-    text-decoration: none;
-    font-weight: 700;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 700;
 }
 
 .btn-primary {
@@ -173,10 +173,10 @@ h2 {
 }
 
 .auth-illustration {
-    width: 280px;
-    height: auto;
-    object-fit: contain;
-    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
+  width: 280px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
 }
 
 .overlay-text h3 {
@@ -191,7 +191,7 @@ h2 {
 }
 
 @media (max-width: 900px) {
-    .auth-right {
-        display: none;
-    }
+  .auth-right {
+    display: none;
+  }
 }

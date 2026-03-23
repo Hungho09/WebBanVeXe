@@ -262,19 +262,20 @@
 }
 
 .hero-title {
-    font-size: 3.5rem;
+    margin-top: 20px;
+    font-size: 3.0rem;
     font-weight: 800;
     color: white;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     line-height: 1.1;
 }
 
 .hero-title span {
     display: block;
     color: rgba(255, 255, 255, 0.9);
-    font-size: 1.8rem;
-    font-weight: 400;
-    margin-top: 10px;
+    font-size: 2.4rem;
+    font-weight: 700;
+    margin-top: 20px;
 }
 
 .hero-subtitle {
@@ -295,8 +296,7 @@
     margin: -80px auto;
     box-shadow: 0px 20px 50px rgba(106, 97, 211, 0.15);
     position: absolute;
-    bottom: -230px;
-    /* Shifted down further to avoid covering text and split the edge */
+    bottom: -250px;
     left: 50%;
     transform: translateX(-50%);
     width: 95%;
@@ -859,7 +859,8 @@ input:checked+.slider:before {
 }
 
 .btn-login-new {
-    display: flex; /* Đã thêm flex để icon và text nằm ngang */
+    display: flex;
+    /* Đã thêm flex để icon và text nằm ngang */
     align-items: center;
     gap: 10px;
     color: white;
@@ -889,7 +890,8 @@ input:checked+.slider:before {
     padding: 6px 18px;
     font-size: 0.9rem;
     background: transparent;
-    border: 1px solid transparent; /* Mặc định trong suốt */
+    border: 1px solid transparent;
+    /* Mặc định trong suốt */
     border-radius: 4px;
     transition: all 0.3s;
     cursor: pointer;
@@ -901,7 +903,8 @@ input:checked+.slider:before {
 
 .btn-register-new:active {
     background: rgba(255, 255, 255, 0.2);
-    border: 1.5px solid white; /* Khi click mới hiện "ô" */
+    border: 1.5px solid white;
+    /* Khi click mới hiện "ô" */
 }
 
 .btn-icon {
@@ -1181,7 +1184,7 @@ input:checked+.slider:before {
    3. FOOTER
 ============================== */
 .footer {
-    background: url('/assets/bvx15.png');
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/assets/bvx15.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
