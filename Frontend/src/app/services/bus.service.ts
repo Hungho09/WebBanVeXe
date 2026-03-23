@@ -6,8 +6,8 @@ export interface Bus {
   id: string;
   plateNumber: string;
   busType: string;
-  totalSeats: number;
-  status: string;
+  seatCapacity: number;
+  isActive: boolean;
 }
 
 @Injectable({
