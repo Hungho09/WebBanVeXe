@@ -73,5 +73,12 @@ namespace Infrastructure.Repositories
                         || (arrivalTime > t.DepartureTime && arrivalTime <= t.ArrivalTime)
                         || (departureTime <= t.DepartureTime && arrivalTime >= t.ArrivalTime)));
         }
+
+        public async Task<Trip?> GetBySeatIdAsync(Guid seatId)
+        {
+            return await _context.Trips
+                .Include(t => t.Seats)
+                .FirstOrDefaultAsync(t => t.Seats.Any(s => s.Id == seatId));
+        }
     }
 }

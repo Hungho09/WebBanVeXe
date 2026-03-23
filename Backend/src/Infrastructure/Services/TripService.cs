@@ -114,6 +114,63 @@ namespace Infrastructure.Services
             return true;
         }
 
+        public async Task<IEnumerable<SeatDto>> GetSeatsByTripIdAsync(Guid tripId)
+        {
+            var trip = await _tripRepository.GetByIdAsync(tripId);
+            if (trip == null) return Enumerable.Empty<SeatDto>();
+
+            return trip.Seats.Select(s => new SeatDto
+            {
+                Id = s.Id,
+                TripId = s.TripId,
+                SeatNumber = s.SeatNumber,
+                Status = s.Status.ToString(),
+                RowNumber = s.RowNumber,
+                ColumnNumber = s.ColumnNumber,
+                Floor = s.Floor
+            });
+        }
+
+        public async Task<bool> LockSeatAsync(Guid seatId)
+        {
+            // Note: Since TripService normally uses TripRepository, we might need a dedicated SeatRepository 
+            // but for simplicity and immediate implementation, we'll assume the repository can handle it 
+            // or we'll use the context if we have access. 
+            // Checking TripRepository implementation...
+            
+            var trip = await _tripRepository.GetBySeatIdAsync(seatId);
+            if (trip == null) return false;
+
+            var seat = trip.Seats.FirstOrDefault(s => s.Id == seatId);
+            if (seat == null || seat.Status == Domain.Enums.SeatStatus.Booked) return false;
+
+            // If already locked and not expired, return false
+            if (seat.Status == Domain.Enums.SeatStatus.Locked && seat.LockExpirationTime > DateTime.UtcNow)
+                return false;
+
+            seat.Status = Domain.Enums.SeatStatus.Locked;
+            seat.LockExpirationTime = DateTime.UtcNow.AddMinutes(10);
+
+            _tripRepository.Update(trip);
+            await _tripRepository.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> UnlockSeatAsync(Guid seatId)
+        {
+            var trip = await _tripRepository.GetBySeatIdAsync(seatId);
+            if (trip == null) return false;
+
+            var seat = trip.Seats.FirstOrDefault(s => s.Id == seatId);
+            if (seat == null || seat.Status != Domain.Enums.SeatStatus.Locked) return false;
+
+            seat.Status = Domain.Enums.SeatStatus.Available;
+            seat.LockExpirationTime = null;
+
+            _tripRepository.Update(trip);
+            await _tripRepository.SaveChangesAsync();
+            return true;
+        }
         private TripDto MapToDto(Trip trip)
         {
             return new TripDto
