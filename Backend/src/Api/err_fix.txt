@@ -1,0 +1,10 @@
+﻿D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Repositories\TripRepository.cs(80,33): error CS1061: 'Trip' does not contain a definition for 'Seats' and no accessible extension method 'Seats' accepting a first argument of type 'Trip' could be found (are you missing a using directive or an assembly reference?) [D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Infrastructure.csproj]
+D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Services\TripService.cs(122,25): error CS1061: 'Trip' does not contain a definition for 'Seats' and no accessible extension method 'Seats' accepting a first argument of type 'Trip' could be found (are you missing a using directive or an assembly reference?) [D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Infrastructure.csproj]
+D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Services\TripService.cs(144,29): error CS1061: 'Trip' does not contain a definition for 'Seats' and no accessible extension method 'Seats' accepting a first argument of type 'Trip' could be found (are you missing a using directive or an assembly reference?) [D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Infrastructure.csproj]
+D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Services\TripService.cs(164,29): error CS1061: 'Trip' does not contain a definition for 'Seats' and no accessible extension method 'Seats' accepting a first argument of type 'Trip' could be found (are you missing a using directive or an assembly reference?) [D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Infrastructure.csproj]
+
+Build FAILED.
+    0 Warning(s)
+    4 Error(s)
+
+Time Elapsed 00:00:01.52

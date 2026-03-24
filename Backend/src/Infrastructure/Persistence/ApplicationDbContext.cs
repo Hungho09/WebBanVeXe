@@ -1,5 +1,6 @@
 using Application.Interfaces;
 using Domain.Entities;
+using Infrastructure.Persistence.SeedData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Threading;
@@ -96,7 +97,7 @@ namespace Infrastructure.Persistence
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.SeatNumber).IsRequired().HasMaxLength(10);
-                entity.HasOne(e => e.Trip).WithMany().HasForeignKey(e => e.TripId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.Trip).WithMany(t => t.Seats).HasForeignKey(e => e.TripId).OnDelete(DeleteBehavior.Restrict);
             });
 
             // Configure SeatTemplate
@@ -150,6 +151,9 @@ namespace Infrastructure.Persistence
                 entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
                 entity.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Restrict);
             });
+
+            // Seed Seat Templates
+            SeatTemplateSeed.Seed(modelBuilder);
         }
     }
 }

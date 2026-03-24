@@ -23,6 +23,7 @@ namespace Infrastructure.Repositories
             return await _context.Trips
                 .Include(t => t.Route)
                 .Include(t => t.Bus)
+                .Include(t => t.Seats)
                 .FirstOrDefaultAsync(t => t.Id == id);
         }
 
@@ -72,6 +73,13 @@ namespace Infrastructure.Repositories
                     && ((departureTime >= t.DepartureTime && departureTime < t.ArrivalTime)
                         || (arrivalTime > t.DepartureTime && arrivalTime <= t.ArrivalTime)
                         || (departureTime <= t.DepartureTime && arrivalTime >= t.ArrivalTime)));
+        }
+
+        public async Task<Trip?> GetBySeatIdAsync(Guid seatId)
+        {
+            return await _context.Trips
+                .Include(t => t.Seats)
+                .FirstOrDefaultAsync(t => t.Seats.Any(s => s.Id == seatId));
         }
     }
 }

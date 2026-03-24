@@ -18,5 +18,6 @@ namespace Domain.Entities
         // Navigation properties
         public Route? Route { get; set; }
         public Bus? Bus { get; set; }
+        public System.Collections.Generic.ICollection<Seat> Seats { get; set; } = new System.Collections.Generic.List<Seat>();
     }
 }

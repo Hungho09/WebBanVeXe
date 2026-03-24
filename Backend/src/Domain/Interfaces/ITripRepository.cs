@@ -15,5 +15,6 @@ namespace Domain.Interfaces
         void Delete(Trip trip);
         Task SaveChangesAsync();
         Task<bool> HasConflictAsync(Guid busId, DateTime departureTime, DateTime arrivalTime, Guid? excludeTripId = null);
+        Task<Trip?> GetBySeatIdAsync(Guid seatId);
     }
 }

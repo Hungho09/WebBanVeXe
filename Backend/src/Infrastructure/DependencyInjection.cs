@@ -1,6 +1,7 @@
 using System.Text;
 using Application.Interfaces;
 using Infrastructure.Persistence;
+using Application.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -59,6 +60,12 @@ namespace Infrastructure
 
             // Seat Management
             services.AddScoped<Application.Interfaces.ISeatService, Infrastructure.Services.SeatService>();
+
+            // Booking Management
+            services.AddScoped<Application.Interfaces.IBookingService, Infrastructure.Services.BookingService>();
+
+            // Background Services
+            services.AddHostedService<Infrastructure.Services.SeatLockBackgroundService>();
 
             return services;
         }

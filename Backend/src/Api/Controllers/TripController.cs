@@ -77,5 +77,28 @@ namespace Api.Controllers
             if (!success) return NotFound();
             return NoContent();
         }
+
+        [HttpGet("{id}/seats")]
+        public async Task<ActionResult<IEnumerable<SeatDto>>> GetSeats(Guid id)
+        {
+            var seats = await _tripService.GetSeatsByTripIdAsync(id);
+            return Ok(seats);
+        }
+
+        [HttpPost("seats/{seatId}/lock")]
+        public async Task<IActionResult> LockSeat(Guid seatId)
+        {
+            var success = await _tripService.LockSeatAsync(seatId);
+            if (!success) return BadRequest(new { message = "Seat could not be locked. It might be already booked or locked by someone else." });
+            return Ok(new { message = "Seat locked successfully" });
+        }
+
+        [HttpPost("seats/{seatId}/unlock")]
+        public async Task<IActionResult> UnlockSeat(Guid seatId)
+        {
+            var success = await _tripService.UnlockSeatAsync(seatId);
+            if (!success) return BadRequest(new { message = "Seat could not be unlocked." });
+            return Ok(new { message = "Seat unlocked successfully" });
+        }
     }
 }
