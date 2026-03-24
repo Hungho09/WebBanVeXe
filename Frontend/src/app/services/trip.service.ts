@@ -30,6 +30,10 @@ export class TripService {
     return this.http.get<Trip>(`${this.apiUrl}/${id}`);
   }
 
+  getSeatsByTrip(tripId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${tripId}/seats`);
+  }
+
   createTrip(trip: any): Observable<Trip> {
     return this.http.post<Trip>(this.apiUrl, trip);
   }

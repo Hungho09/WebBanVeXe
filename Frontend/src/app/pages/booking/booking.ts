@@ -1,7 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TripService, Trip, Seat } from '../../services/trip.service';
+import { TripService, Trip } from '../../services/trip.service';
+
+export interface Seat {
+  id: string;
+  seatNumber: string;
+  status: string;
+  floor?: number;
+  rowNumber?: number;
+  columnNumber?: number;
+  type?: string;
+}
 import { BookingService, CreateBookingDto } from '../../services/booking.service';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
@@ -22,6 +32,30 @@ export class Booking implements OnInit {
   timerValue = 0; // in seconds
   timerDisplay = '10:00';
   private timerInterval: any;
+
+  // Wizard state
+  currentStep = 1;
+
+  // Mock points
+  pickupPoints = [
+    { id: 1, name: 'Bến xe Miền Đông', time: '20:00' },
+    { id: 2, name: 'Ngã Tư Thủ Đức', time: '20:30' },
+    { id: 3, name: 'Suối Tiên', time: '20:45' }
+  ];
+  dropoffPoints = [
+    { id: 1, name: 'Bến xe Đức Trọng', time: '04:00' },
+    { id: 2, name: 'Bến xe Đà Lạt', time: '05:00' }
+  ];
+  selectedPickup = '';
+  selectedDropoff = '';
+
+  // Payment methods
+  paymentMethods = [
+    { id: 'vnpay', name: 'Thanh toán trực tuyến (VNPay)', icon: 'fas fa-wallet' },
+    { id: 'momo', name: 'Ví MoMo', icon: 'fas fa-mobile-alt' },
+    { id: 'cash', name: 'Thanh toán khi lên xe', icon: 'fas fa-money-bill-wave' }
+  ];
+  selectedPaymentMethod = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -66,8 +100,17 @@ export class Booking implements OnInit {
     });
   }
 
+  get floors(): number[] {
+    const floorSet = new Set(this.seats.map(s => s.floor || 1));
+    return Array.from(floorSet).sort((a, b) => a - b);
+  }
+
+  getSeatsByFloor(floorNum: number): Seat[] {
+    return this.seats.filter(s => s.floor === floorNum);
+  }
+
   loadSeats(tripId: string): void {
-    this.tripService.getSeats(tripId).subscribe({
+    this.tripService.getSeatsByTrip(tripId).subscribe({
       next: (seats) => {
         this.seats = seats;
         this.isLoading = false;
@@ -160,6 +203,34 @@ export class Booking implements OnInit {
     return (this.trip?.price || 0) * this.selectedSeatIds.length;
   }
 
+  nextStep() {
+    if (this.currentStep === 1 && this.selectedSeatIds.length === 0) {
+      this.toastService.showWarning('Vui lòng chọn ít nhất 1 chỗ ngồi!');
+      return;
+    }
+    if (this.currentStep === 2 && (!this.selectedPickup || !this.selectedDropoff)) {
+      this.toastService.showWarning('Vui lòng chọn Điểm đón và Điểm trả!');
+      return;
+    }
+    this.currentStep++;
+  }
+
+  prevStep() {
+    this.currentStep--;
+  }
+
+  selectPickup(name: string) {
+    this.selectedPickup = name;
+  }
+
+  selectDropoff(name: string) {
+    this.selectedDropoff = name;
+  }
+
+  selectPaymentMethod(id: string) {
+    this.selectedPaymentMethod = id;
+  }
+
   confirmBooking(): void {
     if (this.selectedSeatIds.length === 0) {
       this.toastService.showWarning('Please select at least one seat');
@@ -167,14 +238,14 @@ export class Booking implements OnInit {
     }
 
     const currentUser = this.authService.getUser();
-    if (!this.authService.isLoggedIn() || !this.authService.getUser()?.id) {
+    if (!this.authService.isLoggedIn() || !currentUser?.userName) {
       this.toastService.showInfo('Please login to book tickets');
       this.router.navigate(['/login'], { queryParams: { returnUrl: `/booking/${this.tripId}` } });
       return;
     }
 
     const bookingDto: CreateBookingDto = {
-      userId: currentUser?.id ?? '',
+      userId: currentUser?.userName ?? '',
       tripId: this.tripId!,
       seatIds: this.selectedSeatIds
     };

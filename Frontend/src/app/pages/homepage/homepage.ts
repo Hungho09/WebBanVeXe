@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { TripService } from '../../services/trip.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
     selector: 'app-homepage',
@@ -24,7 +26,9 @@ export class Homepage implements AfterViewInit, OnInit, OnDestroy {
 
     constructor(
         public authService: AuthService,
-        private router: Router // Inject Router
+        private router: Router,
+        private tripService: TripService,
+        private toastService: ToastService
     ) {
         this.currentUser = this.authService.getUser();
     }
@@ -114,6 +118,39 @@ export class Homepage implements AfterViewInit, OnInit, OnDestroy {
         const temp = this.origin;
         this.origin = this.destination;
         this.destination = temp;
+    }
+
+    searchTrips() {
+        if (!this.origin || !this.destination) {
+            this.toastService.showWarning('Vui lòng chọn Điểm đi và Điểm đến!');
+            return;
+        }
+
+        this.tripService.getTrips().subscribe({
+            next: (trips) => {
+                if (trips.length === 0) {
+                    this.toastService.showError('Hệ thống hiện tại chưa có chuyến xe nào!');
+                    return;
+                }
+
+                // Try to find a direct match
+                const matchedTrip = trips.find(t => 
+                    t.routeName.toLowerCase().includes(this.origin.toLowerCase()) || 
+                    t.routeName.toLowerCase().includes(this.destination.toLowerCase())
+                );
+
+                if (matchedTrip) {
+                    this.router.navigate(['/booking', matchedTrip.id]);
+                } else {
+                    // Fallback to the first available trip for demo purposes
+                    this.toastService.showInfo(`Không có tuyến ${this.origin} - ${this.destination}. Chuyển đến chuyến xe đầu tiên hiện có...`);
+                    this.router.navigate(['/booking', trips[0].id]);
+                }
+            },
+            error: () => {
+                this.toastService.showError('Lỗi kết nối máy chủ khi tìm kiếm chuyến xe.');
+            }
+        });
     }
 
     onBlurOrigin() {
