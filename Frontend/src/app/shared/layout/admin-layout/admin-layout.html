@@ -1,0 +1,13 @@
+<div class="dashboard-wrapper">
+    <!-- Component Sidebar -->
+    <app-admin-sidebar [isAdmin]="isAdmin"></app-admin-sidebar>
+
+    <!-- Main Content AREA -->
+    <!-- ② Right: Topbar + Dynamic Page Content -->
+    <main class="admin-main-content">
+        <app-admin-topnav></app-admin-topnav>
+        <div class="content-body">
+            <router-outlet></router-outlet>
+        </div>
+    </main>
+</div>

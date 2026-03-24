@@ -1,0 +1,56 @@
+<!-- ========================================================
+     app-navbar — Navbar của trang chủ (public layout)
+     Sử dụng: Homepage
+     Props: isScrolled, currentUser, authService
+     ======================================================== -->
+<header class="navbar" [class.scrolled]="isScrolled">
+    <div class="container navbar-inner flex justify-between items-center h-full">
+
+        <!-- ① Logo & Admin Quick Access (Trái) -->
+        <div class="header-left flex items-center gap-8">
+            <div class="logo flex items-center pointer-cursor" (click)="navigateTo('/')">
+                <img src="/assets/bus.png" alt="Logo Codenhalam" class="logo-img">
+                <span class="logo-slogan ml-2">Codenhalam</span>
+            </div>
+
+            <!-- Admin Quick Link: Dashboard cạnh Logo -->
+            <ng-container *ngIf="authService.isLoggedIn()">
+                <a *ngIf="currentUser?.role === 'Admin'"
+                   (click)="navigateTo('/dashboard')"
+                   class="btn-dashboard-large">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </a>
+            </ng-container>
+        </div>
+
+        <!-- ② Right Area: Hotline | Account (Phải) -->
+        <div class="header-right flex items-center gap-6">
+
+            <!-- Hotline / Phone Icon -->
+            <div class="hotline-circle-wrapper">
+                <div class="hotline-box">
+                    <i class="fas fa-phone-alt"></i>
+                    <span class="number">0397279236</span>
+                </div>
+            </div>
+
+            <!-- Auth area -->
+            <div class="auth-wrapper flex items-center">
+                <!-- Guest Area -->
+                <ng-container *ngIf="!authService.isLoggedIn()">
+                    <button (click)="navigateTo('/login')" class="btn-login-new">Đăng nhập</button>
+                    <button (click)="navigateTo('/register')" class="btn-register-new">Đăng ký</button>
+                </ng-container>
+
+                <!-- User Area -->
+                <ng-container *ngIf="authService.isLoggedIn()">
+                    <div class="account-pill">
+                        <span class="welcome">Xin chào, <b>{{ currentUser?.userName || 'Admin Local' }}</b></span>
+                        <button (click)="onLogout()" class="btn-logout-mini">Đăng xuất</button>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+
+    </div>
+</header>

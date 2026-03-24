@@ -1,0 +1,194 @@
+/* ============================================================
+   navbar.css — Public Navbar (trang chủ)
+   ============================================================ */
+
+.navbar {
+    height: 80px;
+    background: transparent;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: var(--z-sticky);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    transition: var(--transition-slow);
+}
+
+.navbar-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 40px;
+}
+
+.navbar.scrolled {
+    position: fixed;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    height: 65px;
+    border-bottom: none;
+}
+
+.navbar.scrolled .logo-slogan,
+.navbar.scrolled .welcome {
+    color: var(--text-main) !important;
+}
+
+/* === Layout: Left & Right split === */
+.header-left { 
+    display: flex;
+    align-items: center;
+    gap: 40px; /* Space between Logo and Dashboard */
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 24px; /* Space between Hotline and Account */
+}
+
+/* === Logo === */
+.logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.logo-img {
+    height: 50px;
+    width: auto;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
+}
+
+.logo-slogan {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: white;
+    letter-spacing: -0.5px;
+    font-family: 'Arial Black', sans-serif;
+    margin-left: 10px;
+}
+
+/* === Dashboard Button (Large) === */
+.btn-dashboard-large {
+    background: linear-gradient(135deg, #6366f1 0%, #a29bfe 100%);
+    color: white !important;
+    padding: 10px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+    transition: var(--transition-bounce);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-dashboard-large:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(99, 102, 241, 0.4);
+}
+
+/* === Hotline Expandable Pill === */
+.hotline-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 44px;
+    height: 44px;
+    overflow: hidden;
+    white-space: nowrap;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.hotline-box:hover {
+    width: 180px; /* Hiệu ứng "thụt ra" mở rộng */
+    justify-content: flex-start;
+    padding-left: 6px;
+    padding-right: 20px;
+    background: white;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.hotline-box i {
+    flex-shrink: 0;
+    color: white;
+    background: var(--primary-color);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 14px;
+    transition: transform 0.5s ease;
+}
+
+.hotline-box:hover i { transform: rotate(360deg); }
+
+.hotline-box .number {
+    margin-left: 12px;
+    font-weight: 800;
+    color: var(--primary-color);
+    font-size: 1.05rem;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.4s ease 0.1s;
+}
+
+.hotline-box:hover .number {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* === Auth Area === */
+.auth-wrapper { gap: 12px; }
+
+.account-pill {
+    background: white;
+    padding: 6px 6px 6px 20px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border: 1px solid #f1f5f9;
+}
+
+.welcome {
+    font-size: 13px;
+    color: #475569;
+}
+
+.btn-logout-mini {
+    background: #f19e8e;
+    color: white;
+    border: none;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition-bounce);
+}
+
+.btn-logout-mini:hover {
+    background: #e08d7d;
+    transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .navbar-inner { padding: 0 20px; }
+    .btn-dashboard-large span { display: none; }
+    .welcome { display: none; }
+    .header-left { gap: 15px; }
+}

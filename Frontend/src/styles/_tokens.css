@@ -1,0 +1,62 @@
+/* ============================================================
+   _tokens.css — Design Tokens (CSS Variables)
+   Định nghĩa bộ màu sắc, kích thước, shadow dùng toàn app
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    /* === Brand Colors === */
+    --primary-color:  #F19E8E;     /* Salmon Pink — màu chủ đạo */
+    --primary-dark:   #d87b6a;     /* Salmon Dark — hover */
+    --accent-indigo:  #7C8AE8;     /* Lavender Blue — điểm nhấn */
+    --accent-blue:    #A7BFE8;     /* Sky Blue */
+    --accent-vip:     #6a5eee;     /* VIP Gradient Start */
+    --accent-vip-end: #a29bfe;     /* VIP Gradient End */
+
+    /* === Semantic Colors === */
+    --success:  #2bc155;
+    --danger:   #f43b3b;
+    --warning:  #ca8a04;
+    --info:     #3b82f6;
+
+    /* === Neutrals === */
+    --bg-color:    #F5F7FF;        /* Nền xanh nhạt */
+    --white:       #ffffff;
+    --text-color:  #2D3436;        /* Màu chữ chính */
+    --text-light:  #8b8f9e;        /* Màu chữ phụ */
+    --text-main:   #1a1c23;        /* Màu chữ đậm */
+    --border-color: #e2e8f0;       /* Viền mặc định */
+    --bg-muted:    #f8fafc;        /* Nền card nhạt */
+
+    /* === Shadows === */
+    --shadow-sm:    4px 4px 15px rgba(0, 0, 0, 0.03);
+    --shadow-md:    0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    --shadow-lg:    0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    --shadow-hover: 5px 10px 20px rgba(106, 94, 238, 0.15);
+    --shadow-primary: 0 5px 15px rgba(241, 158, 142, 0.3);
+
+    /* === Border Radius === */
+    --radius-xs: 8px;
+    --radius-sm: 10px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-xl: 30px;
+    --radius-full: 9999px;
+
+    /* === Transitions === */
+    --transition-fast:   all 0.2s ease;
+    --transition-base:   all 0.3s ease;
+    --transition-slow:   all 0.4s ease;
+    --transition-bounce: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    /* === Z-index Layers === */
+    --z-dropdown:  1000;
+    --z-sticky:    1020;
+    --z-modal:     10000;
+    --z-tooltip:   10100;
+
+    /* === Legacy aliases (backwards compat) === */
+    --accent-orange: #f97316;
+    --shadow-light:  4px 4px 25px rgba(0, 0, 0, 0.04);
+    --shadow-hover:  5px 10px 20px rgba(106, 94, 238, 0.15);
+}

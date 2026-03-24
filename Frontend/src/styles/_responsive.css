@@ -1,0 +1,273 @@
+/* ============================================================
+   _responsive.css — Mobile & Tablet Responsive Breakpoints
+   Áp dụng toàn app (public layout + admin layout)
+   ============================================================
+   Breakpoints:
+     Mobile:  max-width: 640px
+     Tablet:  max-width: 768px  
+     Desktop: max-width: 1024px
+   ============================================================ */
+
+/* ===================================================
+   ADMIN LAYOUT — Sidebar thu gọn trên mobile
+   =================================================== */
+@media (max-width: 768px) {
+    .dashboard-wrapper {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+    }
+
+    /* Sidebar ngang (bottom nav style) trên mobile */
+    .sidebar {
+        width: 100%;
+        height: 60px;
+        border-radius: 0;
+        flex-direction: row;
+        padding: 0 1rem;
+        justify-content: space-around;
+        order: 2; /* Đặt xuống cuối */
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        z-index: 100;
+    }
+
+    .logo-box { display: none; }
+
+    .nav-links {
+        flex-direction: row;
+        gap: 0;
+        width: 100%;
+        justify-content: space-around;
+    }
+
+    .nav-links a {
+        padding: 0 10px;
+        flex-direction: column;
+        gap: 2px;
+        font-size: 16px;
+        width: auto;
+        height: 60px;
+    }
+
+    /* Remove active bar (left) on mobile */
+    .nav-links a.active::before { display: none; }
+
+    /* Active bottom indicator */
+    .nav-links a.active::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 30px;
+        height: 3px;
+        background-color: white;
+        border-radius: 3px 3px 0 0;
+    }
+
+    .logout {
+        margin-top: 0;
+    }
+
+    .logout a {
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 10px;
+        font-size: 16px;
+        width: auto;
+    }
+
+    /* Main content full width, padding bottom cho bottom nav */
+    .main-content {
+        padding: 1rem 1rem 80px 1rem;
+        order: 1;
+        height: auto;
+        overflow-y: visible;
+    }
+
+    /* Top nav thu gọn */
+    .top-nav {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .search-bar { width: 100%; }
+}
+
+/* ===================================================
+   MANAGEMENT PAGES — Header responsive
+   =================================================== */
+@media (max-width: 768px) {
+    .header-section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .action-group {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .title-group h1 { font-size: 1.5rem; }
+
+    /* Table scroll */
+    .table-card { padding: 0.5rem; }
+
+    .modern-table th,
+    .modern-table td { padding: 0.75rem 0.5rem; font-size: 0.8rem; }
+
+    /* Form row -> single column */
+    .form-row { grid-template-columns: 1fr; }
+
+    /* Modal full-ish */
+    .modal-content {
+        max-width: calc(100vw - 2rem);
+        border-radius: 16px;
+        padding: 1.25rem;
+        margin: 1rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .modern-table th:nth-child(5),
+    .modern-table td:nth-child(5) { display: none; } /* hide less important columns */
+}
+
+/* ===================================================
+   AUTH PAGES (Login / Register) — Mobile
+   =================================================== */
+@media (max-width: 900px) {
+    .auth-right,
+    .auth-right-reg { display: none; }
+
+    .auth-card {
+        max-width: 480px;
+        border-radius: 16px;
+    }
+
+    .auth-left { flex: 1; padding: 2rem 1.5rem; }
+}
+
+@media (max-width: 480px) {
+    .auth-container { padding: 1rem; }
+    .auth-left { padding: 1.5rem 1rem; }
+    .auth-card { border-radius: 12px; }
+}
+
+/* ===================================================
+   HOMEPAGE — Navbar + Hero responsive
+   =================================================== */
+@media (max-width: 768px) {
+    .navbar { height: 56px; }
+
+    .logo-slogan { font-size: 1rem; }
+    .logo-img { height: 36px !important; }
+
+    /* Hide admin links on mobile */
+    .nav-link-resource { display: none; }
+    .btn--dashboard { display: none; }
+
+    .nav-actions { gap: 8px; }
+
+    /* hero */
+    .hero-section { padding: 80px 0 200px; }
+    .hero-title { font-size: 1.8rem; }
+    .hero-title span { font-size: 1.4rem; }
+    .hero-subtitle { font-size: 15px; }
+
+    .search-container {
+        padding: 1.5rem 1rem 2.5rem;
+        width: calc(100% - 2rem);
+        border-width: 4px;
+        bottom: -120px;
+    }
+
+    .search-inputs { flex-direction: column; gap: 10px; }
+
+    .swap-icon { padding-top: 0; transform: rotate(90deg); }
+
+    .date-slider-col { max-width: 100%; }
+    .dates-scroll-wrapper { max-width: 100%; }
+    .week-group { width: 100%; }
+
+    /* sections */
+    .popular-routes { padding: 180px 0 60px; }
+    .offers-section { padding: 60px 0 80px; }
+    .testimonials { padding: 80px 0; }
+
+    .testimonial-card {
+        flex: 0 0 calc(100vw - 3rem);
+        flex-direction: column;
+        padding: 1.5rem;
+    }
+
+    .testimonial-avatar-wrap { flex: initial; }
+    .avatar-square { width: 100px; height: 100px; }
+
+    .footer { padding: 80px 0 30px; margin-top: 80px; }
+    .footer-grid { grid-template-columns: 1fr; gap: 20px; }
+
+    .dual-cols { grid-template-columns: 1fr; gap: 30px; }
+}
+
+@media (max-width: 480px) {
+    .search-container {
+        padding: 1rem 0.75rem 2.5rem;
+        bottom: -110px;
+    }
+
+    .btn--search, .btn-search-new {
+        padding: 14px 24px;
+        font-size: 1rem;
+        height: 50px;
+    }
+
+    .hero-title { font-size: 1.5rem; }
+}
+
+/* ===================================================
+   DASHBOARD STATS — Mobile scroll
+   =================================================== */
+@media (max-width: 768px) {
+    .cards-grid {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 12px;
+        padding-bottom: 8px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .stat-card { min-width: 140px; padding: 16px; }
+    .stat-value { font-size: 22px; }
+
+    .hero-card { flex-direction: column; text-align: center; }
+    .hero-image { display: none; }
+}
+
+/* ===================================================
+   CMS MANAGEMENT — Table overflow on mobile
+   =================================================== */
+@media (max-width: 768px) {
+    .cms-section .table-container { overflow-x: auto; }
+    .cards-grid.cms-grid { flex-direction: column; }
+}
+
+/* ===================================================
+   GLOBAL — Prevent overflow on very small screens
+   =================================================== */
+@media (max-width: 360px) {
+    body { min-width: 320px; }
+    .container { padding: 0 12px; }
+}

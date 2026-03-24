@@ -1,0 +1,328 @@
+/* ============================================================
+   _buttons.css — Button System (Tái sử dụng toàn app)
+   Base + Variants + Size Modifiers
+   ============================================================ */
+
+/* === Base Button === */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--transition-base);
+    padding: 0.65rem 1.25rem;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* === Variant: Primary (Salmon Gradient) === */
+/* Dùng: Submit form, action chính, thêm mới */
+.btn--primary,
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    box-shadow: var(--shadow-primary);
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    border: none;
+}
+
+.btn--primary:hover,
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(241, 158, 142, 0.4);
+}
+
+/* === Variant: Secondary (Outline) === */
+/* Dùng: Hủy, thoát, back */
+.btn--secondary,
+.btn-secondary {
+    background: white;
+    color: #475569;
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn--secondary:hover,
+.btn-secondary:hover {
+    background: var(--bg-muted);
+    border-color: #cbd5e1;
+}
+
+/* === Variant: Ghost (Transparent) === */
+/* Dùng: Nav links, inline text actions */
+.btn--ghost {
+    background: transparent;
+    color: var(--text-color);
+    border: 1px solid transparent;
+    padding: 0.5rem 1rem;
+}
+
+.btn--ghost:hover {
+    background: var(--bg-muted);
+}
+
+/* === Variant: Danger === */
+/* Dùng: Xóa, hành động nguy hiểm */
+.btn--danger {
+    background: #fff1f2;
+    color: #e11d48;
+    border: none;
+}
+
+.btn--danger:hover {
+    background: #fee2e2;
+    transform: scale(1.05);
+}
+
+/* === Variant: VIP Dashboard (Indigo Gradient) === */
+/* Dùng: Dashboard admin button */
+.btn--dashboard,
+.btn-dashboard-vip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--accent-vip) 0%, var(--accent-vip-end) 100%);
+    color: white !important;
+    padding: 8px 18px;
+    border-radius: var(--radius-full);
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 4px 15px rgba(106, 94, 238, 0.2);
+    transition: var(--transition-bounce);
+}
+
+.btn--dashboard:hover,
+.btn-dashboard-vip:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(106, 94, 238, 0.35);
+    background: linear-gradient(135deg, #5648e6 0%, #8e84f7 100%);
+}
+
+/* === Variant: Search (Hero large CTA) === */
+/* Dùng: Nút tìm chuyến xe trên hero section */
+.btn--search,
+.btn-search-new {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 18px 45px;
+    border-radius: var(--radius-md);
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 5px 20px rgba(241, 158, 142, 0.4);
+    transition: var(--transition-base);
+    height: 60px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn--search:hover,
+.btn-search-new:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(241, 158, 142, 0.5);
+    background-color: var(--primary-dark);
+}
+
+/* === Variant: Book Now (Indigo small) === */
+/* Dùng: Nút "Đặt vé" trong route cards */
+.btn--book,
+.btn-book-now-indigo-small {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: var(--radius-md);
+    font-weight: 800;
+    font-size: 14px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.btn--book:hover,
+.btn-book-now-indigo-small:hover {
+    filter: brightness(1.2);
+    transform: scale(1.05);
+}
+
+/* === Variant: New (compact admin) === */
+/* Dùng: trong top-nav của admin, kiểu nhỏ */
+.btn--new,
+.btn-new {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(106, 94, 238, 0.2);
+}
+
+/* === Variant: Auth Nav Buttons === */
+/* Dùng: Đăng nhập / Đăng ký trong navbar trang chủ */
+.btn-login-new {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 8px 16px;
+    font-size: 0.95rem;
+    background: transparent;
+    border: 1px solid transparent;
+    transition: var(--transition-base);
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.btn-login-new:active {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn-register-new {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 6px 18px;
+    font-size: 0.9rem;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    transition: var(--transition-base);
+    cursor: pointer;
+}
+
+.btn-register-new:hover { color: rgba(255, 255, 255, 0.8); }
+.btn-register-new:active {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1.5px solid white;
+}
+
+/* Khi header scrolled — override màu */
+.navbar.scrolled .btn-register-new {
+    border-color: var(--primary-color);
+    background-color: var(--primary-color);
+    color: white !important;
+}
+
+/* === Variant: Logout === */
+.btn-logout-new {
+    background: white;
+    border: 1px solid var(--border-color);
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    font-size: 13px;
+    font-weight: 600;
+    color: #ef4444;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.btn-logout-new:hover {
+    background: #fff1f2;
+}
+
+/* === Variant: Browse (file upload) === */
+.btn-browse {
+    background: #eff6ff;
+    color: #2563eb;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    font-size: 14px;
+}
+
+.btn-browse:hover {
+    background: #dbeafe;
+}
+
+/* === Variant: Copy / Promo === */
+.btn-copy {
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.btn-copy:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* === Size Modifiers === */
+.btn--sm { padding: 0.4rem 0.85rem; font-size: 0.8rem; }
+.btn--lg { padding: 1rem 2rem; font-size: 1rem; }
+
+/* === Icon Button (36px square) === */
+/* Dùng: edit/delete icons trong bảng */
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-xs);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    font-size: 14px;
+}
+
+.btn-icon.edit   { background: #eff6ff; color: #2563eb; }
+.btn-icon.delete { background: #fff1f2; color: #e11d48; }
+.btn-icon:hover  { transform: scale(1.1); }
+
+/* === Close Button (Modal) === */
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: var(--transition-base);
+    line-height: 1;
+}
+
+.close-btn:hover { color: var(--text-color); }
+
+/* === Inline Button (small inside table) === */
+.inline-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+}

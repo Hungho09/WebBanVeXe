@@ -1,0 +1,285 @@
+/* ============================================================
+   _admin-layout.css — Admin Shell (Sidebar + TopNav + Content)
+   Áp dụng cho AdminLayout component và các trang quản lý
+   ============================================================ */
+
+/* === Dashboard Shell Wrapper === */
+.dashboard-wrapper {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--bg-color);
+}
+
+/* === Left Sidebar === */
+.sidebar {
+    width: 100px;
+    background-color: var(--primary-color);
+    /* Bỏ bo góc để sidebar tràn hết mép trái */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 0;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    flex-shrink: 0;
+    height: 100vh;
+}
+
+/* Logo box in sidebar */
+.logo-box {
+    width: 60px;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 50px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: var(--transition-bounce);
+}
+
+.logo-box img {
+    height: 35px;
+    width: auto;
+    margin: 0 !important; /* Center the logo icon */
+}
+
+/* Logo text next to logo-box icon */
+.logo-text {
+    display: none;
+    /* hidden on narrow sidebar */
+}
+
+/* === Sidebar Nav Links === */
+.nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 100%;
+}
+
+.nav-links a {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 20px;
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 15px 0;
+    transition: var(--transition-base);
+    position: relative;
+    cursor: pointer;
+}
+
+.nav-links a.active,
+.nav-links a:hover {
+    color: white;
+}
+
+/* Active indicator bar */
+.nav-links a.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 30px;
+    background-color: white;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+/* === Sidebar Logout === */
+.logout {
+    margin-top: auto;
+}
+
+.logout a {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 20px;
+    transition: var(--transition-base);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 15px 0;
+}
+
+.logout a:hover {
+    color: white;
+}
+
+/* === Main Content Area === */
+.admin-main-content {
+    flex: 1;
+    padding: 50px; /* Khôi phục padding 50px toàn bộ cho Admin Dashboard */
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* === Top Navigation Bar (Admin) === */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-shrink: 0;
+}
+
+/* Search in top nav */
+.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    width: 300px;
+    gap: 10px;
+}
+
+.search-bar i {
+    color: #94a3b8;
+}
+
+.search-bar input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 14px;
+    color: var(--text-color);
+    width: 100%;
+}
+
+/* === Nav Actions (top right) === */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.dropdown {
+    color: var(--primary-color);
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* === User Profile Widget (homepage navbar) === */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f8fafc;
+    padding: 5px 5px 5px 15px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-color);
+}
+
+/* === Admin Profile Button === */
+.btn-profile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: var(--radius-full);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.btn-profile:hover {
+    box-shadow: var(--shadow-sm);
+}
+
+/* === Content Body (router-outlet wrapper) === */
+.content-body {
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* === Management Page Header Section === */
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.title-group h1 {
+    font-size: 2rem;
+    color: #1a1c23;
+    margin: 0;
+    font-weight: 700;
+}
+
+.title-group p {
+    color: #6b7280;
+    margin: 0.25rem 0 0;
+}
+
+.action-group {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+/* === Management page container === */
+.mgmt-container {
+    padding: 0 2rem;
+}
+
+.mgmt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+/* === Dashboard Stats Card === */
+.dashboard-content {
+    flex: 1;
+}
+
+.hero-card {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #7C8AE8 100%);
+    border-radius: 24px;
+    padding: 2rem 2.5rem;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.hero-card h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.hero-card p {
+    opacity: 0.9;
+    font-size: 1rem;
+}
+
+.hero-card span {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.hero-image {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+}

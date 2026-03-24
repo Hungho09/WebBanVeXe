@@ -1,0 +1,26 @@
+/* ============================================================
+   styles/index.css — Entry Point (thay thế src/styles.css)
+   Import tất cả modules theo thứ tự ưu tiên
+   ============================================================
+
+   Thứ tự:
+   1. Tokens    — CSS variables (phải đầu tiên)
+   2. Reset     — normalize browser defaults
+   3. Utilities — helper classes
+   4. Buttons   — button system
+   5. Forms     — input/select/toggle
+   6. Modal     — overlay + dialog
+   7. Table     — data table + badges
+   8. Admin     — admin shell layout
+*/
+
+@import './_tokens.css';
+@import './_reset.css';
+@import './_utilities.css';
+@import './_buttons.css';
+@import './_forms.css';
+@import './_modal.css';
+@import './_table.css';
+@import './_admin-layout.css';
+@import './_responsive.css';
+

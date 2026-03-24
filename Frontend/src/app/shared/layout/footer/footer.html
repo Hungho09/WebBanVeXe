@@ -1,0 +1,71 @@
+<!-- ========================================================
+     app-footer — Footer trang chủ (public layout)
+     Sử dụng: Homepage
+     ======================================================== -->
+<footer class="footer">
+    <div class="container footer-grid">
+
+        <!-- Col 1: Brand -->
+        <div class="foot-col">
+            <div class="logo foot-logo pointer-cursor" (click)="navigateTo('/')">
+                <img src="/assets/bus.png" alt="Logo" style="height: 25px; margin-right: 8px;">
+                Codenhalam-WebBanVeXe
+            </div>
+            <p class="foot-desc">
+                Hệ thống đặt vé xe khách trực tuyến tiên phong, mang lại trải nghiệm
+                tiện lợi và an toàn cho mọi chuyến đi.
+            </p>
+            <div class="socials">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+            </div>
+        </div>
+
+        <!-- Col 2: Về chúng tôi -->
+        <div class="foot-col">
+            <h4>Về Chúng Tôi</h4>
+            <ul>
+                <li><a href="#">Giới thiệu Codenhalam</a></li>
+                <li><a href="#">Quy chế hoạt động</a></li>
+                <li><a href="#">Bảo mật thông tin</a></li>
+                <li><a href="#">Giải quyết tranh chấp</a></li>
+            </ul>
+        </div>
+
+        <!-- Col 3: Hỗ trợ -->
+        <div class="foot-col">
+            <h4>Hỗ Trợ Hành Khách</h4>
+            <ul>
+                <li><a href="#">Hướng dẫn đặt vé</a></li>
+                <li><a href="#">Câu hỏi thường gặp</a></li>
+                <li><a href="#">Chính sách hủy vé</a></li>
+                <li><a href="#">Tổng đài: 1900 1009</a></li>
+            </ul>
+        </div>
+
+        <!-- Col 4: Đối tác & App -->
+        <div class="foot-col">
+            <h4>Đối Tác</h4>
+            <ul>
+                <li><a href="#">Đăng ký nhà xe mới</a></li>
+                <li><a href="#">Phần mềm quản lý đại lý</a></li>
+            </ul>
+            <div class="download-app mt-4">
+                <h4>Tải Ứng Dụng</h4>
+                <div class="app-badges flex gap-3 mt-2">
+                    <i class="fab fa-apple fa-2x text-white"></i>
+                    <i class="fab fa-google-play fa-2x text-white"></i>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="footer-bottom">
+        <div class="container text-center">
+            <p>&copy; 2026 Codenhalam - WebBanVeXe. All rights reserved.</p>
+        </div>
+    </div>
+</footer>

@@ -1,0 +1,110 @@
+/* ============================================================
+   footer.css — Homepage Public Footer
+   ============================================================ */
+
+.footer {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url('/assets/bvx15.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 80px 0 50px;
+    margin-top: 0; /* Loại bỏ khoảng trắng giữa section cuối và footer */
+    position: relative;
+}
+
+.footer .container {
+    max-width: 1510px;
+    margin: 0 auto;
+}
+
+/* Grid layout — 4 columns */
+.footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+/* Column styles */
+.foot-col h4 {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.foot-logo {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: white !important;
+    display: flex;
+    align-items: center;
+}
+
+.foot-desc {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 20px;
+    padding-right: 30px;
+}
+
+.foot-col ul {
+    list-style: none;
+}
+
+.foot-col ul li {
+    margin-bottom: 12px;
+}
+
+.foot-col ul a {
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    font-size: 15px;
+    transition: var(--transition-base);
+}
+
+.foot-col ul a:hover {
+    color: white;
+}
+
+/* Social icons */
+.socials a {
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    justify-content: center;
+    align-items: center;
+    margin-right: 10px;
+    text-decoration: none;
+    transition: var(--transition-base);
+}
+
+.socials a:hover {
+    background-color: var(--accent-indigo);
+    transform: translateY(-3px);
+}
+
+/* App badges */
+.download-app h4 { color: rgba(255, 255, 255, 0.9); }
+
+/* Bottom copyright bar */
+.footer-bottom {
+    background-color: #1a1a24;
+    padding: 20px 0;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+    .footer-grid { grid-template-columns: 1fr; }
+}
