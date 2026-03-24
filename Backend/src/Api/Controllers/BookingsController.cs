@@ -1,17 +1,11 @@
 using System;
 using System.Threading.Tasks;
 using Application.Interfaces;
+using Application.DTOs.Booking;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
-    public class CreateBookingDto
-    {
-        public string UserId { get; set; } = string.Empty;
-        public Guid TripId { get; set; }
-        public Guid[] SeatIds { get; set; } = Array.Empty<Guid>();
-    }
-
     [Route("api/[controller]")]
     [ApiController]
     public class BookingsController : ControllerBase
@@ -46,18 +40,33 @@ namespace Api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBooking([FromBody] CreateBookingDto request)
         {
-            if (request == null || request.SeatIds == null || request.SeatIds.Length == 0)
+            if (request == null || request.SeatIds == null || request.SeatIds.Count == 0)
                 return BadRequest(new { message = "Dữ liệu đặt vé không hợp lệ." });
 
             try
             {
-                var bookingId = await _bookingService.CreateBookingAsync(request.UserId, request.TripId, request.SeatIds);
-                return Ok(new { bookingId, message = "Đặt vé thành công." });
+                var response = await _bookingService.CreateBookingAsync(request);
+                return Ok(response);
             }
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBooking(Guid id)
+        {
+            var booking = await _bookingService.GetBookingByIdAsync(id);
+            if (booking == null) return NotFound();
+            return Ok(booking);
+        }
+
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetUserBookings(Guid userId)
+        {
+            var history = await _bookingService.GetUserBookingHistoryAsync(userId);
+            return Ok(history);
         }
     }
 }
