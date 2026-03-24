@@ -1,9 +1,9 @@
 using System;
 using Domain.Enums;
 
-namespace Domain.Entities
+namespace Application.DTOs.Invoice
 {
-    public class Invoice
+    public class InvoiceDto
     {
         public Guid Id { get; set; }
         public string InvoiceNumber { get; set; } = string.Empty;
@@ -11,9 +11,7 @@ namespace Domain.Entities
         public string CustomerName { get; set; } = string.Empty;
         public string CustomerEmail { get; set; } = string.Empty;
         public decimal TotalAmount { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public InvoiceStatus Status { get; set; } = InvoiceStatus.Pending;
-
-        public Booking? Booking { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string Status { get; set; } = string.Empty;
     }
 }
