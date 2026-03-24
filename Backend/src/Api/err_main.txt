@@ -1,0 +1,15 @@
+﻿D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Services\BookingService.cs(1,24): error CS0234: The type or namespace name 'Booking' does not exist in the namespace 'Application.DTOs' (are you missing an assembly reference?) [D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Infrastructure.csproj]
+D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Services\BookingService.cs(14,35): error CS0246: The type or namespace name 'IBookingService' could not be found (are you missing a using directive or an assembly reference?) [D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Infrastructure.csproj]
+D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Services\BookingService.cs(16,26): error CS0246: The type or namespace name 'IBookingRepository' could not be found (are you missing a using directive or an assembly reference?) [D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Infrastructure.csproj]
+D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Services\BookingService.cs(19,31): error CS0246: The type or namespace name 'IBookingRepository' could not be found (are you missing a using directive or an assembly reference?) [D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Infrastructure.csproj]
+D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Services\BookingService.cs(25,66): error CS0246: The type or namespace name 'CreateBookingDto' could not be found (are you missing a using directive or an assembly reference?) [D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Infrastructure.csproj]
+D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Services\BookingService.cs(25,27): error CS0246: The type or namespace name 'BookingResponseDto' could not be found (are you missing a using directive or an assembly reference?) [D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Infrastructure.csproj]
+D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Services\BookingService.cs(74,27): error CS0246: The type or namespace name 'BookingResponseDto' could not be found (are you missing a using directive or an assembly reference?) [D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Infrastructure.csproj]
+D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Services\BookingService.cs(80,39): error CS0246: The type or namespace name 'BookingResponseDto' could not be found (are you missing a using directive or an assembly reference?) [D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Infrastructure.csproj]
+D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Services\BookingService.cs(107,17): error CS0246: The type or namespace name 'BookingResponseDto' could not be found (are you missing a using directive or an assembly reference?) [D:\Codenhalam-WebBanVeXe\Backend\src\Infrastructure\Infrastructure.csproj]
+
+Build FAILED.
+    0 Warning(s)
+    9 Error(s)
+
+Time Elapsed 00:00:01.84

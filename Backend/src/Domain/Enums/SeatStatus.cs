@@ -5,6 +5,7 @@ namespace Domain.Enums
                 Available = 0,
                 Reserved = 1,
                 Booked = 2,
-                Maintenance = 3
+                Maintenance = 3,
+                Locked = 4
         }
 }

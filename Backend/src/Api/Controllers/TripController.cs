@@ -77,8 +77,6 @@ namespace Api.Controllers
             if (!success) return NotFound();
             return NoContent();
         }
-<<<<<<< HEAD
-=======
 
         [HttpGet("{id}/seats")]
         public async Task<ActionResult<IEnumerable<SeatDto>>> GetSeats(Guid id)
@@ -102,6 +100,5 @@ namespace Api.Controllers
             if (!success) return BadRequest(new { message = "Seat could not be unlocked." });
             return Ok(new { message = "Seat unlocked successfully" });
         }
->>>>>>> db65e05 (thêm cơ chế khóa ghế và tự động mở khóa)
     }
 }
