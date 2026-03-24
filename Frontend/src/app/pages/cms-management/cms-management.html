@@ -1,0 +1,223 @@
+<!-- START ADMIN CMS SECTION -->
+<div class="cms-section" *ngIf="isAdmin">
+    <div class="cms-header">
+        <h3>Quản lý Nội dung Trang chủ (Admin CMS)</h3>
+        <p>Chỉnh sửa Tuyến phổ biến, Ưu đãi, Thông báo và Nhận xét khách hàng hiển thị tại Trang Chủ</p>
+    </div>
+
+    <div class="cards-grid">
+        
+        <!-- POPULAR ROUTES -->
+        <div class="stat-card">
+            <div class="card-title-row">
+                <h4>Tuyến Đường Phổ Biến</h4>
+                <button class="btn-cms-add" (click)="addPopularRoute()"><i class="fas fa-plus"></i> Thêm tuyến</button>
+            </div>
+            <div class="table-container">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Liên kết tuyến (Core)</th>
+                            <th>Tên hiển thị</th>
+                            <th style="width: 250px;">Ảnh (URL / Duyệt file)</th>
+                            <th>Giá & K.C / T.Gian</th>
+                            <th>Badge</th>
+                            <th class="col-delete">Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let pr of popularRoutes; let i = index">
+                            <td>
+                                <select [(ngModel)]="pr.routeId">
+                                    <option value="">-- Tùy chỉnh (Không link) --</option>
+                                    <option *ngFor="let r of availableRoutes" [value]="r.id">{{r.origin}} - {{r.destination}}</option>
+                                </select>
+                            </td>
+                             <td><input type="text" [(ngModel)]="pr.routeName" placeholder="Vd: Sài Gòn -> Đà Lạt"></td>
+                              <td class="flex-cell">
+                                  <input type="text" [(ngModel)]="pr.imageUrl" placeholder="Nhập URL..." class="w-120">
+                                  <button class="btn-browse" (click)="triggerFileUpload('filePr' + i)" title="Tải ảnh"><i class="fas fa-folder-open"></i></button>
+                                  <button class="btn-browse" *ngIf="pr.imageUrl" (click)="openAlignModal(pr, 'route')" title="Căn chỉnh"><i class="fas fa-expand-arrows-alt"></i></button>
+                                  <input type="file" [id]="'filePr' + i" (change)="onFileSelected($event, pr, 'route')" hidden accept="image/*">
+                              </td>
+
+                            <td>
+                                <input type="text" [(ngModel)]="pr.mockPrice" placeholder="Giá..." class="w-80 mb-5">
+                                <input type="text" [(ngModel)]="pr.mockTime" placeholder="T.gian..." class="w-80">
+                            </td>
+                            <td><input type="text" [(ngModel)]="pr.badgeText" placeholder="Vd: -10%" class="w-80"></td>
+                            <td class="col-delete"><button class="btn-icon delete" (click)="removePopularRoute(i)"><i class="fas fa-trash-alt"></i></button></td>
+                        </tr>
+                        <tr *ngIf="popularRoutes.length > 0">
+                            <td colspan="7" class="text-right">
+                                <button class="btn-cms-save" (click)="savePopularRoutes()"><i class="fas fa-save"></i> Ghi nhận Tuyến</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PROMOTIONS -->
+        <div class="stat-card">
+            <div class="card-title-row">
+                <h4>Ưu Đãi Nổi Bật</h4>
+                <button class="btn-cms-add" (click)="addPromo()"><i class="fas fa-plus"></i> Thêm ưu đãi</button>
+            </div>
+            <div class="table-container">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Icon (FA)</th>
+                            <th>Tiêu đề</th>
+                            <th>Mô tả</th>
+                            <th>Mã / Button</th>
+                            <th>Màu nền Icon</th>
+                            <th class="col-delete">Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let p of promos; let i = index">
+                            <td><input type="text" [(ngModel)]="p.icon" class="w-120"></td>
+                            <td><input type="text" [(ngModel)]="p.title" class="w-full"></td>
+                            <td><input type="text" [(ngModel)]="p.description" class="w-180"></td>
+                            <td>
+                                <input type="text" [(ngModel)]="p.code" placeholder="Mã..." class="w-80 mb-5">
+                                <input type="text" [(ngModel)]="p.buttonText" placeholder="Nút..." class="w-80">
+                            </td>
+                            <td><input type="text" [(ngModel)]="p.color" placeholder="Vd: bg-orange" class="w-100"></td>
+                            <td class="col-delete"><button class="btn-icon delete" (click)="removePromo(i)"><i class="fas fa-trash-alt"></i></button></td>
+                        </tr>
+                        <tr *ngIf="promos.length > 0">
+                            <td colspan="6" class="text-right"><button class="btn-cms-save" (click)="savePromos()"><i class="fas fa-save"></i> Ghi nhận Ưu đãi</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- NOTICES -->
+        <div class="stat-card">
+            <div class="card-title-row">
+                <h4>Thông Báo Mới</h4>
+                <button class="btn-cms-add" (click)="addNotice()"><i class="fas fa-plus"></i> Thêm thông báo</button>
+            </div>
+            <div class="table-container">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Thời gian</th>
+                            <th>Tiêu đề thông báo</th>
+                            <th>Liên kết</th>
+                            <th class="col-delete">Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let n of notices; let i = index">
+                            <td><input type="text" [(ngModel)]="n.dateStr" placeholder="Vd: Hôm nay" class="w-120"></td>
+                            <td><input type="text" [(ngModel)]="n.title" class="w-250"></td>
+                            <td><input type="text" [(ngModel)]="n.link" class="w-150"></td>
+                            <td class="col-delete"><button class="btn-icon delete" (click)="removeNotice(i)"><i class="fas fa-trash-alt"></i></button></td>
+                        </tr>
+                        <tr *ngIf="notices.length > 0">
+                            <td colspan="4" class="text-right"><button class="btn-cms-save" (click)="saveNotices()"><i class="fas fa-save"></i> Ghi nhận Thông báo</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TESTIMONIALS -->
+        <div class="stat-card">
+            <div class="card-title-row">
+                <h4>Khách Hàng Nói Gì Về Chúng Tôi</h4>
+                <button class="btn-cms-add" (click)="addTestimonial()"><i class="fas fa-plus"></i> Thêm đánh giá</button>
+            </div>
+            <div class="table-container">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Khách hàng</th>
+                             <th>Chức vụ / Vai trò</th>
+                             <th style="width: 250px;">Avatar (URL / Duyệt file)</th>
+                              <th>Nội dung đánh giá</th>
+                             <th class="col-delete">Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let t of testimonials; let i = index">
+                            <td><input type="text" [(ngModel)]="t.name" class="w-150"></td>
+                             <td><input type="text" [(ngModel)]="t.role" class="w-150"></td>
+                              <td class="flex-cell">
+                                  <input type="text" [(ngModel)]="t.avatar" placeholder="Nhập URL..." class="w-120">
+                                  <button class="btn-browse" (click)="triggerFileUpload('fileT' + i)" title="Tải ảnh"><i class="fas fa-folder-open"></i></button>
+                                  <button class="btn-browse" *ngIf="t.avatar" (click)="openAlignModal(t, 'testimonial')" title="Căn chỉnh"><i class="fas fa-expand-arrows-alt"></i></button>
+                                  <input type="file" [id]="'fileT' + i" (change)="onFileSelected($event, t, 'testimonial')" hidden accept="image/*">
+                              </td>
+
+                              <td><textarea [(ngModel)]="t.comment" rows="2" class="w-250"></textarea></td>
+                            <td class="col-delete"><button class="btn-icon delete" (click)="removeTestimonial(i)"><i class="fas fa-trash-alt"></i></button></td>
+                        </tr>
+                        <tr *ngIf="testimonials.length > 0">
+                            <td colspan="5" class="text-right"><button class="btn-cms-save" (click)="saveTestimonials()"><i class="fas fa-save"></i> Ghi nhận Đánh giá</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADVANCED ALIGNMENT MODAL -->
+    <div class="align-modal-overlay" *ngIf="showAlignModal">
+        <div class="align-modal-card">
+            <div class="modal-header">
+                <h4>Căn chỉnh hình ảnh nâng cao</h4>
+                <button class="btn-close" (click)="closeAlignModal()">&times;</button>
+            </div>
+            <div class="modal-body-align">
+                <div class="frame-preview-giant" 
+                     [class.route-frame]="alignType === 'route'"
+                     [class.testimonial-frame]="alignType === 'testimonial'">
+                    <div class="img-render-layer"
+                         [style.background-image]="'url(' + (alignTarget.imageUrl || alignTarget.avatar || 'https://via.placeholder.com/350') + ')'"
+                         [style.background-size]="(alignTarget.zoom || 100) + '%'"
+                         [style.background-position]="(50 + (alignTarget.offsetX || 0)) + '% ' + (50 + (alignTarget.offsetY || 0)) + '%'"
+                         style="width: 100%; height: 100%; background-repeat: no-repeat; transition: none;">
+                    </div>                </div>
+
+                <div class="align-controls">
+                    <p class="guide-text"><i class="fas fa-info-circle"></i> Kéo thanh trượt để phóng to và di chuyển ảnh trong khung hình.</p>
+                    
+                    <div class="control-group">
+                        <label><i class="fas fa-search-plus"></i> Độ phóng (Zoom)</label>
+                        <div class="slider-wrap">
+                            <input type="range" [(ngModel)]="alignTarget.zoom" min="100" max="400" step="1">
+                            <span>{{ alignTarget.zoom }}%</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label><i class="fas fa-arrows-alt-h"></i> Vị trí Ngang (Trái/Phải)</label>
+                        <div class="slider-wrap">
+                            <input type="range" [(ngModel)]="alignTarget.offsetX" min="-50" max="50" step="1">
+                            <span>{{ alignTarget.offsetX || 0 }}%</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label><i class="fas fa-arrows-alt-v"></i> Vị trí Dọc (Lên/Xuống)</label>
+                        <div class="slider-wrap">
+                            <input type="range" [(ngModel)]="alignTarget.offsetY" min="-50" max="50" step="1">
+                            <span>{{ alignTarget.offsetY || 0 }}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-primary" (click)="closeAlignModal()">Hoàn tất căn chỉnh</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END ADMIN CMS SECTION -->

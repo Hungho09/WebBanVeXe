@@ -1,224 +1,173 @@
+/* ============================================================
+   user-management.css — Styles riêng trang quản lý người dùng
+   Giữ lại: mgmt table phong cách riêng, avatar gradient, status-indicator
+   ============================================================ */
+
+/* Container với padding rộng hơn mặc định */
 .mgmt-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 80px 40px;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 2rem 0;
 }
 
+/* Card wrapper bọc table */
 .mgmt-card {
-  background: white;
-  border-radius: 30px;
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.02);
+    background: white;
+    border-radius: 1.75rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(0,0,0,0.02);
+    overflow: hidden;
 }
 
+/* Table riêng có padding to hơn standard */
 .mgmt-table {
-  width: 100%;
-  border-collapse: collapse;
+    width: 100%;
+    border-collapse: collapse;
 }
 
 .mgmt-table th {
-  text-align: left;
-  padding: 20px 25px;
-  background: #f8fafc;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #64748b;
-  font-weight: 800;
-  border-bottom: 1px solid #f1f5f9;
+    text-align: left;
+    padding: 1.25rem 1.5rem;
+    background: #f8fafc;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    font-weight: 700;
+    border-bottom: 1px solid #f1f5f9;
 }
 
 .mgmt-table td {
-  padding: 20px 25px;
-  border-bottom: 1px solid #f8fafc;
-  vertical-align: middle;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #f8fafc;
+    vertical-align: middle;
 }
 
+.mgmt-table tbody tr:hover { background: #f8fafc; }
+.mgmt-table tbody tr:last-child td { border-bottom: none; }
+
+/* Avatar gradient circle (user-specific) */
 .avatar-circle {
-  width: 44px;
-  height: 44px;
-  background: linear-gradient(135deg, #6a5eee 0%, #a29bfe 100%);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 18px;
-  box-shadow: 0 5px 15px rgba(106, 94, 238, 0.2);
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, var(--accent-vip) 0%, var(--accent-vip-end) 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    box-shadow: 0 5px 15px rgba(106, 94, 238, 0.2);
 }
 
-.badge {
-  padding: 6px 14px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.badge.admin { background: #fef2f2; color: #ef4444; }
-.badge.employee { background: #fffbeb; color: #f59e0b; }
-.badge.customer { background: #f0fdf4; color: #10b981; }
-
+/* Status indicator (pulse dot) */
 .status-indicator {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #94a3b8;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #94a3b8;
 }
 
-.status-indicator.active {
-  color: #10b981;
-}
+.status-indicator.active { color: var(--success); }
 
 .status-indicator::before {
-  content: '';
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #94a3b8;
+    content: '';
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #94a3b8;
+    flex-shrink: 0;
 }
 
 .status-indicator.active::before {
-  background: #10b981;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    background: var(--success);
+    box-shadow: 0 0 8px rgba(43, 193, 85, 0.5);
 }
 
+/* Primary action button (indigo gradient) */
 .btn-primary-mgmt {
-  background: linear-gradient(135deg, #6a5eee 0%, #483ed8 100%);
-  color: white;
-  padding: 12px 24px;
-  border-radius: 16px;
-  font-weight: 800;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 10px 20px rgba(106, 94, 238, 0.3);
+    background: linear-gradient(135deg, var(--accent-vip) 0%, #483ed8 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition-bounce);
+    box-shadow: 0 8px 16px rgba(106, 94, 238, 0.25);
+    font-size: 0.9rem;
 }
 
 .btn-primary-mgmt:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(106, 94, 238, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 14px 24px rgba(106, 94, 238, 0.35);
 }
 
-.btn-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 14px;
-}
+/* Icon buttons (btn-edit / btn-delete override) */
+.btn-edit   { background: #f1f5f9 !important; color: #475569 !important; }
+.btn-delete { background: #fef2f2 !important; color: #ef4444 !important; }
+.btn-edit:hover   { background: #e2e8f0 !important; }
+.btn-delete:hover { background: #fee2e2 !important; }
 
-.btn-edit { background: #f1f5f9; color: #475569; }
-.btn-edit:hover { background: #e2e8f0; color: #0f172a; }
-
-.btn-delete { background: #fef2f2; color: #ef4444; }
-.btn-delete:hover { background: #fee2e2; color: #dc2626; }
-
-/* Modal Styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(8px);
-  z-index: 20000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: fadeIn 0.3s ease;
-}
-
+/* Modal (user-management specific: .modal-card wrapper) */
 .modal-card {
-  background: white;
-  max-width: 650px;
-  width: 90%;
-  border-radius: 30px;
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-  animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: white;
+    max-width: 620px;
+    width: 90%;
+    border-radius: 1.75rem;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.modal-header {
-  padding: 25px 35px;
-  background: #f8fafc;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #f1f5f9;
+.modal-header-padded {
+    padding: 1.5rem 2rem;
+    background: #f8fafc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
 }
 
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 30px;
-  cursor: pointer;
-  color: #94a3b8;
-}
+.modal-body { padding: 2rem; }
 
-.modal-body {
-  padding: 35px;
-}
-
-.form-group label {
-  display: block;
-  font-size: 14px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  color: #475569;
-}
-
-.form-group input, .form-group select {
-  width: 100%;
-  padding: 14px 18px;
-  background: #f8fafc;
-  border: 2px solid #f1f5f9;
-  border-radius: 14px;
-  outline: none;
-  font-size: 15px;
-  transition: all 0.3s;
-}
-
-.form-group input:focus {
-  border-color: #6a5eee;
-  background: white;
-  box-shadow: 0 0 0 4px rgba(106, 94, 238, 0.1);
-}
-
+/* Cancel / Save buttons in modal */
 .btn-cancel {
-  background: #f1f5f9;
-  padding: 12px 25px;
-  border-radius: 14px;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
+    background: #f1f5f9;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition-fast);
 }
+
+.btn-cancel:hover { background: #e2e8f0; }
 
 .btn-save {
-  background: #6a5eee;
-  color: white;
-  padding: 12px 35px;
-  border-radius: 14px;
-  font-weight: 800;
-  border: none;
-  cursor: pointer;
+    background: var(--accent-vip);
+    color: white;
+    padding: 0.75rem 2rem;
+    border-radius: var(--radius-md);
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition-base);
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+.btn-save:hover { filter: brightness(1.1); }
 
 @keyframes slideUp {
-  from { transform: translateY(50px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+    from { transform: translateY(50px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .mgmt-container { padding: 1rem 0; }
+    .mgmt-table th,
+    .mgmt-table td { padding: 0.75rem 0.875rem; font-size: 0.8rem; }
+    .modal-card { max-width: calc(100vw - 2rem); border-radius: var(--radius-lg); }
+    .modal-body { padding: 1.25rem; }
 }

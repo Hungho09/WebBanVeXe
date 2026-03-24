@@ -2,18 +2,18 @@
     <header class="header-section">
       <div class="title-group">
         <h1>Quản lý đội xe</h1>
-        <p>Hệ thống quản lý phương tiện vận tải hiện đại</p>
+        <p>Quản lý biển số, loại xe và sức chứa hành khách trong hệ thống</p>
       </div>
-      <div class="action-group">
-        <div class="search-box">
-          <i class="fas fa-search"></i>
-          <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Tìm theo biển số, nhà xe hoặc loại xe...">
+        <div class="action-group">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Tìm theo biển số hoặc loại xe...">
+          </div>
+          <button class="btn-primary" (click)="openAddModal()">
+            <i class="fas fa-plus"></i> Thêm xe mới
+          </button>
         </div>
-        <button class="btn-primary" (click)="openAddModal()">
-          <i class="fas fa-plus"></i> Thêm xe mới
-        </button>
-      </div>
-    </header>
+      </header>
   
     <div class="bus-grid">
       <div class="bus-card" *ngFor="let bus of filteredList">

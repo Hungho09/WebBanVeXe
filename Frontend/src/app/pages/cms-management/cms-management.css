@@ -1,0 +1,187 @@
+/* ============================================================
+   cms-management.css — Nâng cấp giao diện CMS Dashboard
+   ============================================================ */
+
+.cms-section {
+    animation: fadeInUp 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    max-width: 1510px;
+    margin: 0 auto;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Header style chuyên nghiệp hơn */
+.cms-header {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 24px;
+    margin-bottom: 30px;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    position: relative;
+    overflow: hidden;
+}
+
+.cms-header::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 6px;
+    background: linear-gradient(to bottom, #6366f1, #a855f7);
+}
+
+.cms-header h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 850;
+    color: #1e293b;
+    letter-spacing: -0.5px;
+}
+
+.cms-header p {
+    color: #94a3b8;
+    font-size: 15px;
+    margin-top: 8px;
+}
+
+/* CMS Card - Modern White */
+.stat-card {
+    background: white;
+    border-radius: 24px;
+    padding: 35px;
+    margin-bottom: 35px;
+    border: 1px solid rgba(0,0,0,0.03);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+}
+
+.card-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 1.5px solid #f1f5f9;
+    padding-bottom: 15px;
+}
+
+.card-title-row h4 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Inputs & Selects — Modern UI */
+.modern-table input, 
+.modern-table select, 
+.modern-table textarea {
+    background: #f8fafc;
+    border: 1.5px solid #f1f5f9;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #334155;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.modern-table input:focus {
+    background: white;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    outline: none;
+}
+
+/* Table Enhancements */
+.modern-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-top: -10px; }
+.modern-table th { padding: 15px; font-weight: 700; color: #64748b; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; text-align: left; }
+.modern-table td { padding: 10px 15px; vertical-align: middle; background: white; }
+.modern-table tr:hover td { background: #fcfdfe; }
+
+/* === BUTTON VARIANTS for CMS === */
+
+/* Nút Xanh Lá (Ghi nhận/Lưu) */
+.btn-cms-save {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 12px 28px;
+    border-radius: 14px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-cms-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(16, 185, 129, 0.3);
+    filter: brightness(1.1);
+}
+
+/* Nút Thêm Mới (Indigo) */
+.btn-cms-add {
+    background: #f0f3ff;
+    color: #6366f1;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 700;
+    border: 1.5px solid #e0e7ff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-cms-add:hover {
+    background: #6366f1;
+    color: white;
+    border-color: #6366f1;
+}
+
+/* Width Helpers */
+.w-80  { width: 80px !important; }
+.w-100 { width: 100px !important; }
+.w-120 { width: 120px !important; }
+.w-150 { width: 150px !important; }
+.w-180 { width: 180px !important; }
+.w-250 { width: 250px !important; }
+
+/* Layout Helpers */
+.flex-cell { display: flex; align-items: center; gap: 8px; }
+.col-delete { width: 60px; text-align: center; }
+
+/* Modal Align - Nâng cấp */
+.align-modal-card {
+    background: white;
+    border-radius: 32px;
+    box-shadow: 0 30px 60px rgba(15, 23, 42, 0.3);
+}
+
+.modal-header {
+    padding: 25px 35px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h4 { margin: 0; font-size: 20px; font-weight: 900; color: #1e293b; }
+
+.frame-preview-giant {
+    border: 8px solid #fff;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    background: #f1f5f9;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .modern-table { display: block; overflow-x: auto; }
+}

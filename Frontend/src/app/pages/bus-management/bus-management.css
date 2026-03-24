@@ -475,3 +475,22 @@ input:checked + .slider:before { transform: translateX(22px); }
 
 .no-data-card i { font-size: 4rem; color: #d1d5db; margin-bottom: 1.5rem; display: block; }
 .no-data-card p { font-size: 1.125rem; color: #6b7280; font-weight: 500; }
+
+/* Error validation */
+.error-msg {
+    color: var(--danger);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+/* Checkbox */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: #475569;
+}
+
+.checkbox-container input { width: auto !important; }
