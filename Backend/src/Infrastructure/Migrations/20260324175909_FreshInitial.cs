@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialSQLite : Migration
+    public partial class FreshInitial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -25,6 +25,21 @@ namespace Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BusTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CmsConfigs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ConfigKey = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    ContentJson = table.Column<string>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CmsConfigs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -92,7 +107,7 @@ namespace Infrastructure.Migrations
                     ImageUrl = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
                     BusTypeId = table.Column<Guid>(type: "TEXT", nullable: false),
                     SeatCount = table.Column<int>(type: "INTEGER", nullable: false),
-                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Status = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -125,7 +140,7 @@ namespace Infrastructure.Migrations
                         column: x => x.BusTypeId,
                         principalTable: "BusTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -218,8 +233,7 @@ namespace Infrastructure.Migrations
                     TripId = table.Column<Guid>(type: "TEXT", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "TEXT", precision: 18, scale: 2, nullable: false),
                     BookingStatus = table.Column<int>(type: "INTEGER", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    TripId1 = table.Column<Guid>(type: "TEXT", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -230,11 +244,6 @@ namespace Infrastructure.Migrations
                         principalTable: "Trips",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Bookings_Trips_TripId1",
-                        column: x => x.TripId1,
-                        principalTable: "Trips",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Bookings_Users_UserId",
                         column: x => x.UserId,
@@ -273,10 +282,13 @@ namespace Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    BookingId = table.Column<Guid>(type: "TEXT", nullable: false),
                     InvoiceNumber = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
-                    IssuedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    TotalAmount = table.Column<decimal>(type: "TEXT", precision: 18, scale: 2, nullable: false)
+                    BookingId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CustomerName = table.Column<string>(type: "TEXT", nullable: false),
+                    CustomerEmail = table.Column<string>(type: "TEXT", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "TEXT", precision: 18, scale: 2, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Status = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -349,9 +361,111 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "CmsConfigs",
+                columns: new[] { "Id", "ConfigKey", "ContentJson", "UpdatedAt" },
+                values: new object[] { 1, "homepage_v1", "{}", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc) });
+
+            migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreatedAt", "Email", "FullName", "IsActive", "PasswordHash", "PhoneNumber", "Role", "UserName" },
                 values: new object[] { new Guid("11111111-1111-1111-1111-111111111111"), new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin@vexesystem.com", "System Administrator", true, "$2a$11$0nK18Qc7D8N94B3U3P6S/OGfN9f4v.T2H6zH/r4O/C5v.Q/b4XvG6", "0123456789", "Admin", "admin" });
+
+            migrationBuilder.InsertData(
+                table: "SeatTemplates",
+                columns: new[] { "Id", "BusTypeId", "ColumnNumber", "Floor", "RowNumber", "SeatNumber", "Type" },
+                values: new object[,]
+                {
+                    { new Guid("10000000-0000-0000-0000-000000000001"), new Guid("33333333-3333-3333-3333-333333333333"), 1, 1, 1, "A01", 1 },
+                    { new Guid("10000000-0000-0000-0000-000000000002"), new Guid("33333333-3333-3333-3333-333333333333"), 2, 1, 1, "A02", 1 },
+                    { new Guid("10000000-0000-0000-0000-000000000003"), new Guid("33333333-3333-3333-3333-333333333333"), 3, 1, 1, "A03", 1 },
+                    { new Guid("10000000-0000-0000-0000-000000000004"), new Guid("33333333-3333-3333-3333-333333333333"), 1, 1, 2, "A04", 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000005"), new Guid("33333333-3333-3333-3333-333333333333"), 2, 1, 2, "A05", 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000006"), new Guid("33333333-3333-3333-3333-333333333333"), 3, 1, 2, "A06", 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000007"), new Guid("33333333-3333-3333-3333-333333333333"), 1, 1, 3, "A07", 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000008"), new Guid("33333333-3333-3333-3333-333333333333"), 2, 1, 3, "A08", 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000009"), new Guid("33333333-3333-3333-3333-333333333333"), 3, 1, 3, "A09", 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000010"), new Guid("33333333-3333-3333-3333-333333333333"), 1, 1, 4, "A10", 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000011"), new Guid("33333333-3333-3333-3333-333333333333"), 2, 1, 4, "A11", 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000012"), new Guid("33333333-3333-3333-3333-333333333333"), 3, 1, 4, "A12", 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000013"), new Guid("33333333-3333-3333-3333-333333333333"), 1, 1, 5, "A13", 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000014"), new Guid("33333333-3333-3333-3333-333333333333"), 2, 1, 5, "A14", 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000015"), new Guid("33333333-3333-3333-3333-333333333333"), 3, 1, 5, "A15", 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000016"), new Guid("33333333-3333-3333-3333-333333333333"), 1, 1, 6, "A16", 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000017"), new Guid("33333333-3333-3333-3333-333333333333"), 2, 1, 6, "A17", 0 },
+                    { new Guid("10000000-0000-0000-0000-000000000018"), new Guid("33333333-3333-3333-3333-333333333333"), 3, 1, 6, "A18", 0 },
+                    { new Guid("20000000-0000-0000-0000-000000000019"), new Guid("33333333-3333-3333-3333-333333333333"), 1, 2, 1, "B01", 1 },
+                    { new Guid("20000000-0000-0000-0000-000000000020"), new Guid("33333333-3333-3333-3333-333333333333"), 2, 2, 1, "B02", 1 },
+                    { new Guid("20000000-0000-0000-0000-000000000021"), new Guid("33333333-3333-3333-3333-333333333333"), 3, 2, 1, "B03", 1 },
+                    { new Guid("20000000-0000-0000-0000-000000000022"), new Guid("33333333-3333-3333-3333-333333333333"), 1, 2, 2, "B04", 0 },
+                    { new Guid("20000000-0000-0000-0000-000000000023"), new Guid("33333333-3333-3333-3333-333333333333"), 2, 2, 2, "B05", 0 },
+                    { new Guid("20000000-0000-0000-0000-000000000024"), new Guid("33333333-3333-3333-3333-333333333333"), 3, 2, 2, "B06", 0 },
+                    { new Guid("20000000-0000-0000-0000-000000000025"), new Guid("33333333-3333-3333-3333-333333333333"), 1, 2, 3, "B07", 0 },
+                    { new Guid("20000000-0000-0000-0000-000000000026"), new Guid("33333333-3333-3333-3333-333333333333"), 2, 2, 3, "B08", 0 },
+                    { new Guid("20000000-0000-0000-0000-000000000027"), new Guid("33333333-3333-3333-3333-333333333333"), 3, 2, 3, "B09", 0 },
+                    { new Guid("20000000-0000-0000-0000-000000000028"), new Guid("33333333-3333-3333-3333-333333333333"), 1, 2, 4, "B10", 0 },
+                    { new Guid("20000000-0000-0000-0000-000000000029"), new Guid("33333333-3333-3333-3333-333333333333"), 2, 2, 4, "B11", 0 },
+                    { new Guid("20000000-0000-0000-0000-000000000030"), new Guid("33333333-3333-3333-3333-333333333333"), 3, 2, 4, "B12", 0 },
+                    { new Guid("20000000-0000-0000-0000-000000000031"), new Guid("33333333-3333-3333-3333-333333333333"), 1, 2, 5, "B13", 0 },
+                    { new Guid("20000000-0000-0000-0000-000000000032"), new Guid("33333333-3333-3333-3333-333333333333"), 2, 2, 5, "B14", 0 },
+                    { new Guid("20000000-0000-0000-0000-000000000033"), new Guid("33333333-3333-3333-3333-333333333333"), 3, 2, 5, "B15", 0 },
+                    { new Guid("20000000-0000-0000-0000-000000000034"), new Guid("33333333-3333-3333-3333-333333333333"), 1, 2, 6, "B16", 0 },
+                    { new Guid("20000000-0000-0000-0000-000000000035"), new Guid("33333333-3333-3333-3333-333333333333"), 2, 2, 6, "B17", 0 },
+                    { new Guid("20000000-0000-0000-0000-000000000036"), new Guid("33333333-3333-3333-3333-333333333333"), 3, 2, 6, "B18", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000001"), new Guid("44444444-4444-4444-4444-444444444444"), 1, 1, 1, "S01", 1 },
+                    { new Guid("45000000-0000-0000-0000-000000000002"), new Guid("44444444-4444-4444-4444-444444444444"), 2, 1, 1, "S02", 1 },
+                    { new Guid("45000000-0000-0000-0000-000000000003"), new Guid("44444444-4444-4444-4444-444444444444"), 3, 1, 1, "S03", 1 },
+                    { new Guid("45000000-0000-0000-0000-000000000004"), new Guid("44444444-4444-4444-4444-444444444444"), 4, 1, 1, "S04", 1 },
+                    { new Guid("45000000-0000-0000-0000-000000000005"), new Guid("44444444-4444-4444-4444-444444444444"), 5, 1, 1, "S05", 1 },
+                    { new Guid("45000000-0000-0000-0000-000000000006"), new Guid("44444444-4444-4444-4444-444444444444"), 1, 1, 2, "S06", 1 },
+                    { new Guid("45000000-0000-0000-0000-000000000007"), new Guid("44444444-4444-4444-4444-444444444444"), 2, 1, 2, "S07", 1 },
+                    { new Guid("45000000-0000-0000-0000-000000000008"), new Guid("44444444-4444-4444-4444-444444444444"), 3, 1, 2, "S08", 1 },
+                    { new Guid("45000000-0000-0000-0000-000000000009"), new Guid("44444444-4444-4444-4444-444444444444"), 4, 1, 2, "S09", 1 },
+                    { new Guid("45000000-0000-0000-0000-000000000010"), new Guid("44444444-4444-4444-4444-444444444444"), 5, 1, 2, "S10", 1 },
+                    { new Guid("45000000-0000-0000-0000-000000000011"), new Guid("44444444-4444-4444-4444-444444444444"), 1, 1, 3, "S11", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000012"), new Guid("44444444-4444-4444-4444-444444444444"), 2, 1, 3, "S12", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000013"), new Guid("44444444-4444-4444-4444-444444444444"), 3, 1, 3, "S13", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000014"), new Guid("44444444-4444-4444-4444-444444444444"), 4, 1, 3, "S14", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000015"), new Guid("44444444-4444-4444-4444-444444444444"), 5, 1, 3, "S15", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000016"), new Guid("44444444-4444-4444-4444-444444444444"), 1, 1, 4, "S16", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000017"), new Guid("44444444-4444-4444-4444-444444444444"), 2, 1, 4, "S17", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000018"), new Guid("44444444-4444-4444-4444-444444444444"), 3, 1, 4, "S18", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000019"), new Guid("44444444-4444-4444-4444-444444444444"), 4, 1, 4, "S19", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000020"), new Guid("44444444-4444-4444-4444-444444444444"), 5, 1, 4, "S20", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000021"), new Guid("44444444-4444-4444-4444-444444444444"), 1, 1, 5, "S21", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000022"), new Guid("44444444-4444-4444-4444-444444444444"), 2, 1, 5, "S22", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000023"), new Guid("44444444-4444-4444-4444-444444444444"), 3, 1, 5, "S23", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000024"), new Guid("44444444-4444-4444-4444-444444444444"), 4, 1, 5, "S24", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000025"), new Guid("44444444-4444-4444-4444-444444444444"), 5, 1, 5, "S25", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000026"), new Guid("44444444-4444-4444-4444-444444444444"), 1, 1, 6, "S26", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000027"), new Guid("44444444-4444-4444-4444-444444444444"), 2, 1, 6, "S27", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000028"), new Guid("44444444-4444-4444-4444-444444444444"), 3, 1, 6, "S28", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000029"), new Guid("44444444-4444-4444-4444-444444444444"), 4, 1, 6, "S29", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000030"), new Guid("44444444-4444-4444-4444-444444444444"), 5, 1, 6, "S30", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000031"), new Guid("44444444-4444-4444-4444-444444444444"), 1, 1, 7, "S31", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000032"), new Guid("44444444-4444-4444-4444-444444444444"), 2, 1, 7, "S32", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000033"), new Guid("44444444-4444-4444-4444-444444444444"), 3, 1, 7, "S33", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000034"), new Guid("44444444-4444-4444-4444-444444444444"), 4, 1, 7, "S34", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000035"), new Guid("44444444-4444-4444-4444-444444444444"), 5, 1, 7, "S35", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000036"), new Guid("44444444-4444-4444-4444-444444444444"), 1, 1, 8, "S36", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000037"), new Guid("44444444-4444-4444-4444-444444444444"), 2, 1, 8, "S37", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000038"), new Guid("44444444-4444-4444-4444-444444444444"), 3, 1, 8, "S38", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000039"), new Guid("44444444-4444-4444-4444-444444444444"), 4, 1, 8, "S39", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000040"), new Guid("44444444-4444-4444-4444-444444444444"), 5, 1, 8, "S40", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000041"), new Guid("44444444-4444-4444-4444-444444444444"), 1, 1, 9, "S41", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000042"), new Guid("44444444-4444-4444-4444-444444444444"), 2, 1, 9, "S42", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000043"), new Guid("44444444-4444-4444-4444-444444444444"), 3, 1, 9, "S43", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000044"), new Guid("44444444-4444-4444-4444-444444444444"), 4, 1, 9, "S44", 0 },
+                    { new Guid("45000000-0000-0000-0000-000000000045"), new Guid("44444444-4444-4444-4444-444444444444"), 5, 1, 9, "S45", 0 },
+                    { new Guid("90000000-0000-0000-0000-000000000001"), new Guid("22222222-2222-2222-2222-222222222222"), 1, 1, 1, "L01", 1 },
+                    { new Guid("90000000-0000-0000-0000-000000000002"), new Guid("22222222-2222-2222-2222-222222222222"), 2, 1, 1, "L02", 1 },
+                    { new Guid("90000000-0000-0000-0000-000000000003"), new Guid("22222222-2222-2222-2222-222222222222"), 3, 1, 1, "L03", 1 },
+                    { new Guid("90000000-0000-0000-0000-000000000004"), new Guid("22222222-2222-2222-2222-222222222222"), 1, 1, 2, "L04", 1 },
+                    { new Guid("90000000-0000-0000-0000-000000000005"), new Guid("22222222-2222-2222-2222-222222222222"), 2, 1, 2, "L05", 1 },
+                    { new Guid("90000000-0000-0000-0000-000000000006"), new Guid("22222222-2222-2222-2222-222222222222"), 3, 1, 2, "L06", 1 },
+                    { new Guid("90000000-0000-0000-0000-000000000007"), new Guid("22222222-2222-2222-2222-222222222222"), 1, 1, 3, "L07", 1 },
+                    { new Guid("90000000-0000-0000-0000-000000000008"), new Guid("22222222-2222-2222-2222-222222222222"), 2, 1, 3, "L08", 1 },
+                    { new Guid("90000000-0000-0000-0000-000000000009"), new Guid("22222222-2222-2222-2222-222222222222"), 3, 1, 3, "L09", 1 }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_BookingDetails_BookingId",
@@ -369,11 +483,6 @@ namespace Infrastructure.Migrations
                 column: "TripId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Bookings_TripId1",
-                table: "Bookings",
-                column: "TripId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Bookings_UserId",
                 table: "Bookings",
                 column: "UserId");
@@ -382,6 +491,12 @@ namespace Infrastructure.Migrations
                 name: "IX_Buses_BusTypeId",
                 table: "Buses",
                 column: "BusTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CmsConfigs_ConfigKey",
+                table: "CmsConfigs",
+                column: "ConfigKey",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Invoices_BookingId",
@@ -440,6 +555,9 @@ namespace Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "BookingDetails");
+
+            migrationBuilder.DropTable(
+                name: "CmsConfigs");
 
             migrationBuilder.DropTable(
                 name: "Invoices");

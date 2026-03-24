@@ -3,7 +3,6 @@ using System;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -12,40 +11,36 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260324054120_AddBookingModule")]
-    partial class AddBookingModule
+    [Migration("20260324175909_FreshInitial")]
+    partial class FreshInitial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
-
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
 
             modelBuilder.Entity("Domain.Entities.Booking", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("BookingStatus")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<decimal>("TotalAmount")
                         .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("TripId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -60,17 +55,17 @@ namespace Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("BookingId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("SeatId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -85,47 +80,149 @@ namespace Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
-                    b.Property<int>("BusType")
-                        .HasColumnType("int");
+                    b.Property<Guid>("BusTypeId")
+                        .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("PlateNumber")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("TEXT");
 
-                    b.Property<int>("SeatCapacity")
-                        .HasColumnType("int");
+                    b.Property<int>("SeatCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BusTypeId");
+
                     b.ToTable("Buses");
+                });
+
+            modelBuilder.Entity("Domain.Entities.BusType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SeatCount")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BusTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            Description = "VIP Limousine",
+                            Name = "Limousine",
+                            SeatCount = 9
+                        },
+                        new
+                        {
+                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
+                            Description = "Sleeper Bus Standard",
+                            Name = "Giường nằm",
+                            SeatCount = 44
+                        },
+                        new
+                        {
+                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
+                            Description = "Standard Seat Bus",
+                            Name = "Ghế ngồi",
+                            SeatCount = 45
+                        });
+                });
+
+            modelBuilder.Entity("Domain.Entities.CmsConfig", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ConfigKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContentJson")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConfigKey")
+                        .IsUnique();
+
+                    b.ToTable("CmsConfigs");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ConfigKey = "homepage_v1",
+                            ContentJson = "{}",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Invoice", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("BookingId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CustomerEmail")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("InvoiceNumber")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("IssuedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("TotalAmount")
                         .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -138,25 +235,25 @@ namespace Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsSent")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Message")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("SentAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -169,30 +266,30 @@ namespace Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<decimal>("Amount")
                         .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("BookingId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("PaidAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("PaymentMethod")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("PaymentStatus")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("TransactionCode")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -205,73 +302,102 @@ namespace Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Destination")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("DistanceKm")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(true);
 
                     b.Property<string>("Origin")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Points")
-                        .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.ToTable("Routes");
                 });
 
+            modelBuilder.Entity("Domain.Entities.RouteStop", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("DistanceFromOriginKm")
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("OffsetMinutes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("OrderIndex")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("RouteId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("StopPointId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RouteId");
+
+                    b.HasIndex("StopPointId");
+
+                    b.ToTable("RouteStops");
+                });
+
             modelBuilder.Entity("Domain.Entities.Seat", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("ColumnNumber")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("Floor")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime?>("LockExpirationTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("RowNumber")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("SeatNumber")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<Guid>("TripId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Type")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -284,29 +410,31 @@ namespace Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
-                    b.Property<int>("BusType")
-                        .HasColumnType("int");
+                    b.Property<Guid>("BusTypeId")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("ColumnNumber")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("Floor")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("RowNumber")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("SeatNumber")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Type")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BusTypeId");
 
                     b.ToTable("SeatTemplates");
 
@@ -314,7 +442,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("90000000-0000-0000-0000-000000000001"),
-                            BusType = 2,
+                            BusTypeId = new Guid("22222222-2222-2222-2222-222222222222"),
                             ColumnNumber = 1,
                             Floor = 1,
                             RowNumber = 1,
@@ -324,7 +452,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("90000000-0000-0000-0000-000000000002"),
-                            BusType = 2,
+                            BusTypeId = new Guid("22222222-2222-2222-2222-222222222222"),
                             ColumnNumber = 2,
                             Floor = 1,
                             RowNumber = 1,
@@ -334,7 +462,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("90000000-0000-0000-0000-000000000003"),
-                            BusType = 2,
+                            BusTypeId = new Guid("22222222-2222-2222-2222-222222222222"),
                             ColumnNumber = 3,
                             Floor = 1,
                             RowNumber = 1,
@@ -344,7 +472,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("90000000-0000-0000-0000-000000000004"),
-                            BusType = 2,
+                            BusTypeId = new Guid("22222222-2222-2222-2222-222222222222"),
                             ColumnNumber = 1,
                             Floor = 1,
                             RowNumber = 2,
@@ -354,7 +482,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("90000000-0000-0000-0000-000000000005"),
-                            BusType = 2,
+                            BusTypeId = new Guid("22222222-2222-2222-2222-222222222222"),
                             ColumnNumber = 2,
                             Floor = 1,
                             RowNumber = 2,
@@ -364,7 +492,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("90000000-0000-0000-0000-000000000006"),
-                            BusType = 2,
+                            BusTypeId = new Guid("22222222-2222-2222-2222-222222222222"),
                             ColumnNumber = 3,
                             Floor = 1,
                             RowNumber = 2,
@@ -374,7 +502,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("90000000-0000-0000-0000-000000000007"),
-                            BusType = 2,
+                            BusTypeId = new Guid("22222222-2222-2222-2222-222222222222"),
                             ColumnNumber = 1,
                             Floor = 1,
                             RowNumber = 3,
@@ -384,7 +512,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("90000000-0000-0000-0000-000000000008"),
-                            BusType = 2,
+                            BusTypeId = new Guid("22222222-2222-2222-2222-222222222222"),
                             ColumnNumber = 2,
                             Floor = 1,
                             RowNumber = 3,
@@ -394,7 +522,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("90000000-0000-0000-0000-000000000009"),
-                            BusType = 2,
+                            BusTypeId = new Guid("22222222-2222-2222-2222-222222222222"),
                             ColumnNumber = 3,
                             Floor = 1,
                             RowNumber = 3,
@@ -404,7 +532,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000001"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 1,
                             Floor = 1,
                             RowNumber = 1,
@@ -414,7 +542,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000002"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 2,
                             Floor = 1,
                             RowNumber = 1,
@@ -424,7 +552,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000003"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 3,
                             Floor = 1,
                             RowNumber = 1,
@@ -434,7 +562,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000004"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 1,
                             Floor = 1,
                             RowNumber = 2,
@@ -444,7 +572,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000005"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 2,
                             Floor = 1,
                             RowNumber = 2,
@@ -454,7 +582,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000006"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 3,
                             Floor = 1,
                             RowNumber = 2,
@@ -464,7 +592,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000007"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 1,
                             Floor = 1,
                             RowNumber = 3,
@@ -474,7 +602,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000008"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 2,
                             Floor = 1,
                             RowNumber = 3,
@@ -484,7 +612,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000009"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 3,
                             Floor = 1,
                             RowNumber = 3,
@@ -494,7 +622,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000010"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 1,
                             Floor = 1,
                             RowNumber = 4,
@@ -504,7 +632,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000011"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 2,
                             Floor = 1,
                             RowNumber = 4,
@@ -514,7 +642,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000012"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 3,
                             Floor = 1,
                             RowNumber = 4,
@@ -524,7 +652,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000013"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 1,
                             Floor = 1,
                             RowNumber = 5,
@@ -534,7 +662,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000014"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 2,
                             Floor = 1,
                             RowNumber = 5,
@@ -544,7 +672,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000015"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 3,
                             Floor = 1,
                             RowNumber = 5,
@@ -554,7 +682,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000016"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 1,
                             Floor = 1,
                             RowNumber = 6,
@@ -564,7 +692,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000017"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 2,
                             Floor = 1,
                             RowNumber = 6,
@@ -574,7 +702,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000018"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 3,
                             Floor = 1,
                             RowNumber = 6,
@@ -584,7 +712,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000019"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 1,
                             Floor = 2,
                             RowNumber = 1,
@@ -594,7 +722,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000020"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 2,
                             Floor = 2,
                             RowNumber = 1,
@@ -604,7 +732,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000021"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 3,
                             Floor = 2,
                             RowNumber = 1,
@@ -614,7 +742,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000022"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 1,
                             Floor = 2,
                             RowNumber = 2,
@@ -624,7 +752,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000023"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 2,
                             Floor = 2,
                             RowNumber = 2,
@@ -634,7 +762,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000024"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 3,
                             Floor = 2,
                             RowNumber = 2,
@@ -644,7 +772,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000025"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 1,
                             Floor = 2,
                             RowNumber = 3,
@@ -654,7 +782,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000026"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 2,
                             Floor = 2,
                             RowNumber = 3,
@@ -664,7 +792,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000027"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 3,
                             Floor = 2,
                             RowNumber = 3,
@@ -674,7 +802,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000028"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 1,
                             Floor = 2,
                             RowNumber = 4,
@@ -684,7 +812,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000029"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 2,
                             Floor = 2,
                             RowNumber = 4,
@@ -694,7 +822,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000030"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 3,
                             Floor = 2,
                             RowNumber = 4,
@@ -704,7 +832,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000031"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 1,
                             Floor = 2,
                             RowNumber = 5,
@@ -714,7 +842,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000032"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 2,
                             Floor = 2,
                             RowNumber = 5,
@@ -724,7 +852,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000033"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 3,
                             Floor = 2,
                             RowNumber = 5,
@@ -734,7 +862,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000034"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 1,
                             Floor = 2,
                             RowNumber = 6,
@@ -744,7 +872,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000035"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 2,
                             Floor = 2,
                             RowNumber = 6,
@@ -754,7 +882,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000036"),
-                            BusType = 0,
+                            BusTypeId = new Guid("33333333-3333-3333-3333-333333333333"),
                             ColumnNumber = 3,
                             Floor = 2,
                             RowNumber = 6,
@@ -764,7 +892,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000001"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 1,
                             Floor = 1,
                             RowNumber = 1,
@@ -774,7 +902,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000002"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 2,
                             Floor = 1,
                             RowNumber = 1,
@@ -784,7 +912,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000003"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 3,
                             Floor = 1,
                             RowNumber = 1,
@@ -794,7 +922,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000004"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 4,
                             Floor = 1,
                             RowNumber = 1,
@@ -804,7 +932,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000005"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 5,
                             Floor = 1,
                             RowNumber = 1,
@@ -814,7 +942,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000006"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 1,
                             Floor = 1,
                             RowNumber = 2,
@@ -824,7 +952,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000007"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 2,
                             Floor = 1,
                             RowNumber = 2,
@@ -834,7 +962,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000008"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 3,
                             Floor = 1,
                             RowNumber = 2,
@@ -844,7 +972,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000009"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 4,
                             Floor = 1,
                             RowNumber = 2,
@@ -854,7 +982,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000010"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 5,
                             Floor = 1,
                             RowNumber = 2,
@@ -864,7 +992,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000011"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 1,
                             Floor = 1,
                             RowNumber = 3,
@@ -874,7 +1002,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000012"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 2,
                             Floor = 1,
                             RowNumber = 3,
@@ -884,7 +1012,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000013"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 3,
                             Floor = 1,
                             RowNumber = 3,
@@ -894,7 +1022,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000014"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 4,
                             Floor = 1,
                             RowNumber = 3,
@@ -904,7 +1032,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000015"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 5,
                             Floor = 1,
                             RowNumber = 3,
@@ -914,7 +1042,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000016"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 1,
                             Floor = 1,
                             RowNumber = 4,
@@ -924,7 +1052,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000017"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 2,
                             Floor = 1,
                             RowNumber = 4,
@@ -934,7 +1062,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000018"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 3,
                             Floor = 1,
                             RowNumber = 4,
@@ -944,7 +1072,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000019"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 4,
                             Floor = 1,
                             RowNumber = 4,
@@ -954,7 +1082,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000020"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 5,
                             Floor = 1,
                             RowNumber = 4,
@@ -964,7 +1092,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000021"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 1,
                             Floor = 1,
                             RowNumber = 5,
@@ -974,7 +1102,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000022"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 2,
                             Floor = 1,
                             RowNumber = 5,
@@ -984,7 +1112,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000023"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 3,
                             Floor = 1,
                             RowNumber = 5,
@@ -994,7 +1122,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000024"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 4,
                             Floor = 1,
                             RowNumber = 5,
@@ -1004,7 +1132,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000025"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 5,
                             Floor = 1,
                             RowNumber = 5,
@@ -1014,7 +1142,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000026"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 1,
                             Floor = 1,
                             RowNumber = 6,
@@ -1024,7 +1152,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000027"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 2,
                             Floor = 1,
                             RowNumber = 6,
@@ -1034,7 +1162,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000028"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 3,
                             Floor = 1,
                             RowNumber = 6,
@@ -1044,7 +1172,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000029"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 4,
                             Floor = 1,
                             RowNumber = 6,
@@ -1054,7 +1182,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000030"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 5,
                             Floor = 1,
                             RowNumber = 6,
@@ -1064,7 +1192,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000031"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 1,
                             Floor = 1,
                             RowNumber = 7,
@@ -1074,7 +1202,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000032"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 2,
                             Floor = 1,
                             RowNumber = 7,
@@ -1084,7 +1212,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000033"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 3,
                             Floor = 1,
                             RowNumber = 7,
@@ -1094,7 +1222,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000034"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 4,
                             Floor = 1,
                             RowNumber = 7,
@@ -1104,7 +1232,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000035"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 5,
                             Floor = 1,
                             RowNumber = 7,
@@ -1114,7 +1242,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000036"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 1,
                             Floor = 1,
                             RowNumber = 8,
@@ -1124,7 +1252,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000037"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 2,
                             Floor = 1,
                             RowNumber = 8,
@@ -1134,7 +1262,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000038"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 3,
                             Floor = 1,
                             RowNumber = 8,
@@ -1144,7 +1272,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000039"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 4,
                             Floor = 1,
                             RowNumber = 8,
@@ -1154,7 +1282,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000040"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 5,
                             Floor = 1,
                             RowNumber = 8,
@@ -1164,7 +1292,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000041"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 1,
                             Floor = 1,
                             RowNumber = 9,
@@ -1174,7 +1302,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000042"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 2,
                             Floor = 1,
                             RowNumber = 9,
@@ -1184,7 +1312,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000043"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 3,
                             Floor = 1,
                             RowNumber = 9,
@@ -1194,7 +1322,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000044"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 4,
                             Floor = 1,
                             RowNumber = 9,
@@ -1204,7 +1332,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("45000000-0000-0000-0000-000000000045"),
-                            BusType = 1,
+                            BusTypeId = new Guid("44444444-4444-4444-4444-444444444444"),
                             ColumnNumber = 5,
                             Floor = 1,
                             RowNumber = 9,
@@ -1213,38 +1341,74 @@ namespace Infrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Domain.Entities.StopPoint", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Badge")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDropoff")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsPickup")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StopPoints");
+                });
+
             modelBuilder.Entity("Domain.Entities.Trip", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("ArrivalTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("BusId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DepartureTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("RouteId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -1259,41 +1423,41 @@ namespace Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Role")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -1320,7 +1484,7 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Booking", b =>
                 {
                     b.HasOne("Domain.Entities.Trip", "Trip")
-                        .WithMany()
+                        .WithMany("Bookings")
                         .HasForeignKey("TripId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1339,7 +1503,7 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.BookingDetail", b =>
                 {
                     b.HasOne("Domain.Entities.Booking", "Booking")
-                        .WithMany()
+                        .WithMany("BookingDetails")
                         .HasForeignKey("BookingId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1353,6 +1517,17 @@ namespace Infrastructure.Migrations
                     b.Navigation("Booking");
 
                     b.Navigation("Seat");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Bus", b =>
+                {
+                    b.HasOne("Domain.Entities.BusType", "BusType")
+                        .WithMany("Buses")
+                        .HasForeignKey("BusTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BusType");
                 });
 
             modelBuilder.Entity("Domain.Entities.Invoice", b =>
@@ -1388,6 +1563,25 @@ namespace Infrastructure.Migrations
                     b.Navigation("Booking");
                 });
 
+            modelBuilder.Entity("Domain.Entities.RouteStop", b =>
+                {
+                    b.HasOne("Domain.Entities.Route", "Route")
+                        .WithMany("RouteStops")
+                        .HasForeignKey("RouteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.StopPoint", "StopPoint")
+                        .WithMany("RouteStops")
+                        .HasForeignKey("StopPointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Route");
+
+                    b.Navigation("StopPoint");
+                });
+
             modelBuilder.Entity("Domain.Entities.Seat", b =>
                 {
                     b.HasOne("Domain.Entities.Trip", "Trip")
@@ -1397,6 +1591,17 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Trip");
+                });
+
+            modelBuilder.Entity("Domain.Entities.SeatTemplate", b =>
+                {
+                    b.HasOne("Domain.Entities.BusType", "BusType")
+                        .WithMany()
+                        .HasForeignKey("BusTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BusType");
                 });
 
             modelBuilder.Entity("Domain.Entities.Trip", b =>
@@ -1418,18 +1623,37 @@ namespace Infrastructure.Migrations
                     b.Navigation("Route");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Booking", b =>
+                {
+                    b.Navigation("BookingDetails");
+                });
+
             modelBuilder.Entity("Domain.Entities.Bus", b =>
                 {
                     b.Navigation("Trips");
                 });
 
+            modelBuilder.Entity("Domain.Entities.BusType", b =>
+                {
+                    b.Navigation("Buses");
+                });
+
             modelBuilder.Entity("Domain.Entities.Route", b =>
                 {
+                    b.Navigation("RouteStops");
+
                     b.Navigation("Trips");
+                });
+
+            modelBuilder.Entity("Domain.Entities.StopPoint", b =>
+                {
+                    b.Navigation("RouteStops");
                 });
 
             modelBuilder.Entity("Domain.Entities.Trip", b =>
                 {
+                    b.Navigation("Bookings");
+
                     b.Navigation("Seats");
                 });
 #pragma warning restore 612, 618

@@ -16,7 +16,7 @@
             <!-- Admin Quick Link: Dashboard cạnh Logo -->
             <ng-container *ngIf="authService.isLoggedIn()">
                 <a *ngIf="currentUser?.role === 'Admin'"
-                   (click)="navigateTo('/dashboard')"
+                   (click)="navigateTo('/admin/dashboard')"
                    class="btn-dashboard-large">
                     <i class="fas fa-chart-line"></i> Dashboard
                 </a>

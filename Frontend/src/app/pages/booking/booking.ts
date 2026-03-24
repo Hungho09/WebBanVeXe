@@ -208,7 +208,7 @@ export class Booking implements OnInit, OnDestroy {
     }
 
     const bookingDto: CreateBookingDto = {
-      userId: userProfile.id || userProfile.userName, // Handle both id and userName depending on auth implementation
+      userId: userProfile.id || userProfile.userName || 'unknown', // Handle both id and userName depending on auth implementation
       tripId: this.tripId!,
       seatIds: this.selectedSeatIds
     };

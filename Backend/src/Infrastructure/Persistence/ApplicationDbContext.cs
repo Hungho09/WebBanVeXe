@@ -153,6 +153,7 @@ namespace Infrastructure.Persistence
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.SeatNumber).IsRequired().HasMaxLength(10);
+                entity.HasOne(e => e.BusType).WithMany().HasForeignKey(e => e.BusTypeId).OnDelete(DeleteBehavior.Restrict);
             });
 
             // Configure Booking
@@ -161,7 +162,7 @@ namespace Infrastructure.Persistence
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.TotalAmount).HasPrecision(18, 2);
                 entity.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Restrict);
-                entity.HasOne(e => e.Trip).WithMany().HasForeignKey(e => e.TripId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.Trip).WithMany(t => t.Bookings).HasForeignKey(e => e.TripId).OnDelete(DeleteBehavior.Restrict);
             });
 
             // Configure BookingDetail
@@ -226,6 +227,7 @@ namespace Infrastructure.Persistence
                     UpdatedAt = new System.DateTime(2026, 1, 1, 0, 0, 0, System.DateTimeKind.Utc)
                 });
             });
+
         }
     }
 }

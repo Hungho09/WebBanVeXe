@@ -47,7 +47,7 @@ export class Login implements OnInit {
       const dummyToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQWRtaW4iLCJuYW1lIjoiQWRtaW4iLCJleHAiOjk5OTk5OTk5OTl9.dummy';
       this.authService.saveUser(dummyToken, 'Admin Local', 'admin-id-123', 'Admin');
       this.toastService.showSuccess('Đăng nhập thành công (Bypass Backend)!');
-      this.router.navigateByUrl('/dashboard');
+      this.router.navigateByUrl('/admin/dashboard');
       return;
     }
 
