@@ -59,11 +59,11 @@ namespace Infrastructure
 
             // Seat Management
             services.AddScoped<Application.Interfaces.ISeatService, Infrastructure.Services.SeatService>();
+            services.AddScoped<Domain.Interfaces.IBookingRepository, Infrastructure.Persistence.Repositories.BookingRepository>();
+            services.AddScoped<Application.Interfaces.IBookingService, Infrastructure.Services.BookingService>();
 
             // Extra Services
             services.AddScoped<Application.Interfaces.IBusTypeService, Application.Services.BusTypeService>();
-            services.AddScoped<Domain.Interfaces.IBookingRepository, Infrastructure.Persistence.Repositories.BookingRepository>();
-            services.AddScoped<Application.Interfaces.IBookingService, Infrastructure.Services.BookingService>();
 
             // Background Services
             services.AddHostedService<Infrastructure.Services.SeatLockBackgroundService>();

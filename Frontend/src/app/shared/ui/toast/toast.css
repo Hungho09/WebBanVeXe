@@ -1,8 +1,16 @@
+/* Host full-viewport layer: tránh bị ảnh hưởng bởi flex/overflow của body hoặc layout trang */
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+}
+
 .toast-container {
   position: fixed;
   top: 30px;
   right: 30px;
-  z-index: 10000;
+  pointer-events: auto;
   display: flex;
   flex-direction: column;
   gap: 15px;

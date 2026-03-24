@@ -242,4 +242,12 @@ export class HeroSearchComponent implements OnInit, AfterViewInit, OnDestroy {
             el.scrollLeft = wg ? wg.offsetLeft : active.offsetLeft - el.clientWidth / 2 + active.clientWidth / 2;
         }
     }
+
+    onSearchClick(): void {
+        this.searchEvent.emit({
+            origin: (this.origin ?? '').trim(),
+            destination: (this.destination ?? '').trim(),
+            departureDate: new Date(this.selectedDate.getTime()),
+        });
+    }
 }

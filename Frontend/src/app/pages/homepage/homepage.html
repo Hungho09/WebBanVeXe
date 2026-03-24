@@ -16,7 +16,35 @@
     <main class="main-content">
 
         <!-- 2a. Hero + Search Box -->
-        <app-hero-search [bgImageUrl]="bgImageUrl"></app-hero-search>
+        <app-hero-search
+            [bgImageUrl]="bgImageUrl"
+            (searchEvent)="onTripSearch($event)">
+        </app-hero-search>
+
+        <section class="trip-search-results container" *ngIf="tripSearchAttempted">
+            <div class="trip-search-results__head">
+                <h2>Kết quả tìm chuyến</h2>
+                <p *ngIf="tripSearchError" class="trip-search-results__error">{{ tripSearchError }}</p>
+                <p *ngIf="tripSearchDateNote" class="trip-search-results__note">{{ tripSearchDateNote }}</p>
+                <p *ngIf="!tripSearchLoading && !tripSearchError && tripSearchResults.length === 0" class="trip-search-results__empty">
+                    Không có chuyến phù hợp. Thử <strong>Hà Nội</strong> → <strong>Hải Phòng</strong> hoặc <strong>Hồ Chí Minh</strong> → <strong>Lâm Đồng</strong> (tuyến Đà Lạt).
+                </p>
+            </div>
+            <div class="trip-search-results__loading" *ngIf="tripSearchLoading">Đang tải…</div>
+            <ul class="trip-search-results__list" *ngIf="!tripSearchLoading && tripSearchResults.length > 0">
+                <li *ngFor="let t of tripSearchResults" class="trip-card">
+                    <div class="trip-card__main">
+                        <span class="trip-card__route">{{ t.routeName }}</span>
+                        <span class="trip-card__time">{{ formatTripTime(t.departureTime) }} → {{ formatTripTime(t.arrivalTime) }}</span>
+                        <span class="trip-card__plate">Xe: {{ t.busPlate }}</span>
+                    </div>
+                    <div class="trip-card__side">
+                        <span class="trip-card__price">{{ t.price | number }} đ</span>
+                        <a class="trip-card__cta" [routerLink]="['/booking', t.id]">Đặt vé</a>
+                    </div>
+                </li>
+            </ul>
+        </section>
 
         <!-- 2b. Tuyến Đường Phổ Biến -->
         <app-popular-routes

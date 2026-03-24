@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Application.Interfaces;
 using Application.DTOs.Booking;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace Api.Controllers
 {
@@ -46,9 +47,9 @@ namespace Api.Controllers
             try
             {
                 var response = await _bookingService.CreateBookingAsync(request);
-                return Ok(response);
+                return StatusCode(StatusCodes.Status201Created, response);
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
@@ -67,6 +68,14 @@ namespace Api.Controllers
         {
             var history = await _bookingService.GetUserBookingHistoryAsync(userId);
             return Ok(history);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> CancelBooking(Guid id)
+        {
+            var ok = await _bookingService.CancelBookingAsync(id);
+            if (!ok) return NotFound();
+            return NoContent();
         }
     }
 }

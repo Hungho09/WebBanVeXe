@@ -100,11 +100,86 @@ export class Booking implements OnInit, OnDestroy {
 
   loadPoints(tripId: string): void {
     this.tripService.getTripPoints(tripId).subscribe({
-      next: (points) => {
-        this.points = points;
+      next: (raw) => {
+        this.points = this.normalizeTripPoints(raw);
+        queueMicrotask(() => this.applyDefaultPointSelection());
       },
-      error: () => console.error('Error loading points')
+      error: () => {
+        this.points = [];
+        queueMicrotask(() => this.applyDefaultPointSelection());
+      }
     });
+  }
+
+  /** API có thể trả camelCase hoặc PascalCase; map về một dạng. */
+  private normalizeTripPoints(raw: any[] | null | undefined): any[] {
+    if (!raw?.length) return [];
+    return raw.map((p) => ({
+      id: p.id ?? p.Id,
+      name: p.name ?? p.Name ?? '',
+      address: p.address ?? p.Address ?? '',
+      expectedTime: p.expectedTime ?? p.ExpectedTime,
+      distanceFromOrigin: p.distanceFromOrigin ?? p.DistanceFromOrigin ?? 0,
+      badge: p.badge ?? p.Badge,
+      isPickup: !!(p.isPickup ?? p.IsPickup),
+      isDropoff: !!(p.isDropoff ?? p.IsDropoff),
+    }));
+  }
+
+  /** Khi backend chưa seed RouteStops: tạo điểm đón/trả từ routeName + giờ chuyến. */
+  private buildSyntheticPickups(): any[] {
+    const parts = this.parseRouteEnds();
+    const origin = parts[0] || 'Điểm đi';
+    const dep = this.trip?.departureTime;
+    return [
+      {
+        id: 'synthetic-pickup-main',
+        name: `Đón tại ${origin}`,
+        address: `Điểm xuất phát — ${origin} (theo giờ xe)`,
+        expectedTime: dep,
+        badge: 'Mặc định',
+        isPickup: true,
+        isDropoff: false,
+      },
+    ];
+  }
+
+  private buildSyntheticDropoffs(): any[] {
+    const parts = this.parseRouteEnds();
+    const dest = parts[1] || parts[0] || 'Điểm đến';
+    const arr = this.trip?.arrivalTime;
+    return [
+      {
+        id: 'synthetic-dropoff-terminal',
+        name: `Trả tại ${dest}`,
+        address: `Bến / điểm đến — ${dest}`,
+        expectedTime: arr,
+        badge: null,
+        isPickup: false,
+        isDropoff: true,
+      },
+    ];
+  }
+
+  private parseRouteEnds(): [string, string] {
+    const name = (this.trip?.routeName || '').trim();
+    if (!name) return ['', ''];
+    const bits = name.split(/\s*-\s*/).map((s: string) => s.trim()).filter(Boolean);
+    if (bits.length >= 2) return [bits[0], bits[bits.length - 1]];
+    return [bits[0] || '', ''];
+  }
+
+  private applyDefaultPointSelection(): void {
+    const pickups = this.pickupPoints;
+    if (pickups.length === 1) {
+      this.selectedPickupId = this.pointId(pickups[0]);
+    }
+    const drops = this.dropoffPoints;
+    if (drops.length === 1) {
+      this.selectedDropoffId = this.pointId(drops[0]);
+    } else if (drops.length === 0) {
+      this.selectedDropoffId = 'door-to-door';
+    }
   }
 
   get floors(): number[] {
@@ -116,8 +191,16 @@ export class Booking implements OnInit, OnDestroy {
     return this.seats.filter(s => s.floor === floorNum);
   }
 
-  get pickupPoints() { return this.points.filter(p => p.isPickup); }
-  get dropoffPoints() { return this.points.filter(p => p.isDropoff); }
+  get pickupPoints(): any[] {
+    const api = this.points.filter((p) => p.isPickup);
+    return api.length > 0 ? api : this.buildSyntheticPickups();
+  }
+
+  /** Chỉ điểm trả từ API (không gồm “Trả tận nơi” cứng trong template). */
+  get dropoffPoints(): any[] {
+    const api = this.points.filter((p) => p.isDropoff);
+    return api.length > 0 ? api : this.buildSyntheticDropoffs();
+  }
 
   toggleSeat(seat: any): void {
     const isAlreadySelected = this.selectedSeatIds.includes(seat.id);
@@ -168,6 +251,10 @@ export class Booking implements OnInit, OnDestroy {
 
   isSelected(seatId: string): boolean {
     return this.selectedSeatIds.includes(seatId);
+  }
+
+  pointId(p: any): string {
+    return p?.id != null ? String(p.id) : '';
   }
 
   showMap(point: any) {

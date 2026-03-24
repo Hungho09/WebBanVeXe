@@ -80,8 +80,8 @@
             <div class="points-list">
               <div *ngFor="let p of pickupPoints" 
                    class="point-item"
-                   [class.selected]="selectedPickupId === p.id"
-                   (click)="selectedPickupId = p.id">
+                   [class.selected]="selectedPickupId === pointId(p)"
+                   (click)="selectedPickupId = pointId(p)">
                 <div class="point-radio">
                   <div class="radio-outer"><div class="radio-inner" *ngIf="selectedPickupId === p.id"></div></div>
                 </div>
@@ -121,10 +121,10 @@
 
               <div *ngFor="let p of dropoffPoints" 
                    class="point-item"
-                   [class.selected]="selectedDropoffId === p.id"
-                   (click)="selectedDropoffId = p.id">
+                   [class.selected]="selectedDropoffId === pointId(p)"
+                   (click)="selectedDropoffId = pointId(p)">
                 <div class="point-radio">
-                  <div class="radio-outer"><div class="radio-inner" *ngIf="selectedDropoffId === p.id"></div></div>
+                  <div class="radio-outer"><div class="radio-inner" *ngIf="selectedDropoffId === pointId(p)"></div></div>
                 </div>
                 <div class="point-main">
                   <div class="p-time-row">
