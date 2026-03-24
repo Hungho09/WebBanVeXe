@@ -11,6 +11,7 @@ namespace Application.DTOs.Trip
         public int RowNumber { get; set; }
         public int ColumnNumber { get; set; }
         public int Floor { get; set; }
+        public string Type { get; set; } = string.Empty;
         public DateTime? LockExpirationTime { get; set; }
     }
 }
