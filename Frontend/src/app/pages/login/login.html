@@ -3,7 +3,8 @@
     <div class="auth-left">
       <div class="logo pointer-cursor" (click)="navigateTo('/')">
         <img src="/assets/bus.png" alt="Logo" class="auth-logo-img" style="height: 45px;">
-        <span style="font-family: Arial; font-weight: 800; font-size: 1.4rem; color: var(--primary-color); margin-left: 10px;">Codenhalam</span>
+        <span
+          style="font-family: Arial; font-weight: 800; font-size: 1.4rem; color: var(--primary-color); margin-left: 10px;">Codenhalam</span>
       </div>
 
       <h2>Chào mừng trở lại</h2>
@@ -27,7 +28,7 @@
           <a href="#" class="forgot-link">Quên mật khẩu?</a>
         </div>
 
-        <button type="submit" class="btn-primary" [disabled]="isLoading">
+        <button type="submit" class="btn-login-submit" [disabled]="isLoading">
           {{ isLoading ? 'Đang xác thực...' : 'Đăng nhập ngay' }}
         </button>
 
@@ -40,7 +41,7 @@
     <!-- Right Section -->
     <div class="auth-right">
       <div class="illustration-box">
-         <img src="/assets/login.png" alt="Login Illustration" class="auth-illustration">
+        <img src="/assets/login.png" alt="Login Illustration" class="auth-illustration">
       </div>
       <div class="overlay-text">
         <h3>Bắt đầu hành trình!</h3>

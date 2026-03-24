@@ -7,9 +7,10 @@ import { RouteManagement } from './pages/route-management/route-management';
 import { BusManagement } from './pages/bus-management/bus-management';
 import { TripManagement } from './pages/trip-management/trip-management';
 import { UserManagement } from './pages/user-management/user-management';
-import { AdminLayout } from './components/admin-layout/admin-layout';
+import { CmsManagement } from './pages/cms-management/cms-management';
+import { AdminLayout } from './shared/layout/admin-layout/admin-layout';
 import { AuthGuard } from './guards/auth.guard';
-import { PaymentComponent } from './components/payment/payment.component';
+import { PaymentComponent } from './pages/payment/payment.component';
 import { Booking } from './pages/booking/booking';
 
 export const routes: Routes = [
@@ -30,6 +31,7 @@ export const routes: Routes = [
       { path: 'bus', component: BusManagement },
       { path: 'route', component: RouteManagement },
       { path: 'trip', component: TripManagement },
+      { path: 'cms-management', component: CmsManagement, data: { roles: ['Admin'] } },
     ]
   },
   { path: 'booking/:id', loadComponent: () => import('./pages/booking/booking').then(m => m.Booking) },

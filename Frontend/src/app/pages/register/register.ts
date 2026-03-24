@@ -25,11 +25,11 @@ export class Register implements OnInit {
   returnUrl: string = '/';
 
   constructor(
-    private authService: AuthService, 
+    private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
     private toastService: ToastService
-  ) {}
+  ) { }
 
   ngOnInit() {
     // Get return url from route parameters or default to '/'
@@ -43,7 +43,7 @@ export class Register implements OnInit {
   onRegister(event: Event) {
     event.preventDefault();
     this.isLoading = true;
-    
+
     this.authService.register(this.registerData).subscribe({
       next: (response) => {
         this.isLoading = false;
@@ -51,10 +51,9 @@ export class Register implements OnInit {
           // AUTO-LOGIN: Save the user info immediately
           const uId = response.userId || response.Id || response['userId'] || 'new-user-id';
           this.authService.saveUser(response.token, response.userName, uId, response.role);
-          
           // Professional Toast
           this.toastService.showSuccess('Đăng ký và Đăng nhập thành công! Chào mừng bạn gia nhập Vexere.');
-          
+
           // Redirect to the previous page the user was trying to access
           this.router.navigateByUrl(this.returnUrl);
         } else {

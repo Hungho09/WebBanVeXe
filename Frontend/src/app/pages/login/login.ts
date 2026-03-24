@@ -21,11 +21,11 @@ export class Login implements OnInit {
   returnUrl: string = '/';
 
   constructor(
-    private authService: AuthService, 
+    private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
     private toastService: ToastService
-  ) {}
+  ) { }
 
   ngOnInit() {
     // Get return url from route parameters or default to '/'
@@ -39,7 +39,7 @@ export class Login implements OnInit {
   onLogin(event: Event) {
     event.preventDefault();
     this.isLoading = true;
-    
+
     // Bypass logic cho admin (không cần backend)
     if (this.loginData.userName === 'admin' && this.loginData.password === '123456') {
       this.isLoading = false;
@@ -61,7 +61,7 @@ export class Login implements OnInit {
           
           this.authService.saveUser(response.token, uName, uId, uRole);
           this.toastService.showSuccess(`Chào mừng trở lại, ${uName}!`);
-          this.router.navigateByUrl(this.returnUrl); 
+          this.router.navigateByUrl(this.returnUrl);
         } else {
           this.toastService.showError(response.message || 'Đăng nhập thất bại');
         }
