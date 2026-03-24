@@ -10,6 +10,7 @@ import { UserManagement } from './pages/user-management/user-management';
 import { AdminLayout } from './components/admin-layout/admin-layout';
 import { AuthGuard } from './guards/auth.guard';
 import { PaymentComponent } from './components/payment/payment.component';
+import { Booking } from './pages/booking/booking';
 
 export const routes: Routes = [
   {
@@ -29,6 +30,7 @@ export const routes: Routes = [
   { path: 'homepage', component: Homepage },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
+  { path: 'booking/:id', component: Booking },
   { path: 'payment', component: PaymentComponent },
   { path: '**', redirectTo: 'homepage' }
 ];
