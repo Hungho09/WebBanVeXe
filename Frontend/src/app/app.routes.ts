@@ -12,12 +12,18 @@ import { AuthGuard } from './guards/auth.guard';
 import { PaymentComponent } from './components/payment/payment.component';
 
 export const routes: Routes = [
+  { path: '', redirectTo: 'homepage', pathMatch: 'full' },
+  { path: 'homepage', component: Homepage },
+  { path: 'login', component: Login },
+  { path: 'register', component: Register },
+  { path: 'payment', component: PaymentComponent },
   {
-    path: '',
+    path: 'admin',
     component: AdminLayout,
     canActivate: [AuthGuard],
     data: { roles: ['Admin', 'Employee'] },
     children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: Dashboard },
       { path: 'user-management', component: UserManagement, data: { roles: ['Admin'] } },
       { path: 'bus', component: BusManagement },
@@ -25,11 +31,5 @@ export const routes: Routes = [
       { path: 'trip', component: TripManagement },
     ]
   },
-  { path: '', redirectTo: 'homepage', pathMatch: 'full' },
-  { path: 'homepage', component: Homepage },
-  { path: 'login', component: Login },
-  { path: 'register', component: Register },
-  { path: 'payment', component: PaymentComponent },
   { path: '**', redirectTo: 'homepage' }
 ];
-

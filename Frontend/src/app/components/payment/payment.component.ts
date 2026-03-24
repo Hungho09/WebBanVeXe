@@ -46,32 +46,19 @@ export class PaymentComponent implements OnInit {
     this.isProcessing = true;
     this.errorMessage = '';
 
-    // Bước 1: Tạo Payment
     const paymentReq = {
       bookingId: this.bookingId,
-      amount: this.amount,
-      paymentMethod: this.paymentMethod,
-      transactionCode: 'TXN-' + Math.floor(Math.random() * 1000000) // Mock transaction code
+      paymentMethod: this.paymentMethod
     };
 
-    this.paymentService.createPayment(paymentReq).subscribe({
-      next: (createResult) => {
-        // Bước 2: Gọi hàm xử lý (Process) Payment
-        this.paymentService.processPayment(createResult.id).subscribe({
-          next: (processResult) => {
-            this.paymentResult = processResult;
-            this.isProcessing = false;
-          },
-          error: (err) => {
-            console.error('Lỗi khi xử lý thanh toán', err);
-            this.errorMessage = 'Thanh toán thất bại trong quá trình xử lý.';
-            this.isProcessing = false;
-          }
-        });
+    this.paymentService.processPayment(paymentReq).subscribe({
+      next: (result) => {
+        this.paymentResult = result;
+        this.isProcessing = false;
       },
       error: (err) => {
-        console.error('Lỗi khi tạo yêu cầu thanh toán', err);
-        this.errorMessage = 'Không thể khởi tạo yêu cầu thanh toán.';
+        console.error('Lỗi khi xử lý thanh toán', err);
+        this.errorMessage = err.error?.message || 'Thanh toán thất bại.';
         this.isProcessing = false;
       }
     });

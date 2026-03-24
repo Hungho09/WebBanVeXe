@@ -333,8 +333,13 @@ namespace Infrastructure.Migrations
                     b.Property<Guid>("RouteId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -492,13 +497,13 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Trip", b =>
                 {
                     b.HasOne("Domain.Entities.Bus", "Bus")
-                        .WithMany()
+                        .WithMany("Trips")
                         .HasForeignKey("BusId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.Route", "Route")
-                        .WithMany()
+                        .WithMany("Trips")
                         .HasForeignKey("RouteId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -506,6 +511,16 @@ namespace Infrastructure.Migrations
                     b.Navigation("Bus");
 
                     b.Navigation("Route");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Bus", b =>
+                {
+                    b.Navigation("Trips");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Route", b =>
+                {
+                    b.Navigation("Trips");
                 });
 #pragma warning restore 612, 618
         }

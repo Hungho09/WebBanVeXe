@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260318115618_UpdateSchema")]
-    partial class UpdateSchema
+    [Migration("20260324084614_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -270,11 +270,45 @@ namespace Infrastructure.Migrations
                     b.Property<Guid>("TripId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TripId");
 
                     b.ToTable("Seats");
+                });
+
+            modelBuilder.Entity("Domain.Entities.SeatTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("BusType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ColumnNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Floor")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RowNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SeatNumber")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SeatTemplates");
                 });
 
             modelBuilder.Entity("Domain.Entities.Trip", b =>
@@ -302,8 +336,13 @@ namespace Infrastructure.Migrations
                     b.Property<Guid>("RouteId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -461,13 +500,13 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Trip", b =>
                 {
                     b.HasOne("Domain.Entities.Bus", "Bus")
-                        .WithMany()
+                        .WithMany("Trips")
                         .HasForeignKey("BusId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.Route", "Route")
-                        .WithMany()
+                        .WithMany("Trips")
                         .HasForeignKey("RouteId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -475,6 +514,16 @@ namespace Infrastructure.Migrations
                     b.Navigation("Bus");
 
                     b.Navigation("Route");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Bus", b =>
+                {
+                    b.Navigation("Trips");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Route", b =>
+                {
+                    b.Navigation("Trips");
                 });
 #pragma warning restore 612, 618
         }

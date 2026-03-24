@@ -11,12 +11,8 @@ export class PaymentService {
 
   constructor(private http: HttpClient) { }
 
-  createPayment(payment: CreatePaymentDto): Observable<PaymentResultDto> {
-    return this.http.post<PaymentResultDto>(this.apiUrl, payment);
-  }
-
-  processPayment(id: string): Observable<PaymentResultDto> {
-    return this.http.post<PaymentResultDto>(`${this.apiUrl}/${id}/process`, {});
+  processPayment(payment: any): Observable<any> {
+    return this.http.post<any>(this.apiUrl, payment);
   }
 
   getPaymentById(id: string): Observable<PaymentResultDto> {

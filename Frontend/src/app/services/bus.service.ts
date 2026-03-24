@@ -14,7 +14,7 @@ export interface Bus {
   providedIn: 'root'
 })
 export class BusService {
-  private apiUrl = 'api/buses';
+  private apiUrl = '/api/buses';
 
   constructor(private http: HttpClient) {}
 

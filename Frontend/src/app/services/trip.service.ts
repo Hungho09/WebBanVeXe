@@ -18,7 +18,7 @@ export interface Trip {
   providedIn: 'root'
 })
 export class TripService {
-  private apiUrl = 'api/trip'; // Assuming relative path or proxy
+  private apiUrl = '/api/trip'; // Assuming relative path or proxy
 
   constructor(private http: HttpClient) {}
 

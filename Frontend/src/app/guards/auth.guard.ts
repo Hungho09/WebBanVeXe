@@ -19,7 +19,7 @@ export class AuthGuard implements CanActivate {
                 const user = this.authService.getUser();
                 if (!user || !user.role || !expectedRoles.includes(user.role as string)) {
                     this.toastService.showError('Bạn không có quyền truy cập vào chức năng này!');
-                    this.router.navigate(['/']);
+                    this.router.navigate(['/homepage']);
                     return false;
                 }
             }
