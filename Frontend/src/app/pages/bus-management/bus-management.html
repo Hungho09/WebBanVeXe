@@ -2,12 +2,12 @@
     <header class="header-section">
       <div class="title-group">
         <h1>Quản lý đội xe</h1>
-        <p>Quản lý biển số, loại xe và sức chứa hành khách trong hệ thống</p>
+        <p>Hệ thống quản lý phương tiện vận tải hiện đại</p>
       </div>
       <div class="action-group">
         <div class="search-box">
           <i class="fas fa-search"></i>
-          <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Tìm theo biển số hoặc loại xe...">
+          <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Tìm theo biển số, nhà xe hoặc loại xe...">
         </div>
         <button class="btn-primary" (click)="openAddModal()">
           <i class="fas fa-plus"></i> Thêm xe mới
@@ -15,85 +15,104 @@
       </div>
     </header>
   
-    <div class="table-card">
-      <table class="modern-table">
-        <thead>
-          <tr>
-            <th>Biển số</th>
-            <th>Loại xe</th>
-            <th>Sức chứa</th>
-            <th>Trạng thái</th>
-            <th style="width: 120px;">Thao tác</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let bus of filteredList">
-            <td class="res-name">{{ bus.plateNumber }}</td>
-            <td>
-              <span class="type-badge">{{ bus.busType }}</span>
-            </td>
-            <td>{{ bus.seatCapacity }} chỗ</td>
-            <td>
-              <span [class]="bus.isActive ? 'status-badge status-available' : 'status-badge status-out'">
-                {{ bus.isActive ? 'Đang hoạt động' : 'Tạm dừng' }}
-              </span>
-            </td>
-            <td class="actions-cell">
-              <button class="btn-icon edit" (click)="openEditModal(bus)" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
-              <button class="btn-icon delete" (click)="onDelete(bus.id)" title="Xóa"><i class="fas fa-trash"></i></button>
-            </td>
-          </tr>
-          <tr *ngIf="filteredList.length === 0">
-            <td colspan="5" class="no-data">Không tìm thấy xe phù hợp</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="bus-grid">
+      <div class="bus-card" *ngFor="let bus of filteredList">
+        <div class="bus-image">
+          <img [src]="bus.imageUrl || 'assets/images/bus-placeholder.png'" alt="Bus image">
+          <span [class]="getStatusClass(bus.status)">{{ getStatusLabel(bus.status) }}</span>
+        </div>
+        <div class="bus-info">
+          <div class="bus-header">
+            <h3 class="plate-number">{{ bus.licensePlate }}</h3>
+            <span class="type-tag">{{ bus.busType.name }}</span>
+          </div>
+          <p class="company-name"><i class="fas fa-building"></i> {{ bus.companyName }}</p>
+          <div class="bus-footer">
+            <span class="seat-count"><i class="fas fa-chair"></i> {{ bus.seatCount }} chỗ</span>
+            <div class="card-actions">
+              <button class="btn-icon edit" (click)="openEditModal(bus)"><i class="fas fa-edit"></i></button>
+              <button class="btn-icon delete" (click)="onDelete(bus.id)"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="no-data-card" *ngIf="filteredList.length === 0">
+        <i class="fas fa-bus-alt"></i>
+        <p>Không tìm thấy xe nào phù hợp với tìm kiếm của bạn</p>
+      </div>
     </div>
   
     <!-- Modal -->
     <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
       <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h2>{{ isEditMode ? 'Chỉnh sửa thông tin xe' : 'Thêm xe mới vào hệ thống' }}</h2>
+          <div class="header-titles">
+            <h2>{{ isEditMode ? 'Cập nhật thông tin xe' : 'Thêm xe mới' }}</h2>
+            <p>Vui lòng điền đầy đủ các thông tin kỹ thuật của phương tiện</p>
+          </div>
           <button class="close-btn" (click)="closeModal()">&times;</button>
         </div>
   
         <form [formGroup]="busForm" (ngSubmit)="saveBus()">
-          <div class="form-group">
-            <label>Biển số xe (Ví dụ: 29A-12345)</label>
-            <input type="text" formControlName="plateNumber" placeholder="Nhập biển số xe">
-            <div *ngIf="busForm.get('plateNumber')?.invalid && busForm.get('plateNumber')?.touched" class="error-msg">
-                Biển số không hợp lệ (Định dạng: 29A-123.45 hoặc tương tự)
+          <!-- Image Upload -->
+          <div class="upload-section">
+            <div class="image-preview-container" (click)="fileInput.click()">
+              <div class="preview-overlay" *ngIf="imagePreview">
+                <i class="fas fa-camera"></i> Thay đổi ảnh
+              </div>
+              <img [src]="imagePreview" *ngIf="imagePreview" class="preview-img">
+              <div class="placeholder" *ngIf="!imagePreview">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>Nhấn để tải ảnh xe lên</span>
+                <small>Hỗ trợ JPG, PNG (Max 5MB)</small>
+              </div>
             </div>
+            <input #fileInput type="file" (change)="onFileSelected($event)" style="display:none" accept="image/*">
           </div>
-  
-          <div class="form-row">
+
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label>Tên nhà xe / Đối tác</label>
+              <input type="text" formControlName="companyName" placeholder="Ví dụ: Phương Trang, Thành Bưởi...">
+            </div>
+
+            <div class="form-group">
+              <label>Biển số xe</label>
+              <input type="text" formControlName="licensePlate" placeholder="Ví dụ: 51B-12345">
+            </div>
+
             <div class="form-group">
               <label>Loại xe</label>
-              <select formControlName="busType">
-                <option *ngFor="let type of busTypes" [value]="type">{{ type }}</option>
+              <select formControlName="busTypeId">
+                <option value="">-- Chọn loại xe --</option>
+                <option *ngFor="let type of busTypes" [value]="type.id">{{ type.name }} ({{ type.seatCount }} chỗ)</option>
               </select>
             </div>
+
             <div class="form-group">
-              <label>Sức chứa (số chỗ)</label>
-              <input type="number" formControlName="seatCapacity">
+              <label>Số chỗ (tự động theo loại)</label>
+              <input type="number" formControlName="seatCount" readonly class="readonly-input">
             </div>
-          </div>
-  
-          <div class="form-group">
-            <label class="checkbox-container">
-              <input type="checkbox" formControlName="isActive"> 
-              <span>Kích hoạt xe này ngay</span>
-            </label>
+
+            <div class="form-group">
+              <label>Trạng thái hoạt động</label>
+              <select formControlName="status">
+                <option [value]="1">🚌 Đang hoạt động (đang chạy chuyến)</option>
+                <option [value]="2">✅ Có sẵn (có thể đặt chuyến mới)</option>
+                <option [value]="3">🔴 Ngưng hoạt động (bảo trì/dừng khai thác)</option>
+              </select>
+            </div>
           </div>
   
           <div class="modal-footer">
-            <button type="button" class="btn-secondary" (click)="closeModal()">Hủy</button>
+            <button type="button" class="btn-ghost" (click)="closeModal()">Hủy bỏ</button>
             <button type="submit" class="btn-primary" [disabled]="busForm.invalid">
-              {{ isEditMode ? 'Cập nhật' : 'Thêm mới' }}
+              {{ isEditMode ? 'Lưu thay đổi' : 'Xác nhận thêm' }}
             </button>
           </div>
         </form>
       </div>
     </div>
   </div>
+

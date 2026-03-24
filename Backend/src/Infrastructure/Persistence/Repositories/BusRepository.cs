@@ -19,12 +19,12 @@ namespace Infrastructure.Persistence.Repositories
 
         public async Task<IEnumerable<Bus>> GetAllAsync()
         {
-            return await _context.Buses.ToListAsync();
+            return await _context.Buses.Include(b => b.BusType).ToListAsync();
         }
 
         public async Task<Bus?> GetByIdAsync(Guid id)
         {
-            return await _context.Buses.FindAsync(id);
+            return await _context.Buses.Include(b => b.BusType).FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<bool> ExistsByPlateNumberAsync(string plateNumber)

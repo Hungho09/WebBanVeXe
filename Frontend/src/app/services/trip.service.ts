@@ -45,4 +45,12 @@ export class TripService {
   deleteTrip(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  getSeats(tripId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${tripId}/seats`);
+  }
+
+  getTripPoints(tripId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${tripId}/points`);
+  }
 }

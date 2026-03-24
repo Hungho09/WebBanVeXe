@@ -24,6 +24,9 @@ namespace Infrastructure.Persistence
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<BusType> BusTypes { get; set; }
+        public DbSet<StopPoint> StopPoints { get; set; }
+        public DbSet<RouteStop> RouteStops { get; set; }
         public DbSet<SeatTemplate> SeatTemplates { get; set; }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
@@ -60,6 +63,13 @@ namespace Infrastructure.Persistence
                 });
             });
 
+            // Seed BusTypes
+            modelBuilder.Entity<BusType>().HasData(
+                new BusType { Id = Guid.Parse("22222222-2222-2222-2222-222222222222"), Name = "Limousine", SeatCount = 9, Description = "VIP Limousine" },
+                new BusType { Id = Guid.Parse("33333333-3333-3333-3333-333333333333"), Name = "Giường nằm", SeatCount = 44, Description = "Sleeper Bus Standard" },
+                new BusType { Id = Guid.Parse("44444444-4444-4444-4444-444444444444"), Name = "Ghế ngồi", SeatCount = 45, Description = "Standard Seat Bus" }
+            );
+
             modelBuilder.Entity<Route>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -77,6 +87,43 @@ namespace Infrastructure.Persistence
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.PlateNumber).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.CompanyName).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.ImageUrl).HasMaxLength(500);
+                
+                entity.HasOne(e => e.BusType)
+                    .WithMany(bt => bt.Buses)
+                    .HasForeignKey(e => e.BusTypeId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // Configure BusType
+            modelBuilder.Entity<BusType>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.SeatCount).IsRequired();
+            });
+
+            // Configure StopPoint
+            modelBuilder.Entity<StopPoint>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.Address).IsRequired().HasMaxLength(500);
+            });
+
+            // Configure RouteStop
+            modelBuilder.Entity<RouteStop>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(e => e.Route)
+                    .WithMany(r => r.RouteStops)
+                    .HasForeignKey(e => e.RouteId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.StopPoint)
+                    .WithMany(sp => sp.RouteStops)
+                    .HasForeignKey(e => e.StopPointId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Trip>(entity =>
@@ -121,8 +168,14 @@ namespace Infrastructure.Persistence
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Price).HasPrecision(18, 2);
-                entity.HasOne(e => e.Booking).WithMany().HasForeignKey(e => e.BookingId).OnDelete(DeleteBehavior.Restrict);
-                entity.HasOne(e => e.Seat).WithMany().HasForeignKey(e => e.SeatId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.Booking)
+                    .WithMany(b => b.BookingDetails)
+                    .HasForeignKey(e => e.BookingId)
+                    .OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.Seat)
+                    .WithMany()
+                    .HasForeignKey(e => e.SeatId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // Configure Payment

@@ -100,5 +100,12 @@ namespace Api.Controllers
             if (!success) return BadRequest(new { message = "Seat could not be unlocked." });
             return Ok(new { message = "Seat unlocked successfully" });
         }
+
+        [HttpGet("{id}/points")]
+        public async Task<ActionResult<IEnumerable<TripPointDto>>> GetPoints(Guid id)
+        {
+            var points = await _tripService.GetTripPointsAsync(id);
+            return Ok(points);
+        }
     }
 }

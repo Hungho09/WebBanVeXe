@@ -11,15 +11,19 @@ namespace Application.DTOs
 
         [Required]
         [MaxLength(50)]
-        public string PlateNumber { get; set; } = string.Empty;
+        public string LicensePlate { get; set; } = string.Empty;
 
         [Required]
-        public BusType BusType { get; set; }
+        [MaxLength(200)]
+        public string CompanyName { get; set; } = string.Empty;
+
+        public string? ImageUrl { get; set; }
 
         [Required]
-        [Range(10, 60, ErrorMessage = "Seat capacity must be between 10 and 60")]
-        public int SeatCapacity { get; set; }
+        public Guid BusTypeId { get; set; }
 
         public bool IsActive { get; set; }
+
+        public BusStatus Status { get; set; } = BusStatus.Available;
     }
 }

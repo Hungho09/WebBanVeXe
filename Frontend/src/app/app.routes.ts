@@ -32,6 +32,6 @@ export const routes: Routes = [
       { path: 'trip', component: TripManagement },
     ]
   },
-  { path: 'booking/:id', component: Booking },
+  { path: 'booking/:id', loadComponent: () => import('./pages/booking/booking').then(m => m.Booking) },
   { path: '**', redirectTo: 'homepage' }
 ];

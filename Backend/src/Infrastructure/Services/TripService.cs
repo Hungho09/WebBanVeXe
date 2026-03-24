@@ -13,11 +13,13 @@ namespace Infrastructure.Services
     {
         private readonly ITripRepository _tripRepository;
         private readonly ISeatService _seatService;
+        private readonly IBusRepository _busRepository;
 
-        public TripService(ITripRepository tripRepository, ISeatService seatService)
+        public TripService(ITripRepository tripRepository, ISeatService seatService, IBusRepository busRepository)
         {
             _tripRepository = tripRepository;
             _seatService = seatService;
+            _busRepository = busRepository;
         }
 
         public async Task<TripDto?> GetTripByIdAsync(Guid id)
@@ -42,10 +44,23 @@ namespace Infrastructure.Services
                 throw new ArgumentException("Arrival time must be after departure time.");
             }
 
+            // Check for bus availability (from BusStatus enum)
+            var bus = await _busRepository.GetByIdAsync(dto.BusId);
+            if (bus == null)
+            {
+                throw new ArgumentException("Bus not found.");
+            }
+
+            if (bus.Status != Domain.Enums.BusStatus.Available)
+            {
+                var statusMsg = bus.Status == Domain.Enums.BusStatus.Active ? "đang hoạt động" : "ngưng hoạt động";
+                throw new InvalidOperationException($"Không thể tạo chuyến mới cho xe này vì xe {statusMsg}.");
+            }
+
             // Check for bus availability (no overlapping trips)
             if (await _tripRepository.HasConflictAsync(dto.BusId, dto.DepartureTime, dto.ArrivalTime))
             {
-                throw new InvalidOperationException("This bus is already assigned to another trip during this interval.");
+                throw new InvalidOperationException("Xe này đã được xếp lịch cho một chuyến đi khác trong khoảng thời gian này.");
             }
 
             var trip = new Trip
@@ -61,6 +76,11 @@ namespace Infrastructure.Services
             };
 
             await _tripRepository.AddAsync(trip);
+            
+            // Story: Update bus status to Active when trip is created
+            bus.Status = Domain.Enums.BusStatus.Active;
+            await _busRepository.UpdateAsync(bus);
+
             await _tripRepository.SaveChangesAsync();
 
             // Refresh to get navigation properties (like Bus) for seat generation
@@ -68,7 +88,7 @@ namespace Infrastructure.Services
             if (createdTripWithBus?.Bus != null)
             {
                 // Story 2.4: Auto generate seats based on bus type
-                await _seatService.GenerateSeatsForTripAsync(trip.Id, createdTripWithBus.Bus.BusType);
+                await _seatService.GenerateSeatsForTripAsync(trip.Id, createdTripWithBus.Bus.BusTypeId);
             }
 
             // Refresh to get navigation properties for the DTO
@@ -172,6 +192,26 @@ namespace Infrastructure.Services
             await _tripRepository.SaveChangesAsync();
             return true;
         }
+
+        public async Task<IEnumerable<TripPointDto>> GetTripPointsAsync(Guid tripId)
+        {
+            var trip = await _tripRepository.GetByIdAsync(tripId);
+            if (trip == null || trip.Route == null) return Enumerable.Empty<TripPointDto>();
+
+            return trip.Route.RouteStops
+                .OrderBy(rs => rs.OrderIndex)
+                .Select(rs => new TripPointDto
+                {
+                    Id = rs.StopPointId,
+                    Name = rs.StopPoint.Name,
+                    Address = rs.StopPoint.Address,
+                    ExpectedTime = trip.DepartureTime.AddMinutes(rs.OffsetMinutes),
+                    DistanceFromOrigin = rs.DistanceFromOriginKm,
+                    Badge = rs.StopPoint.Badge,
+                    IsPickup = rs.StopPoint.IsPickup,
+                    IsDropoff = rs.StopPoint.IsDropoff
+                });
+        }
         private TripDto MapToDto(Trip trip)
         {
             return new TripDto
@@ -181,6 +221,8 @@ namespace Infrastructure.Services
                 RouteName = trip.Route != null ? $"{trip.Route.Origin} - {trip.Route.Destination}" : "N/A",
                 BusId = trip.BusId,
                 BusPlate = trip.Bus?.PlateNumber ?? "N/A",
+                BusTypeName = trip.Bus?.BusType?.Name ?? "N/A",
+                BusImageUrl = trip.Bus?.ImageUrl,
                 DepartureTime = trip.DepartureTime,
                 ArrivalTime = trip.ArrivalTime,
                 Price = trip.Price,

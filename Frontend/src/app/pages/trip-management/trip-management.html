@@ -66,12 +66,22 @@
       <form [formGroup]="tripForm" (ngSubmit)="saveTrip()">
         <div class="form-row">
             <div class="form-group">
-                <label>Lộ trình (ID)</label>
-                <input type="text" formControlName="routeId" placeholder="Nhập mã lộ trình">
+                <label>Chọn Lộ trình</label>
+                <select formControlName="routeId">
+                  <option value="" disabled>-- Chọn lộ trình --</option>
+                  <option *ngFor="let route of routes" [value]="route.id">
+                    {{ getRouteLabel(route) }}
+                  </option>
+                </select>
             </div>
             <div class="form-group">
-                <label>Xe (ID)</label>
-                <input type="text" formControlName="busId" placeholder="Nhập mã xe">
+                <label>Chọn Xe (Chỉ xe "Có sẵn")</label>
+                <select formControlName="busId">
+                  <option value="" disabled>-- Chọn xe --</option>
+                  <option *ngFor="let bus of availableBuses" [value]="bus.id">
+                    {{ bus.licensePlate }} ({{ bus.companyName }} - {{ bus.seatCount }} chỗ)
+                  </option>
+                </select>
             </div>
         </div>
         <div class="form-row">

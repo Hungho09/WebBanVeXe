@@ -34,7 +34,7 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        // [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateRouteDto createRouteDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -51,7 +51,7 @@ namespace Api.Controllers
         }
 
         [HttpPut("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        // [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateRouteDto updateRouteDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -69,7 +69,7 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        // [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var success = await _routeService.DeleteRouteAsync(id);
