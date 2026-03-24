@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TripService, Trip } from '../../services/trip.service';
+import { TripService } from '../../services/trip.service';
+import { BookingService, CreateBookingDto } from '../../services/booking.service';
+import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
 
 export interface Seat {
   id: string;
@@ -12,9 +15,6 @@ export interface Seat {
   columnNumber?: number;
   type?: string;
 }
-import { BookingService, CreateBookingDto } from '../../services/booking.service';
-import { AuthService } from '../../services/auth.service';
-import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-booking',
@@ -23,31 +23,21 @@ import { ToastService } from '../../services/toast.service';
   templateUrl: './booking.html',
   styleUrl: './booking.css'
 })
-export class Booking implements OnInit {
+export class Booking implements OnInit, OnDestroy {
   tripId: string | null = null;
-  trip: Trip | null = null;
+  trip: any | null = null;
   seats: Seat[] = [];
+  points: any[] = [];
+  
   selectedSeatIds: string[] = [];
+  selectedPickupId: string | null = null;
+  selectedDropoffId: string | null = null;
+
+  activeStep: 'seat' | 'point' | 'info' = 'seat';
   isLoading = true;
-  timerValue = 0; // in seconds
+  timerValue = 0;
   timerDisplay = '10:00';
   private timerInterval: any;
-
-  // Wizard state
-  currentStep = 1;
-
-  // Mock points
-  pickupPoints = [
-    { id: 1, name: 'Bến xe Miền Đông', time: '20:00' },
-    { id: 2, name: 'Ngã Tư Thủ Đức', time: '20:30' },
-    { id: 3, name: 'Suối Tiên', time: '20:45' }
-  ];
-  dropoffPoints = [
-    { id: 1, name: 'Bến xe Đức Trọng', time: '04:00' },
-    { id: 2, name: 'Bến xe Đà Lạt', time: '05:00' }
-  ];
-  selectedPickup = '';
-  selectedDropoff = '';
 
   // Payment methods
   paymentMethods = [
@@ -55,7 +45,7 @@ export class Booking implements OnInit {
     { id: 'momo', name: 'Ví MoMo', icon: 'fas fa-mobile-alt' },
     { id: 'cash', name: 'Thanh toán khi lên xe', icon: 'fas fa-money-bill-wave' }
   ];
-  selectedPaymentMethod = '';
+  selectedPaymentMethod = 'vnpay';
 
   constructor(
     private route: ActivatedRoute,
@@ -77,13 +67,7 @@ export class Booking implements OnInit {
   }
 
   ngOnDestroy(): void {
-    if (this.timerInterval) {
-      clearInterval(this.timerInterval);
-    }
-    // Optional: Unlock all selected seats on destroy
-    if (this.selectedSeatIds.length > 0) {
-      this.selectedSeatIds.forEach(id => this.bookingService.unlockSeat(id).subscribe());
-    }
+    this.stopTimer();
   }
 
   loadTripData(id: string): void {
@@ -92,21 +76,13 @@ export class Booking implements OnInit {
       next: (trip) => {
         this.trip = trip;
         this.loadSeats(id);
+        this.loadPoints(id);
       },
       error: () => {
         this.toastService.showError('Failed to load trip details');
         this.isLoading = false;
       }
     });
-  }
-
-  get floors(): number[] {
-    const floorSet = new Set(this.seats.map(s => s.floor || 1));
-    return Array.from(floorSet).sort((a, b) => a - b);
-  }
-
-  getSeatsByFloor(floorNum: number): Seat[] {
-    return this.seats.filter(s => s.floor === floorNum);
   }
 
   loadSeats(tripId: string): void {
@@ -122,56 +98,63 @@ export class Booking implements OnInit {
     });
   }
 
-  toggleSeat(seat: Seat): void {
+  loadPoints(tripId: string): void {
+    this.tripService.getTripPoints(tripId).subscribe({
+      next: (points) => {
+        this.points = points;
+      },
+      error: () => console.error('Error loading points')
+    });
+  }
+
+  get floors(): number[] {
+    const floorSet = new Set(this.seats.map(s => s.floor || 1));
+    return Array.from(floorSet).sort((a, b) => a - b);
+  }
+
+  getSeatsByFloor(floorNum: number): Seat[] {
+    return this.seats.filter(s => s.floor === floorNum);
+  }
+
+  get pickupPoints() { return this.points.filter(p => p.isPickup); }
+  get dropoffPoints() { return this.points.filter(p => p.isDropoff); }
+
+  toggleSeat(seat: any): void {
     const isAlreadySelected = this.selectedSeatIds.includes(seat.id);
 
     if (isAlreadySelected) {
-      // Deselect and Unlock
       this.bookingService.unlockSeat(seat.id).subscribe({
         next: () => {
           this.selectedSeatIds = this.selectedSeatIds.filter(id => id !== seat.id);
-          if (this.selectedSeatIds.length === 0) {
-            this.stopTimer();
-          }
-          this.loadSeats(this.tripId!); // Refresh to show as available
-        },
-        error: () => {
-          this.toastService.showError('Failed to unlock seat');
+          if (this.selectedSeatIds.length === 0) this.stopTimer();
+          this.loadSeats(this.tripId!);
         }
       });
     } else {
-      // Select and Lock
-      if (seat.status !== 'Available') {
-        this.toastService.showWarning('This seat is not available');
-        return;
-      }
-
+      if (seat.status !== 'Available') return;
       this.bookingService.lockSeat(seat.id).subscribe({
         next: () => {
           this.selectedSeatIds.push(seat.id);
           this.startTimer();
-          this.loadSeats(this.tripId!); // Refresh to show as locked
+          this.loadSeats(this.tripId!);
         },
-        error: (err) => {
-          this.toastService.showError(err.error?.message || 'Failed to lock seat');
-        }
+        error: (err) => this.toastService.showError(err.error?.message || 'Failed to lock seat')
       });
     }
   }
 
   startTimer(): void {
     if (this.timerInterval) return;
-    
-    this.timerValue = 10 * 60; // 10 minutes
-    this.updateTimerDisplay();
-    
+    this.timerValue = 10 * 60;
     this.timerInterval = setInterval(() => {
       this.timerValue--;
-      this.updateTimerDisplay();
-      
+      const minutes = Math.floor(this.timerValue / 60);
+      const seconds = this.timerValue % 60;
+      this.timerDisplay = `${minutes}:${seconds.toString().padStart(2, '0')}`;
       if (this.timerValue <= 0) {
         this.stopTimer();
-        this.handleTimerExpired();
+        this.selectedSeatIds = [];
+        this.loadSeats(this.tripId!);
       }
     }, 1000);
   }
@@ -183,20 +166,12 @@ export class Booking implements OnInit {
     }
   }
 
-  updateTimerDisplay(): void {
-    const minutes = Math.floor(this.timerValue / 60);
-    const seconds = this.timerValue % 60;
-    this.timerDisplay = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  }
-
-  handleTimerExpired(): void {
-    this.toastService.showWarning('Booking session expired. Seats have been released.');
-    this.selectedSeatIds = [];
-    this.loadSeats(this.tripId!);
-  }
-
   isSelected(seatId: string): boolean {
     return this.selectedSeatIds.includes(seatId);
+  }
+
+  showMap(point: any) {
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(point.name + ' ' + point.address)}`, '_blank');
   }
 
   get totalAmount(): number {
@@ -204,60 +179,50 @@ export class Booking implements OnInit {
   }
 
   nextStep() {
-    if (this.currentStep === 1 && this.selectedSeatIds.length === 0) {
-      this.toastService.showWarning('Vui lòng chọn ít nhất 1 chỗ ngồi!');
-      return;
+    if (this.activeStep === 'seat') {
+      if (this.selectedSeatIds.length === 0) {
+        this.toastService.showWarning('Vui lòng chọn ít nhất 1 chỗ ngồi!');
+        return;
+      }
+      this.activeStep = 'point';
+    } else if (this.activeStep === 'point') {
+      if (!this.selectedPickupId || !this.selectedDropoffId) {
+        this.toastService.showWarning('Vui lòng chọn Điểm đón và Điểm trả!');
+        return;
+      }
+      this.activeStep = 'info';
     }
-    if (this.currentStep === 2 && (!this.selectedPickup || !this.selectedDropoff)) {
-      this.toastService.showWarning('Vui lòng chọn Điểm đón và Điểm trả!');
-      return;
-    }
-    this.currentStep++;
   }
 
   prevStep() {
-    this.currentStep--;
-  }
-
-  selectPickup(name: string) {
-    this.selectedPickup = name;
-  }
-
-  selectDropoff(name: string) {
-    this.selectedDropoff = name;
-  }
-
-  selectPaymentMethod(id: string) {
-    this.selectedPaymentMethod = id;
+    if (this.activeStep === 'point') this.activeStep = 'seat';
+    else if (this.activeStep === 'info') this.activeStep = 'point';
   }
 
   confirmBooking(): void {
-    if (this.selectedSeatIds.length === 0) {
-      this.toastService.showWarning('Please select at least one seat');
-      return;
-    }
-
-    const currentUser = this.authService.getUser();
-    if (!this.authService.isLoggedIn() || !currentUser?.userName) {
-      this.toastService.showInfo('Please login to book tickets');
+    const userProfile = this.authService.getUser();
+    if (!this.authService.isLoggedIn() || !userProfile) {
+      this.toastService.showInfo('Vui lòng đăng nhập để đặt vé');
       this.router.navigate(['/login'], { queryParams: { returnUrl: `/booking/${this.tripId}` } });
       return;
     }
 
     const bookingDto: CreateBookingDto = {
-      userId: currentUser?.userName ?? '',
+      userId: userProfile.id || userProfile.userName, // Handle both id and userName depending on auth implementation
       tripId: this.tripId!,
       seatIds: this.selectedSeatIds
     };
 
+    this.isLoading = true;
     this.bookingService.createBooking(bookingDto).subscribe({
-      next: (response) => {
+      next: () => {
         this.stopTimer();
-        this.toastService.showSuccess('Booking successful!');
+        this.toastService.showSuccess('Đặt vé thành công!');
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        this.toastService.showError(err.error?.message || 'Booking failed');
+        this.toastService.showError(err.error?.message || 'Đặt vé thất bại');
+        this.isLoading = false;
       }
     });
   }

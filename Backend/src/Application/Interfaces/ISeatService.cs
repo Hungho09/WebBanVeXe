@@ -11,11 +11,11 @@ namespace Application.Interfaces
         /// <summary>
         /// Retrieves the seat templates for a specific bus type.
         /// </summary>
-        Task<IEnumerable<SeatTemplate>> GetTemplatesByBusTypeAsync(BusType busType);
+        Task<IEnumerable<SeatTemplate>> GetTemplatesByBusTypeAsync(Guid busTypeId);
 
         /// <summary>
         /// Generates the actual Seat records for a given Trip based on the BusType's layout template.
         /// </summary>
-        Task<IEnumerable<Seat>> GenerateSeatsForTripAsync(Guid tripId, BusType busType);
+        Task<IEnumerable<Seat>> GenerateSeatsForTripAsync(Guid tripId, Guid busTypeId);
     }
 }

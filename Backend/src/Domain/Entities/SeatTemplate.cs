@@ -7,10 +7,8 @@ namespace Domain.Entities
     {
         public Guid Id { get; set; }
         
-        /// <summary>
-        /// Loại xe áp dụng layout này (Sleeper, Seat, Limousine)
-        /// </summary>
-        public BusType BusType { get; set; }
+        public Guid BusTypeId { get; set; }
+        public BusType BusType { get; set; } = null!;
         
         /// <summary>
         /// Số ghế/Mã ghế tương đối (vd: A1, B2)

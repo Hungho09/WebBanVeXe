@@ -1,186 +1,232 @@
 <div class="booking-container" *ngIf="!isLoading; else loading">
-  <div class="booking-card glass-card">
-    <div class="booking-header">
-      <h2>Booking for Trip: {{ trip?.routeName }}</h2>
-      <p class="trip-info">
-        <span><i class="fas fa-clock"></i> {{ trip?.departureTime | date:'short' }}</span>
-        <span><i class="fas fa-bus"></i> {{ trip?.busPlate }}</span>
-        <span><i class="fas fa-money-bill-wave"></i> {{ trip?.price | currency:'VND' }}/seat</span>
-      </p>
+  <!-- Stepper Header -->
+  <div class="stepper-bar">
+    <div class="step" [class.active]="activeStep === 'seat'" [class.completed]="activeStep !== 'seat'">
+      <div class="step-icon"><i class="fas fa-chair"></i></div>
+      <span>Chọn chỗ</span>
     </div>
-    <!-- Progress Tracker -->
-    <div class="step-indicator">
-      <div class="step" [class.active]="currentStep >= 1" (click)="currentStep = 1">1. Chọn Ghế</div>
-      <div class="step-connector" [class.active-connector]="currentStep >= 2"></div>
-      <div class="step" [class.active]="currentStep >= 2" [class.disabled]="selectedSeatIds.length === 0" (click)="selectedSeatIds.length > 0 ? (currentStep = 2) : null">2. Điểm Đón/Trả</div>
-      <div class="step-connector" [class.active-connector]="currentStep === 3"></div>
-      <div class="step" [class.active]="currentStep === 3" [class.disabled]="currentStep < 3">3. Thanh Toán</div>
+    <div class="connector"></div>
+    <div class="step" [class.active]="activeStep === 'point'" [class.completed]="activeStep === 'info'">
+      <div class="step-icon"><i class="fas fa-map-marker-alt"></i></div>
+      <span>Điểm đón/trả</span>
     </div>
+    <div class="connector"></div>
+    <div class="step" [class.active]="activeStep === 'info'">
+      <div class="step-icon"><i class="fas fa-user-edit"></i></div>
+      <span>Xác nhận</span>
+    </div>
+  </div>
 
-    <!-- STEP 1: Chọn Ghế -->
-    <div *ngIf="currentStep === 1" class="wizard-step fade-in seat-map-container">
-      <h3>1. Chọn Ghế Của Bạn</h3>
-      
-      <div class="layout-wrapper">
-        <!-- Legend Left -->
-        <div class="seat-legend-vertical">
-          <h4>Chú thích</h4>
-          <div class="legend-item">
-            <div class="seat-box unavailable"><i class="fas fa-times-circle seat-icon"></i></div>
-            <span>Ghế không bán</span>
-          </div>
-          <div class="legend-item">
-            <div class="seat-box selected"><i class="fas fa-check-circle seat-icon"></i></div>
-            <span>Đang chọn</span>
-          </div>
-          <div class="legend-item">
-            <div class="seat-box available vip">
-               <i class="fas fa-star vip-star" style="position: absolute; top: 6px; color: #f1c40f; font-size: 12px;"></i>
+  <div class="main-content">
+    <div class="content-left">
+      <!-- SEAT SELECTION STEP -->
+      <div class="step-content animate-fade" *ngIf="activeStep === 'seat'">
+        <div class="card seat-card">
+          <div class="card-header">
+            <h3>Chọn chỗ ngồi mong muốn</h3>
+            <div class="legend" style="display: flex; gap: 1rem; font-size: 0.8rem; margin-top: 0.5rem;">
+              <span class="l-item" style="display: flex; align-items: center; gap: 4px;"><i class="seat s-avail" style="width: 12px; height: 12px; border: 1px solid #ccc; display: inline-block;"></i> Trống</span>
+              <span class="l-item" style="display: flex; align-items: center; gap: 4px;"><i class="seat s-selected" style="width: 12px; height: 12px; background: #2563eb; display: inline-block;"></i> Đang chọn</span>
+              <span class="l-item" style="display: flex; align-items: center; gap: 4px;"><i class="seat s-booked" style="width: 12px; height: 12px; background: #f3f4f6; display: inline-block;"></i> Đã đặt</span>
             </div>
-            <span>Ghế VIP</span>
           </div>
-          <div class="legend-item">
-            <div class="seat-box available"></div>
-            <span>Còn trống</span>
-          </div>
-        </div>
 
-        <!-- Bus Layout Right -->
-        <div class="bus-floors">
-          <div class="floor-wrapper" *ngFor="let floor of floors">
-            <div class="floor-title">{{ floor === 1 ? 'Tầng dưới' : 'Tầng trên' }}</div>
-            <div class="bus-body">
-              <!-- Steering wheel for lower floor -->
-              <div class="steering-wheel" *ngIf="floor === 1">
-                 <img src="/assets/steering-wheel.png" alt="wheel" style="width: 30px; opacity: 0.5;" *ngIf="false">
-                 <i class="fas fa-steering-wheel" style="font-size: 24px; color: #aaa;"></i>
-                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="2"></circle><line x1="12" y1="2" x2="12" y2="10"></line><line x1="12" y1="14" x2="12" y2="22"></line><line x1="2.68" y1="7.11" x2="8.61" y2="10.5"></line><line x1="15.39" y1="13.5" x2="21.32" y2="16.89"></line><line x1="2.68" y1="16.89" x2="8.61" y2="13.5"></line><line x1="15.39" y1="10.5" x2="21.32" y2="7.11"></line></svg>
-              </div>
-
-              <div class="seat-grid-custom">
-                <!-- Assuming max rows = 6 for physical grid rendering. 
-                     We map seat objects directly to their grid positions -->
-                <ng-container *ngFor="let seat of getSeatsByFloor(floor)">
-                  <div 
-                    class="seat-box" 
-                    [style.grid-row]="seat.rowNumber"
-                    [style.grid-column]="seat.columnNumber"
-                    [ngClass]="{
-                      'available': seat.status === 'Available',
-                      'unavailable': seat.status !== 'Available' && !isSelected(seat.id),
-                      'selected': isSelected(seat.id),
-                      'vip': seat.type === 'VIP'
-                    }"
-                    (click)="toggleSeat(seat)"
-                    [title]="seat.seatNumber + (seat.type === 'VIP' ? ' (VIP)' : '')"
-                  >
-                    <!-- Display Icons based on status -->
-                    <i *ngIf="seat.type === 'VIP' && seat.status === 'Available' && !isSelected(seat.id)" class="fas fa-star" style="position: absolute; top: 6px; color: #f1c40f; font-size: 12px;"></i>
-                    <i *ngIf="seat.status !== 'Available' && !isSelected(seat.id)" class="fas fa-times-circle seat-icon"></i>
-                    <i *ngIf="isSelected(seat.id)" class="fas fa-check-circle seat-icon"></i>
+          <div class="bus-layout">
+            <div class="timer-banner" *ngIf="selectedSeatIds.length > 0">
+              <i class="fas fa-clock"></i> Thời gian giữ chỗ: <strong>{{ timerDisplay }}</strong>
+            </div>
+            
+            <div class="bus-floors">
+              <div class="floor-wrapper" *ngFor="let floor of floors">
+                <div class="floor-title">{{ floor === 1 ? 'Tầng dưới' : 'Tầng trên' }}</div>
+                <div class="bus-body">
+                  <div class="steering-wheel" *ngIf="floor === 1">
+                     <i class="fas fa-steering-wheel" style="font-size: 24px;"></i>
+                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="2"></circle><line x1="12" y1="2" x2="12" y2="10"></line><line x1="12" y1="14" x2="12" y2="22"></line><line x1="2.68" y1="7.11" x2="8.61" y2="10.5"></line><line x1="15.39" y1="13.5" x2="21.32" y2="16.89"></line></svg>
                   </div>
-                </ng-container>
+    
+                  <div class="seat-grid-custom">
+                    <ng-container *ngFor="let seat of getSeatsByFloor(floor)">
+                      <div 
+                        class="seat-box" 
+                        [style.grid-row]="seat.rowNumber"
+                        [style.grid-column]="seat.columnNumber"
+                        [ngClass]="{
+                          'available': seat.status === 'Available',
+                          'booked': seat.status !== 'Available' && !isSelected(seat.id),
+                          'selected': isSelected(seat.id),
+                          'vip': seat.type === 'VIP'
+                        }"
+                        (click)="toggleSeat(seat)"
+                      >
+                        <span class="s-num" *ngIf="!isSelected(seat.id) && seat.status === 'Available'">{{ seat.seatNumber }}</span>
+                        <i *ngIf="isSelected(seat.id)" class="fas fa-check"></i>
+                        <i *ngIf="seat.status !== 'Available' && !isSelected(seat.id)" class="fas fa-times" style="font-size: 10px; opacity: 0.3;"></i>
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="timer-container" *ngIf="selectedSeatIds.length > 0" style="margin-top: 20px; text-align: center;">
-        <p>Your seats are held for: <span class="timer">{{ timerDisplay }}</span></p>
-      </div>
-    </div>
-
-    <!-- STEP 2: Chọn Điểm Đón / Trả -->
-    <div *ngIf="currentStep === 2" class="wizard-step fade-in">
-      <div class="location-section">
-        <h3>📍 Chọn Điểm Đón</h3>
-        <div class="options-container">
-          <div 
-            class="option-card" 
-            *ngFor="let pt of pickupPoints"
-            [class.selected]="selectedPickup === pt.name"
-            (click)="selectPickup(pt.name)"
-          >
-            <div>
-              <strong>{{ pt.time }}</strong> - {{ pt.name }}
+      <!-- POINT SELECTION STEP -->
+      <div class="step-content animate-fade" *ngIf="activeStep === 'point'">
+        <div class="points-grid">
+          <div class="card p-card">
+            <div class="card-header"><h3>Điểm đón</h3></div>
+            <div class="points-list">
+              <div *ngFor="let p of pickupPoints" 
+                   class="point-item"
+                   [class.selected]="selectedPickupId === p.id"
+                   (click)="selectedPickupId = p.id">
+                <div class="point-radio">
+                  <div class="radio-outer"><div class="radio-inner" *ngIf="selectedPickupId === p.id"></div></div>
+                </div>
+                <div class="point-main">
+                  <div class="p-time-row">
+                    <span class="p-time">{{ p.expectedTime | date:'HH:mm' }}</span>
+                    <span class="p-dot">•</span>
+                    <span class="p-name">{{ p.name }}</span>
+                    <span class="badge" *ngIf="p.badge">{{ p.badge }}</span>
+                  </div>
+                  <div class="p-addr">{{ p.address }}</div>
+                  <button class="btn-map" (click)="$event.stopPropagation(); showMap(p)">
+                    <i class="fas fa-map-marked-alt"></i> Bản đồ
+                  </button>
+                </div>
+              </div>
             </div>
-            <i class="fas fa-check-circle" *ngIf="selectedPickup === pt.name"></i>
           </div>
-        </div>
-      </div>
 
-      <div class="location-section">
-        <h3>📍 Chọn Điểm Trả</h3>
-        <div class="options-container">
-          <div 
-            class="option-card" 
-            *ngFor="let pt of dropoffPoints"
-            [class.selected]="selectedDropoff === pt.name"
-            (click)="selectDropoff(pt.name)"
-          >
-            <div>
-              <strong>{{ pt.time }}</strong> - {{ pt.name }}
+          <div class="card p-card">
+            <div class="card-header"><h3>Điểm trả</h3></div>
+            <div class="points-list">
+              <div class="point-item special" 
+                   [class.selected]="selectedDropoffId === 'door-to-door'"
+                   (click)="selectedDropoffId = 'door-to-door'">
+                <div class="point-radio">
+                  <div class="radio-outer"><div class="radio-inner" *ngIf="selectedDropoffId === 'door-to-door'"></div></div>
+                </div>
+                <div class="point-main">
+                  <div class="p-time-row">
+                    <span class="p-name">Trả tận nơi</span>
+                    <span class="badge hit">Phổ biến</span>
+                  </div>
+                  <div class="p-addr">Hỗ trợ trả tận nhà trong khu vực nội thành</div>
+                </div>
+              </div>
+
+              <div *ngFor="let p of dropoffPoints" 
+                   class="point-item"
+                   [class.selected]="selectedDropoffId === p.id"
+                   (click)="selectedDropoffId = p.id">
+                <div class="point-radio">
+                  <div class="radio-outer"><div class="radio-inner" *ngIf="selectedDropoffId === p.id"></div></div>
+                </div>
+                <div class="point-main">
+                  <div class="p-time-row">
+                    <span class="p-time">{{ p.expectedTime | date:'HH:mm' }}</span>
+                    <span class="p-dot">•</span>
+                    <span class="p-name">{{ p.name }}</span>
+                  </div>
+                  <div class="p-addr">{{ p.address }}</div>
+                  <div class="p-actions">
+                    <button class="btn-map" (click)="$event.stopPropagation(); showMap(p)">
+                      <i class="fas fa-map-marked-alt"></i> Bản đồ
+                    </button>
+                    <span class="badge shuttle" *ngIf="p.name.includes('Bến xe')">Trung chuyển 5km</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <i class="fas fa-check-circle" *ngIf="selectedDropoff === pt.name"></i>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- STEP 3: Thanh Toán -->
-    <div *ngIf="currentStep === 3" class="wizard-step fade-in">
-      <h3>💳 Phương thức thanh toán</h3>
-      <div class="options-container">
-        <div 
-          class="option-card" 
-          *ngFor="let method of paymentMethods"
-          [class.selected]="selectedPaymentMethod === method.id"
-          (click)="selectPaymentMethod(method.id)"
-        >
-          <div>
-            <i [class]="method.icon" style="margin-right: 10px; font-size: 1.2rem;"></i>
-            {{ method.name }}
+      <!-- INFO CONFIRMATION STEP -->
+      <div class="step-content animate-fade" *ngIf="activeStep === 'info'">
+          <div class="card info-card">
+              <h3>Xác nhận thông tin & Thanh toán</h3>
+              <p>Vui lòng kiểm tra lại lộ trình và thông tin hành khách trước khi thanh toán.</p>
+              
+              <div class="payment-methods" style="margin-top: 2rem;">
+                <label style="font-weight: 700; margin-bottom: 1rem; display: block;">Chọn phương thức thanh toán</label>
+                <div class="options-container">
+                  <div 
+                    class="option-card" 
+                    *ngFor="let method of paymentMethods"
+                    [class.selected]="selectedPaymentMethod === method.id"
+                    (click)="selectedPaymentMethod = method.id"
+                    style="margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #eee; border-radius: 12px; cursor: pointer;"
+                  >
+                    <div>
+                      <i [class]="method.icon" style="margin-right: 10px; color: #2563eb;"></i>
+                      {{ method.name }}
+                    </div>
+                    <i class="fas fa-check-circle" *ngIf="selectedPaymentMethod === method.id" style="color: #2563eb;"></i>
+                  </div>
+                </div>
+              </div>
           </div>
-          <i class="fas fa-check-circle" *ngIf="selectedPaymentMethod === method.id"></i>
-        </div>
       </div>
     </div>
 
-    <div class="booking-summary">
-      <div class="summary-details">
-        <p>Selected Seats: <strong>{{ selectedSeatIds.length }}</strong> (<span *ngFor="let id of selectedSeatIds; let last=last">{{ (seats | keyvalue) ? '1' : '' }}{{last ? '' : ', '}}</span> )</p>
-        <p>Total Amount: <span class="price">{{ totalAmount | currency:'VND' }}</span></p>
-      </div>
-      
-      <div class="btn-group">
-        <button class="btn-secondary" *ngIf="currentStep > 1" (click)="prevStep()">Quay lại</button>
-        
-        <button 
-          class="confirm-btn" 
-          *ngIf="currentStep < 3"
-          [disabled]="selectedSeatIds.length === 0"
-          (click)="nextStep()"
-        >
-          Tiếp tục
-        </button>
+    <div class="content-right">
+      <div class="sticky-sidebar">
+        <div class="card trip-summary-card">
+          <div class="trip-header">
+            <h3>{{ trip?.routeName }}</h3>
+            <span class="trip-date">{{ trip?.departureTime | date:'dd/MM/yyyy' }}</span>
+          </div>
 
-        <button 
-          class="confirm-btn" 
-          *ngIf="currentStep === 3"
-          [disabled]="selectedSeatIds.length === 0 || !selectedPaymentMethod || !selectedPickup || !selectedDropoff"
-          (click)="confirmBooking()"
-        >
-          Thanh Toán & Đặt Vé
-        </button>
+          <div class="trip-visual-path">
+            <div class="path-node">
+                <i class="fas fa-circle-dot ori" style="color: #2563eb;"></i>
+                <div class="node-text">
+                    <span class="time">{{ trip?.departureTime | date:'HH:mm' }}</span>
+                    <span class="place">Điểm xuất phát</span>
+                </div>
+            </div>
+            <div class="path-line" style="height: 30px; width: 2px; background: #e5e7eb; margin-left: 5px;"></div>
+            <div class="path-node">
+                <i class="fas fa-location-dot des" style="color: #ef4444;"></i>
+                <div class="node-text">
+                    <span class="time">{{ trip?.arrivalTime | date:'HH:mm' }}</span>
+                    <span class="place">Điểm kết thúc</span>
+                </div>
+            </div>
+          </div>
+
+          <div class="divider" style="height: 1px; background: #eee; margin: 1.5rem 0;"></div>
+
+          <div class="selection-details">
+            <div class="detail-row" *ngIf="selectedSeatIds.length > 0" style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+              <span>Chỗ đã chọn:</span>
+              <span class="val" style="font-weight: 700;">{{ selectedSeatIds.length }} ghế</span>
+            </div>
+            <div class="detail-row" style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+              <span>Tổng tiền:</span>
+              <span class="val price" style="color: #2563eb; font-weight: 800; font-size: 1.25rem;">{{ totalAmount | number }}đ</span>
+            </div>
+          </div>
+
+          <div class="nav-buttons" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem;">
+            <button class="btn-back" *ngIf="activeStep !== 'seat'" (click)="prevStep()" style="padding: 1rem; border-radius: 12px; border: 1px solid #eee; background: #f9fafb; cursor: pointer;">Quay lại</button>
+            <button class="btn-next" *ngIf="activeStep !== 'info'" (click)="nextStep()" style="padding: 1rem; border-radius: 12px; border: none; background: #2563eb; color: white; cursor: pointer; font-weight: 700;">Tiếp tục</button>
+            <button class="btn-confirm" *ngIf="activeStep === 'info'" (click)="confirmBooking()" style="padding: 1rem; border-radius: 12px; border: none; background: #2563eb; color: white; cursor: pointer; font-weight: 700;">Thanh toán ngay</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <ng-template #loading>
-  <div class="loading-spinner">
-    <div class="spinner"></div>
-    <p>Loading trip details...</p>
-  </div>
+    <div class="loading-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh;">
+        <div class="loader" style="width: 40px; height: 40px; border: 4px solid #f3f4f6; border-top: 4px solid #2563eb; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <p style="margin-top: 1rem; color: #666;">Đang chuẩn bị lộ trình của bạn...</p>
+    </div>
 </ng-template>

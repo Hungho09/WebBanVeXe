@@ -237,3 +237,42 @@
   .checkbox-container input {
     width: auto !important;
   }
+
+  .route-id-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f8fafc;
+    padding: 0.25rem 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    width: fit-content;
+  }
+
+  .route-id-text {
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+
+  .btn-copy {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 0.75rem;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .btn-copy:hover {
+    color: #6366f1;
+    transform: scale(1.1);
+  }
+
+  .btn-copy:active {
+    transform: scale(0.9);
+  }

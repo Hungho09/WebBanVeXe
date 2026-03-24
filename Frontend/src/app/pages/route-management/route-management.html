@@ -19,6 +19,7 @@
       <table class="modern-table">
         <thead>
           <tr>
+            <th>Mã tuyến (ID)</th>
             <th>Điểm đi</th>
             <th>Điểm đến</th>
             <th>Khoảng cách</th>
@@ -28,6 +29,14 @@
         </thead>
         <tbody>
           <tr *ngFor="let route of filteredList">
+            <td>
+              <div class="route-id-cell">
+                <span class="route-id-text" title="{{ route.id }}">{{ route.id | slice:0:8 }}...</span>
+                <button class="btn-copy" (click)="copyId(route.id)" title="Sao chép ID đầy đủ">
+                  <i class="fas fa-copy"></i>
+                </button>
+              </div>
+            </td>
             <td class="res-name">{{ route.origin }}</td>
             <td class="res-name">{{ route.destination }}</td>
             <td>
@@ -44,7 +53,7 @@
             </td>
           </tr>
           <tr *ngIf="filteredList.length === 0">
-            <td colspan="5" class="no-data">Không tìm thấy tuyến đường phù hợp</td>
+            <td colspan="6" class="no-data">Không tìm thấy tuyến đường phù hợp</td>
           </tr>
         </tbody>
       </table>
@@ -62,25 +71,29 @@
           <div class="form-row">
             <div class="form-group">
               <label>Điểm đi (Tỉnh/Thành phố)</label>
-              <input type="text" formControlName="origin" placeholder="Ví dụ: Hà Nội">
+              <input type="text" formControlName="origin" list="provinces" placeholder="Tìm hoặc chọn tỉnh...">
             </div>
             <div class="form-group">
               <label>Điểm đến (Tỉnh/Thành phố)</label>
-              <input type="text" formControlName="destination" placeholder="Ví dụ: Hải Phòng">
+              <input type="text" formControlName="destination" list="provinces" placeholder="Tìm hoặc chọn tỉnh...">
             </div>
           </div>
+
+          <datalist id="provinces">
+            <option *ngFor="let p of provinces" [value]="p"></option>
+          </datalist>
   
           <div class="form-group">
             <label>Khoảng cách (km)</label>
             <input type="number" formControlName="distanceKm">
           </div>
-  
+
           <div class="form-group">
             <label>Các điểm đón/trả dọc lộ trình (nếu có)</label>
             <input type="text" formControlName="points" placeholder="Ví dụ: Phủ Lý, Ninh Bình...">
           </div>
   
-          <div class="form-group">
+          <div class="form-group" style="margin-top: 2rem;">
             <label class="checkbox-container">
               <input type="checkbox" formControlName="isActive"> 
               <span>Kích hoạt khai thác tuyến này ngay</span>

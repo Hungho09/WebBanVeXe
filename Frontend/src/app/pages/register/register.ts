@@ -49,7 +49,8 @@ export class Register implements OnInit {
         this.isLoading = false;
         if (response.success && response.token) {
           // AUTO-LOGIN: Save the user info immediately
-          this.authService.saveUser(response.token, response.userName, response.role);
+          const uId = response.userId || response.Id || response['userId'] || 'new-user-id';
+          this.authService.saveUser(response.token, response.userName, uId, response.role);
           
           // Professional Toast
           this.toastService.showSuccess('Đăng ký và Đăng nhập thành công! Chào mừng bạn gia nhập Vexere.');

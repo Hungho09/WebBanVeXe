@@ -10,6 +10,8 @@ namespace Application.DTOs.Trip
         public string? RouteName { get; set; }
         public Guid BusId { get; set; }
         public string? BusPlate { get; set; }
+        public string? BusTypeName { get; set; }
+        public string? BusImageUrl { get; set; }
         public DateTime DepartureTime { get; set; }
         public DateTime ArrivalTime { get; set; }
         public decimal Price { get; set; }

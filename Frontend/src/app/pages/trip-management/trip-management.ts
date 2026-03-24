@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Trip, TripService } from '../../services/trip.service';
+import { Route, RouteService } from '../../services/route.service';
+import { Bus, BusService } from '../../services/bus.service';
 
 @Component({
   selector: 'app-trip-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule], // Thêm RouterLink
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './trip-management.html',
   styleUrls: ['./trip-management.css']
 })
@@ -20,9 +22,15 @@ export class TripManagement implements OnInit {
   isEditMode = false;
   currentTripId: string | null = null;
 
+  // Data for dropdowns
+  routes: Route[] = [];
+  availableBuses: Bus[] = [];
+
   constructor(
     private fb: FormBuilder, 
-    private tripService: TripService
+    private tripService: TripService,
+    private routeService: RouteService,
+    private busService: BusService
   ) {
     this.tripForm = this.fb.group({
       routeId: ['', Validators.required],
@@ -34,15 +42,33 @@ export class TripManagement implements OnInit {
     });
   }
 
-
   ngOnInit() {
     this.loadTrips();
+    this.loadRoutes();
+    this.loadBuses();
   }
 
   loadTrips() {
     this.tripService.getTrips().subscribe(trips => {
       this.tripList = trips;
       this.onSearch();
+    });
+  }
+
+  loadRoutes() {
+    this.routeService.getRoutes().subscribe({
+      next: (routes) => this.routes = routes.filter(r => r.isActive),
+      error: (err) => console.error('Lỗi tải tuyến đường', err)
+    });
+  }
+
+  loadBuses() {
+    this.busService.getBuses().subscribe({
+      next: (buses) => {
+        // Only show Available buses (status=2) for new trip creation
+        this.availableBuses = buses.filter(b => b.status === 2);
+      },
+      error: (err) => console.error('Lỗi tải danh sách xe', err)
     });
   }
 
@@ -63,11 +89,21 @@ export class TripManagement implements OnInit {
   openEditModal(trip: Trip) {
     this.isEditMode = true;
     this.currentTripId = trip.id;
+    // In edit mode, show current bus even if it's "Active" status
+    if (!this.availableBuses.find(b => b.id === trip.busId)) {
+      this.busService.getBus(trip.busId).subscribe(bus => {
+        if (bus && !this.availableBuses.find(b => b.id === bus.id)) {
+          this.availableBuses = [bus, ...this.availableBuses];
+        }
+      });
+    }
+    const dep = trip.departureTime ? trip.departureTime.substring(0, 16) : '';
+    const arr = trip.arrivalTime ? trip.arrivalTime.substring(0, 16) : '';
     this.tripForm.patchValue({
       routeId: trip.routeId,
       busId: trip.busId,
-      departureTime: trip.departureTime,
-      arrivalTime: trip.arrivalTime,
+      departureTime: dep,
+      arrivalTime: arr,
       price: trip.price,
       status: trip.status
     });
@@ -88,15 +124,22 @@ export class TripManagement implements OnInit {
             this.loadTrips();
             this.closeModal();
           },
-          error: (err) => alert('Lỗi khi cập nhật: ' + (err.error?.message || err.message))
+          error: (err) => {
+            const msg = typeof err.error === 'string' ? err.error : (err.error?.message || err.message);
+            alert('Lỗi khi cập nhật: ' + msg);
+          }
         });
       } else {
         this.tripService.createTrip(tripData).subscribe({
           next: () => {
             this.loadTrips();
+            this.loadBuses(); // Refresh available buses
             this.closeModal();
           },
-          error: (err) => alert('Lỗi khi tạo mới: ' + (err.error?.message || err.message))
+          error: (err) => {
+            const msg = typeof err.error === 'string' ? err.error : (err.error?.message || err.message);
+            alert('Lỗi khi tạo mới: ' + msg);
+          }
         });
       }
     }
@@ -118,5 +161,9 @@ export class TripManagement implements OnInit {
       case 'Cancelled': return 'status-out';
       default: return '';
     }
+  }
+
+  getRouteLabel(route: Route): string {
+    return `${route.origin} → ${route.destination} (${route.distanceKm}km)`;
   }
 }

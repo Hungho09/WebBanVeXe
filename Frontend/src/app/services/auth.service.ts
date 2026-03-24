@@ -19,9 +19,10 @@ export class AuthService {
   }
 
   // Save token and user info to localStorage
-  saveUser(token: string, userName: string, role: string) {
+  saveUser(token: string, userName: string, userId: string, role: string) {
     localStorage.setItem('auth_token', token);
     localStorage.setItem('user_name', userName);
+    localStorage.setItem('user_id', userId);
     localStorage.setItem('user_role', role);
   }
 
@@ -29,6 +30,7 @@ export class AuthService {
   getUser() {
     return {
       userName: localStorage.getItem('user_name'),
+      id: localStorage.getItem('user_id'),
       role: localStorage.getItem('user_role')
     };
   }
@@ -42,6 +44,7 @@ export class AuthService {
   logout() {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user_name');
+    localStorage.removeItem('user_id');
     localStorage.removeItem('user_role');
   }
 }

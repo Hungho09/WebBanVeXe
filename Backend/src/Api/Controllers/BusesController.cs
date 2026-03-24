@@ -34,7 +34,7 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        // [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateBusDto createBusDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -51,7 +51,7 @@ namespace Api.Controllers
         }
 
         [HttpPut("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        // [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateBusDto updateBusDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -62,14 +62,11 @@ namespace Api.Controllers
                 if (!success) return NotFound($"Bus with ID {id} not found or mismatch.");
                 return NoContent();
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
         [HttpDelete("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        // [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var success = await _busService.DeleteBusAsync(id);

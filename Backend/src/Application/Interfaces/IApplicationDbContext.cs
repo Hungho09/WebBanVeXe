@@ -18,6 +18,10 @@ namespace Application.Interfaces
         DbSet<Payment> Payments { get; set; }
         DbSet<Invoice> Invoices { get; set; }
         DbSet<Notification> Notifications { get; set; }
+        DbSet<BusType> BusTypes { get; set; }
+        DbSet<StopPoint> StopPoints { get; set; }
+        DbSet<RouteStop> RouteStops { get; set; }
+        DbSet<SeatTemplate> SeatTemplates { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);

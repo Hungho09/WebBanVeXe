@@ -45,7 +45,7 @@ export class Login implements OnInit {
       this.isLoading = false;
       // Tạo một JWT giả (Header.Payload.Signature) với exp rất xa
       const dummyToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQWRtaW4iLCJuYW1lIjoiQWRtaW4iLCJleHAiOjk5OTk5OTk5OTl9.dummy';
-      this.authService.saveUser(dummyToken, 'Admin Local', 'Admin');
+      this.authService.saveUser(dummyToken, 'Admin Local', 'admin-id-123', 'Admin');
       this.toastService.showSuccess('Đăng nhập thành công (Bypass Backend)!');
       this.router.navigateByUrl('/dashboard');
       return;
@@ -57,8 +57,9 @@ export class Login implements OnInit {
         if (response.success && response.token) {
           const uName = response.userName || response.UserName || response['userName'] || 'Thành viên';
           const uRole = response.role || response.Role || response['role'] || 'Customer';
+          const uId = response.userId || response.Id || response['userId'] || 'user-id-placeholder';
           
-          this.authService.saveUser(response.token, uName, uRole);
+          this.authService.saveUser(response.token, uName, uId, uRole);
           this.toastService.showSuccess(`Chào mừng trở lại, ${uName}!`);
           this.router.navigateByUrl(this.returnUrl); 
         } else {
