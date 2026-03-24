@@ -1,0 +1,50 @@
+<!-- ========================================================
+     popular-routes section — Tuyến đường phổ biến
+     Sử dụng: Homepage
+     Inputs: routes (từ CmsConfig.popularRoutes)
+     ======================================================== -->
+<section class="popular-routes">
+    <div class="container">
+        <div class="section-title left-align">
+            <h2>Tuyến Đường Phổ Biến</h2>
+            <p>Những chuyến đi khởi hành trong ngày</p>
+        </div>
+
+        <div class="route-list-vertical">
+            <div class="route-row-card" *ngFor="let pr of routes">
+
+                <!-- Image Panel (60%) -->
+                <div class="route-image-panel">
+                    <div class="img-render-layer"
+                         [style.background-image]="'url(' + (pr.imageUrl || defaultRouteImg) + ')'"
+                         [style.background-size]="(pr.zoom || 100) + '%'"
+                         [style.background-position]="(50 + (pr.offsetX || 0)) + '% ' + (50 + (pr.offsetY || 0)) + '%'">
+                    </div>
+                    <i class="fas fa-image fa-3x img-placeholder" *ngIf="!pr.imageUrl"></i>
+                    <span class="badge" [ngClass]="pr.badgeText === 'Hot' ? 'badge-hot' : 'badge-sale'"
+                          *ngIf="pr.badgeText">
+                        {{ pr.badgeText }}
+                    </span>
+                </div>
+
+                <!-- Info Panel (40%) -->
+                <div class="route-info-panel">
+                    <div class="route-header">
+                        <h3>{{ formatRouteName(pr.routeName) }}</h3>
+                        <div class="route-meta">
+                            <span><i class="fas fa-road"></i> {{ pr.distanceKm }}km</span>
+                            <span class="dot-sep">•</span>
+                            <span><i class="far fa-clock"></i> {{ pr.mockTime }}</span>
+                        </div>
+                    </div>
+
+                    <div class="route-actions">
+                        <span class="price-vivid">{{ pr.mockPrice }}</span>
+                        <button class="btn--book">Đặt vé</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>

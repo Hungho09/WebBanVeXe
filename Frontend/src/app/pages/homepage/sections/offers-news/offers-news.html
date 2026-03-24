@@ -1,0 +1,46 @@
+<!-- ========================================================
+     offers-news section — Ưu đãi nổi bật + Thông báo mới
+     Sử dụng: Homepage
+     Inputs: promos, notices (từ CmsConfig)
+     ======================================================== -->
+<section class="offers-section">
+    <div class="container dual-cols">
+
+        <!-- ① Ưu Đãi Nổi Bật (Cột trái) -->
+        <div class="promotions">
+            <div class="section-title left-align">
+                <h2>Ưu Đãi Nổi Bật</h2>
+                <p>Khám phá các ưu đãi độc quyền dành riêng cho bạn</p>
+            </div>
+
+            <!-- Promo Cards -->
+            <div class="promo-box" *ngFor="let promo of promos">
+                <div class="promo-icon" [ngClass]="promo.color || 'salmon'">
+                    <i [class]="promo.icon || 'fas fa-gift'"></i>
+                </div>
+                <div class="promo-text">
+                    <h4>{{ promo.title }}</h4>
+                    <p>{{ promo.description }}</p>
+                </div>
+                <button class="btn-copy-outline">{{ promo.buttonText || 'Chi tiết' }}</button>
+            </div>
+        </div>
+
+        <!-- ② Thông Báo Mới (Cột phải) -->
+        <div class="news">
+            <div class="section-title left-align">
+                <h2>Thông Báo Mới</h2>
+                <p>Cập nhật tin tức và thông tin từ Codenhalam</p>
+            </div>
+
+            <!-- News List Card (Thẻ trắng bao quanh list) -->
+            <div class="news-list-card">
+                <div class="news-item" *ngFor="let notice of notices">
+                    <span class="news-label">{{ notice.dateStr }}</span>
+                    <div class="news-title">{{ notice.title }}</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>

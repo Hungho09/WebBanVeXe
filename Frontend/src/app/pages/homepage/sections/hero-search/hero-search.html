@@ -1,0 +1,179 @@
+<!-- ========================================================
+     hero-search section — Hero Banner + Search Box + Calendar
+     Sử dụng trong: Homepage (main section đầu tiên)
+     ======================================================== -->
+<section class="hero-section">
+    <!-- Background Image Layer (Ken Burns) -->
+    <div class="hero-bg-fader" [style.backgroundImage]="getBgStyle()"></div>
+    <div class="hero-bg-overlay"></div>
+
+    <div class="container hero-container">
+        <!-- Hero Text -->
+        <h1 class="hero-title">
+            Cái gì không làm được thì mình vừa khóc vừa làm
+            <span>Codenhalam-WebBanVeXe</span>
+        </h1>
+        <p class="hero-subtitle">Đặt vé xe khách trực tuyến dễ dàng, nhanh chóng và an toàn nhất</p>
+
+        <!-- ──────────────────────────────────────────────
+             Search Container
+             ────────────────────────────────────────── -->
+        <div class="search-container">
+
+            <!-- Trip Type Toggle -->
+            <div class="trip-type">
+                <label class="radio-label" [class.active]="tripType === 'oneWay'"
+                       (click)="setTripType('oneWay', $event)">
+                    <input type="radio" name="tripType" [checked]="tripType === 'oneWay'">
+                    <span class="custom-radio"></span> Một chiều
+                </label>
+                <label class="radio-label" [class.active]="tripType === 'roundTrip'"
+                       (click)="setTripType('roundTrip', $event)">
+                    <input type="radio" name="tripType" [checked]="tripType === 'roundTrip'">
+                    <span class="custom-radio"></span> Khứ hồi
+                </label>
+            </div>
+
+            <!-- Search Input Fields -->
+            <div class="search-inputs">
+
+                <!-- Origin Field -->
+                <div class="input-col relative">
+                    <label>Điểm đi:</label>
+                    <div class="input-wrapper">
+                        <input type="text" placeholder="Hà Nội" [(ngModel)]="origin"
+                               (focus)="showOriginDropdown = true"
+                               (blur)="onBlurOrigin()"
+                               style="text-transform: capitalize;">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="dropdown-list" *ngIf="showOriginDropdown">
+                        <div class="dropdown-item" *ngFor="let p of filteredOrigins"
+                             (mousedown)="selectOrigin(p)">{{ p }}</div>
+                        <div class="dropdown-item no-result" *ngIf="filteredOrigins.length === 0">
+                            Không tìm thấy địa điểm hoặc đã chọn ở điểm đến.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Swap Button -->
+                <div class="swap-icon pointer-cursor" (click)="swapLocations()">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+
+                <!-- Destination Field -->
+                <div class="input-col relative">
+                    <label>Điểm đến:</label>
+                    <div class="input-wrapper">
+                        <input type="text" placeholder="Hồ Chí Minh" [(ngModel)]="destination"
+                               (focus)="showDestinationDropdown = true"
+                               (blur)="onBlurDestination()"
+                               style="text-transform: capitalize;">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="dropdown-list" *ngIf="showDestinationDropdown">
+                        <div class="dropdown-item" *ngFor="let p of filteredDestinations"
+                             (mousedown)="selectDestination(p)">{{ p }}</div>
+                        <div class="dropdown-item no-result" *ngIf="filteredDestinations.length === 0">
+                            Không tìm thấy địa điểm hoặc đã chọn ở điểm đi.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Date Slider Column (giữ nguyên inline vì liên kết chặt chẽ với search) -->
+                <div class="input-col date-slider-col">
+                    <div class="calendar-header-mini">
+                        <div class="cal-title">Ngày đi
+                            <i class="fas fa-chevron-left"></i>
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                        <label class="btn-month-mini pointer-cursor" (click)="toggleCustomCalendar()">
+                            <i class="far fa-calendar"></i> {{ currentMonthYearStr }}
+                        </label>
+
+                        <!-- Custom Calendar Popup -->
+                        <div class="custom-calendar-popup" *ngIf="showCustomCalendar"
+                             (click)="$event.stopPropagation()">
+                            <div class="calendar-nav">
+                                <button (click)="prevMonth()"><i class="fas fa-chevron-left"></i></button>
+                                <div class="current-month">
+                                    {{ calendarLang === 'vi' ? monthNames.vi[viewDate.getMonth()] : monthNames.en[viewDate.getMonth()] }},
+                                    {{ viewDate.getFullYear() }}
+                                </div>
+                                <button (click)="nextMonth()"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+
+                            <div class="calendar-grid">
+                                <div class="weekday"
+                                     *ngFor="let day of (calendarLang === 'vi' ? weekDays.vi : weekDays.en)">
+                                    {{ day }}
+                                </div>
+                                <div class="calendar-day" *ngFor="let day of calendarDays"
+                                     [class.empty]="day.empty"
+                                     [class.today]="day.isToday"
+                                     [class.selected]="day.isSelected"
+                                     (click)="selectCalendarDate(day)">
+                                    <span class="solar">{{ day.day }}</span>
+                                    <span class="lunar"
+                                          *ngIf="calendarLang === 'vi' && isLunarMode && !day.empty">
+                                        {{ day.lunar }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="calendar-footer">
+                                <div class="lang-switch">
+                                    <button [class.active]="calendarLang === 'en'"
+                                            (click)="calendarLang = 'en'; generateCalendar()">EN</button>
+                                    <button [class.active]="calendarLang === 'vi'"
+                                            (click)="calendarLang = 'vi'; generateCalendar()">VI</button>
+                                </div>
+                                <div class="lunar-toggle" *ngIf="calendarLang === 'vi'">
+                                    <label class="switch">
+                                        <input type="checkbox" [(ngModel)]="isLunarMode">
+                                        <span class="slider round"></span>
+                                    </label>
+                                    <span>Hiển thị lịch âm</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Date Scroll Strip -->
+                    <div class="dates-scroll-wrapper" #scrollWrapper
+                         [class.dragging]="isDragging"
+                         (mousedown)="onMouseDown($event)"
+                         (mousemove)="onMouseMove($event)"
+                         (mouseup)="onMouseUp()"
+                         (mouseleave)="onMouseUp()">
+                        <div class="weeks-row">
+                            <div class="week-group" *ngFor="let group of datesGroupList">
+                                <div class="dates-row-mini">
+                                    <div class="date-item-mini"
+                                         *ngFor="let ds of group"
+                                         [class.active]="ds.date.getTime() === selectedDate.getTime()"
+                                         (click)="selectDate(ds)">
+                                        <span class="day">{{ds.dayName}}</span>
+                                        <span class="num">{{ds.dateNum}}</span>
+                                        <span *ngIf="ds.dotType === 'red'" class="dot-red"></span>
+                                        <span *ngIf="ds.dotType === 'teal'" class="dots-teal">...</span>
+                                        <span *ngIf="ds.dotType === 'mix'" class="dots-mix">..</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /search-inputs -->
+
+            <!-- Floating Search CTA Button -->
+            <div class="search-btn-wrapper">
+                <button class="btn--search">
+                    <i class="fas fa-search"></i> Tìm chuyến xe
+                </button>
+            </div>
+
+        </div><!-- /search-container -->
+    </div>
+</section>

@@ -1,0 +1,50 @@
+<!-- ========================================================
+     testimonials section — Khách hàng nói gì
+     Sử dụng: Homepage
+     Inputs: testimonials (từ CmsConfig)
+     ======================================================== -->
+<section class="testimonials">
+    <div class="container">
+        <div class="section-title" style="text-align:center;">
+            <h2>Khách Hàng Nói Gì Về Chúng Tôi</h2>
+            <p>Những chia sẻ chân thực từ những người đã đồng hành cùng Codenhalam</p>
+        </div>
+
+        <!-- Horizontal scroll strip with Drag-to-Scroll -->
+        <div class="testimonial-scroll" #scrollContainer (mousedown)="startDragging($event, scrollContainer)">
+            <div class="testimonial-card" *ngFor="let t of testimonials">
+
+                <!-- Avatar -->
+                <div class="testimonial-avatar-wrap">
+                    <div class="avatar-square">
+                        <div class="img-render-layer"
+                             [style.background-image]="'url(' + (t.avatar || defaultAvatar) + ')'"
+                             [style.background-size]="(t.zoom || 100) + '%'"
+                             [style.background-position]="(50 + (t.offsetX || 0)) + '% ' + (50 + (t.offsetY || 0)) + '%'"
+                             style="position:absolute;top:0;left:0;width:100%;height:100%;background-repeat:no-repeat;">
+                        </div>
+                        <i class="fas fa-user-ninja fa-2x img-placeholder" *ngIf="!t.avatar"></i>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="testimonial-body">
+                    <div class="user-info-vivid">
+                        <h3>{{ t.name }} <i class="fas fa-quote-right quote-accent"></i></h3>
+                        <span class="role-bubble">{{ t.role }}</span>
+                    </div>
+                    <div class="comment-vivid">
+                        <p>{{ t.comment }}</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Dot indicator -->
+        <div class="dot-indicator" style="text-align:center;margin-top:1rem;">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+        </div>
+    </div>
+</section>

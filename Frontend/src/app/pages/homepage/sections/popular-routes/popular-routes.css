@@ -1,0 +1,149 @@
+/* ============================================================
+   popular-routes.css — Tuyến đường phổ biến section
+   ============================================================ */
+
+.popular-routes {
+    padding: 250px 0 80px;
+}
+
+/* Override global container for this section to fit 1500px card */
+.popular-routes .container {
+    max-width: 1540px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Section title */
+.section-title.left-align {
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.section-title h2 {
+    font-size: 30px;
+    color: #1a1a24;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.section-title p {
+    color: var(--text-light);
+    font-size: 15px;
+}
+
+/* Route list */
+.route-list-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Route Card */
+.route-row-card {
+    display: flex;
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+    transition: var(--transition-bounce);
+    cursor: pointer;
+    border: 1px solid #f1f5f9;
+    width: 100%;
+    max-width: 1500px;
+    height: 240px;
+    margin: 0 auto;
+}
+
+.route-row-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.1);
+}
+
+/* Image Panel */
+.route-image-panel {
+    flex: 0 0 75%;
+    /* Tăng tỉ lệ ảnh lên 75% */
+    height: 240px;
+    background-color: var(--bg-muted);
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px 0 0 24px;
+}
+
+/* Shared image render layer (used in route + testimonials) */
+.img-render-layer {
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    /* Đảm bảo ảnh phủ kín khung */
+    transition: none;
+}
+
+.img-placeholder {
+    color: #cbd5e1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Info Panel */
+.route-info-panel {
+    flex: 1;
+    /* Phần info chiếm 25% còn lại */
+    background: white;
+    padding: 20px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+}
+
+.route-header h3 {
+    font-size: 20px;
+    color: #1e293b;
+    margin: 0 0 10px;
+    font-weight: 800;
+}
+
+.route-meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #64748b;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.dot-sep {
+    color: #cbd5e1;
+}
+
+.route-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.price-vivid {
+    color: #059669;
+    font-weight: 900;
+    font-size: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .route-row-card {
+        flex-direction: column;
+    }
+
+    .route-image-panel {
+        width: 100%;
+    }
+
+    .route-info-panel {
+        width: 100%;
+    }
+}
