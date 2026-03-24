@@ -28,6 +28,7 @@ namespace Infrastructure.Persistence
         public DbSet<StopPoint> StopPoints { get; set; }
         public DbSet<RouteStop> RouteStops { get; set; }
         public DbSet<SeatTemplate> SeatTemplates { get; set; }
+        public DbSet<CmsConfig> CmsConfigs { get; set; }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
         {
@@ -207,6 +208,24 @@ namespace Infrastructure.Persistence
 
             // Seed Seat Templates
             SeatTemplateSeed.Seed(modelBuilder);
+
+            // Configure CmsConfig
+            modelBuilder.Entity<CmsConfig>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.ConfigKey).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.ContentJson).IsRequired();
+                entity.HasIndex(e => e.ConfigKey).IsUnique();
+
+                // Seed default homepage config key
+                entity.HasData(new CmsConfig
+                {
+                    Id = 1,
+                    ConfigKey = "homepage_v1",
+                    ContentJson = "{}", // To be filled by frontend or default service value
+                    UpdatedAt = new System.DateTime(2026, 1, 1, 0, 0, 0, System.DateTimeKind.Utc)
+                });
+            });
         }
     }
 }

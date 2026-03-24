@@ -22,6 +22,7 @@ namespace Application.Interfaces
         DbSet<StopPoint> StopPoints { get; set; }
         DbSet<RouteStop> RouteStops { get; set; }
         DbSet<SeatTemplate> SeatTemplates { get; set; }
+        DbSet<CmsConfig> CmsConfigs { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
