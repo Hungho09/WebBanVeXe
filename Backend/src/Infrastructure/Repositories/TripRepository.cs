@@ -23,6 +23,7 @@ namespace Infrastructure.Repositories
             return await _context.Trips
                 .Include(t => t.Route)
                 .Include(t => t.Bus)
+                .Include(t => t.Seats)
                 .FirstOrDefaultAsync(t => t.Id == id);
         }
 

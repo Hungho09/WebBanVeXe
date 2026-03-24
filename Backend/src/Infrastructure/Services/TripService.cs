@@ -127,7 +127,8 @@ namespace Infrastructure.Services
                 Status = s.Status.ToString(),
                 RowNumber = s.RowNumber,
                 ColumnNumber = s.ColumnNumber,
-                Floor = s.Floor
+                Floor = s.Floor,
+                Type = s.Type.ToString()
             });
         }
 
