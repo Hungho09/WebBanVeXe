@@ -206,7 +206,12 @@ export class Booking implements OnInit, OnDestroy {
     const isAlreadySelected = this.selectedSeatIds.includes(seat.id);
 
     if (isAlreadySelected) {
-      this.bookingService.unlockSeat(seat.id).subscribe({
+      const uid = this.authService.getUser().id;
+      if (!uid) {
+        this.toastService.showWarning('Vui lòng đăng nhập để thao tác ghế.');
+        return;
+      }
+      this.bookingService.unlockSeat(seat.id, uid).subscribe({
         next: () => {
           this.selectedSeatIds = this.selectedSeatIds.filter(id => id !== seat.id);
           if (this.selectedSeatIds.length === 0) this.stopTimer();
@@ -215,7 +220,12 @@ export class Booking implements OnInit, OnDestroy {
       });
     } else {
       if (seat.status !== 'Available') return;
-      this.bookingService.lockSeat(seat.id).subscribe({
+      const uid = this.authService.getUser().id;
+      if (!uid) {
+        this.toastService.showWarning('Vui lòng đăng nhập để chọn ghế.');
+        return;
+      }
+      this.bookingService.lockSeat(seat.id, uid).subscribe({
         next: () => {
           this.selectedSeatIds.push(seat.id);
           this.startTimer();

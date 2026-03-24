@@ -50,11 +50,11 @@ export class BookingService {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
-  lockSeat(seatId: string): Observable<any> {
-    return this.http.post(`api/trip/seats/${seatId}/lock`, {});
+  lockSeat(seatId: string, userId: string): Observable<any> {
+    return this.http.post(`api/trip/seats/${seatId}/lock`, { userId });
   }
 
-  unlockSeat(seatId: string): Observable<any> {
-    return this.http.post(`api/trip/seats/${seatId}/unlock`, {});
+  unlockSeat(seatId: string, userId: string): Observable<any> {
+    return this.http.post(`api/trip/seats/${seatId}/unlock`, { userId });
   }
 }

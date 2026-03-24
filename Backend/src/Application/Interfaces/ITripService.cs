@@ -13,8 +13,8 @@ namespace Application.Interfaces
         Task<bool> UpdateTripAsync(Guid id, UpdateTripDto updateTripDto);
         Task<bool> DeleteTripAsync(Guid id);
         Task<IEnumerable<SeatDto>> GetSeatsByTripIdAsync(Guid tripId);
-        Task<bool> LockSeatAsync(Guid seatId);
-        Task<bool> UnlockSeatAsync(Guid seatId);
+        Task<bool> LockSeatAsync(Guid seatId, Guid userId);
+        Task<bool> UnlockSeatAsync(Guid seatId, Guid userId);
         Task<IEnumerable<TripPointDto>> GetTripPointsAsync(Guid tripId);
     }
 }

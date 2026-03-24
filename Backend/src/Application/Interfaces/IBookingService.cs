@@ -7,8 +7,8 @@ namespace Application.Interfaces
 {
     public interface IBookingService
     {
-        Task<bool> LockSeatAsync(Guid seatId);
-        Task<bool> UnlockSeatAsync(Guid seatId);
+        Task<bool> LockSeatAsync(Guid seatId, Guid userId);
+        Task<bool> UnlockSeatAsync(Guid seatId, Guid userId);
         
         // Simplified DTO-based booking
         Task<BookingResponseDto> CreateBookingAsync(CreateBookingDto dto);

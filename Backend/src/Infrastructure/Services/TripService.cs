@@ -148,45 +148,88 @@ namespace Infrastructure.Services
                 RowNumber = s.RowNumber,
                 ColumnNumber = s.ColumnNumber,
                 Floor = s.Floor,
-                Type = s.Type.ToString()
+                Type = s.Type.ToString(),
+                LockExpirationTime = s.LockExpirationTime
             });
         }
 
-        public async Task<bool> LockSeatAsync(Guid seatId)
+        public async Task<bool> LockSeatAsync(Guid seatId, Guid userId)
         {
-            // Note: Since TripService normally uses TripRepository, we might need a dedicated SeatRepository 
-            // but for simplicity and immediate implementation, we'll assume the repository can handle it 
-            // or we'll use the context if we have access. 
-            // Checking TripRepository implementation...
-            
+            if (userId == Guid.Empty) return false;
+
             var trip = await _tripRepository.GetBySeatIdAsync(seatId);
             if (trip == null) return false;
 
             var seat = trip.Seats.FirstOrDefault(s => s.Id == seatId);
-            if (seat == null || seat.Status == Domain.Enums.SeatStatus.Booked) return false;
+            if (seat == null) return false;
 
-            // If already locked and not expired, return false
-            if (seat.Status == Domain.Enums.SeatStatus.Locked && seat.LockExpirationTime > DateTime.UtcNow)
+            var now = DateTime.UtcNow;
+
+            if (seat.Status == Domain.Enums.SeatStatus.Booked)
                 return false;
 
-            seat.Status = Domain.Enums.SeatStatus.Locked;
-            seat.LockExpirationTime = DateTime.UtcNow.AddMinutes(10);
+            if (seat.Status == Domain.Enums.SeatStatus.Locked &&
+                (!seat.LockExpirationTime.HasValue || seat.LockExpirationTime <= now))
+            {
+                seat.Status = Domain.Enums.SeatStatus.Available;
+                seat.LockExpirationTime = null;
+                seat.LockedByUserId = null;
+            }
 
-            _tripRepository.Update(trip);
-            await _tripRepository.SaveChangesAsync();
-            return true;
+            if (seat.Status == Domain.Enums.SeatStatus.Available)
+            {
+                seat.Status = Domain.Enums.SeatStatus.Locked;
+                seat.LockExpirationTime = now.AddMinutes(10);
+                seat.LockedByUserId = userId;
+                _tripRepository.Update(trip);
+                await _tripRepository.SaveChangesAsync();
+                return true;
+            }
+
+            if (seat.Status == Domain.Enums.SeatStatus.Locked && seat.LockExpirationTime > now)
+            {
+                if (seat.LockedByUserId == userId)
+                {
+                    seat.LockExpirationTime = now.AddMinutes(10);
+                    _tripRepository.Update(trip);
+                    await _tripRepository.SaveChangesAsync();
+                    return true;
+                }
+
+                return false;
+            }
+
+            return false;
         }
 
-        public async Task<bool> UnlockSeatAsync(Guid seatId)
+        public async Task<bool> UnlockSeatAsync(Guid seatId, Guid userId)
         {
+            if (userId == Guid.Empty) return false;
+
             var trip = await _tripRepository.GetBySeatIdAsync(seatId);
             if (trip == null) return false;
 
             var seat = trip.Seats.FirstOrDefault(s => s.Id == seatId);
             if (seat == null || seat.Status != Domain.Enums.SeatStatus.Locked) return false;
 
+            var now = DateTime.UtcNow;
+
+            if (seat.LockExpirationTime.HasValue && seat.LockExpirationTime <= now)
+            {
+                seat.Status = Domain.Enums.SeatStatus.Available;
+                seat.LockExpirationTime = null;
+                seat.LockedByUserId = null;
+                _tripRepository.Update(trip);
+                await _tripRepository.SaveChangesAsync();
+                return true;
+            }
+
+            if (seat.LockedByUserId != userId)
+                return false;
+
             seat.Status = Domain.Enums.SeatStatus.Available;
             seat.LockExpirationTime = null;
+            seat.LockedByUserId = null;
 
             _tripRepository.Update(trip);
             await _tripRepository.SaveChangesAsync();

@@ -1,10 +1,13 @@
 using Application.DTOs.Booking;
+using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Moq;
 using Xunit;
 
 namespace Application.UnitTests
@@ -13,16 +16,18 @@ namespace Application.UnitTests
     {
         private readonly ApplicationDbContext _context;
         private readonly BookingService _service;
+        private readonly Mock<ITripService> _tripServiceMock = new();
 
         public BookingServiceTests()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
                 .Options;
             _context = new ApplicationDbContext(options);
             _context.Database.EnsureCreated();
             var repository = new BookingRepository(_context);
-            _service = new BookingService(_context, repository);
+            _service = new BookingService(_context, repository, _tripServiceMock.Object);
         }
 
         public void Dispose() => _context.Dispose();
@@ -136,11 +141,13 @@ namespace Application.UnitTests
         }
 
         [Fact]
-        public async Task CreateBookingAsync_AllowsLockedSeats_AfterLockFlow()
+        public async Task CreateBookingAsync_AllowsLockedSeats_WhenSameUserHoldsLock()
         {
             var (userId, tripId, seatA, _) = await SeedTripWithTwoAvailableSeatsAsync();
             var seat = await _context.Seats.FindAsync(seatA);
             seat!.Status = SeatStatus.Locked;
+            seat.LockedByUserId = userId;
+            seat.LockExpirationTime = DateTime.UtcNow.AddMinutes(5);
             await _context.SaveChangesAsync();
 
             var response = await _service.CreateBookingAsync(new CreateBookingDto
@@ -152,6 +159,88 @@ namespace Application.UnitTests
 
             Assert.Single(response.Details);
             Assert.Equal(SeatStatus.Booked, (await _context.Seats.FindAsync(seatA))!.Status);
+        }
+
+        [Fact]
+        public async Task CreateBookingAsync_Throws_WhenLockedByOtherUser()
+        {
+            var (userId, tripId, seatA, _) = await SeedTripWithTwoAvailableSeatsAsync();
+            var other = Guid.NewGuid();
+            _context.Users.Add(new User
+            {
+                Id = other,
+                UserName = "other",
+                Email = "o@test.local",
+                PasswordHash = "x",
+                FullName = "O",
+                PhoneNumber = "0900000002",
+                Role = "Customer"
+            });
+            var seat = await _context.Seats.FindAsync(seatA);
+            seat!.Status = SeatStatus.Locked;
+            seat.LockedByUserId = other;
+            seat.LockExpirationTime = DateTime.UtcNow.AddMinutes(5);
+            await _context.SaveChangesAsync();
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                _service.CreateBookingAsync(new CreateBookingDto
+                {
+                    UserId = userId,
+                    TripId = tripId,
+                    SeatIds = new List<Guid> { seatA }
+                }));
+        }
+
+        [Fact]
+        public async Task CreateBookingAsync_Throws_WhenLockExpired()
+        {
+            var (userId, tripId, seatA, _) = await SeedTripWithTwoAvailableSeatsAsync();
+            var seat = await _context.Seats.FindAsync(seatA);
+            seat!.Status = SeatStatus.Locked;
+            seat.LockedByUserId = userId;
+            seat.LockExpirationTime = DateTime.UtcNow.AddMinutes(-1);
+            await _context.SaveChangesAsync();
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                _service.CreateBookingAsync(new CreateBookingDto
+                {
+                    UserId = userId,
+                    TripId = tripId,
+                    SeatIds = new List<Guid> { seatA }
+                }));
+        }
+
+        [Fact]
+        public async Task CreateBookingAsync_SecondUserCannotBookSameSeat()
+        {
+            var (userId, tripId, seatA, _) = await SeedTripWithTwoAvailableSeatsAsync();
+            var other = Guid.NewGuid();
+            _context.Users.Add(new User
+            {
+                Id = other,
+                UserName = "other2",
+                Email = "o2@test.local",
+                PasswordHash = "x",
+                FullName = "O2",
+                PhoneNumber = "0900000003",
+                Role = "Customer"
+            });
+            await _context.SaveChangesAsync();
+
+            await _service.CreateBookingAsync(new CreateBookingDto
+            {
+                UserId = userId,
+                TripId = tripId,
+                SeatIds = new List<Guid> { seatA }
+            });
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                _service.CreateBookingAsync(new CreateBookingDto
+                {
+                    UserId = other,
+                    TripId = tripId,
+                    SeatIds = new List<Guid> { seatA }
+                }));
         }
 
         [Fact]

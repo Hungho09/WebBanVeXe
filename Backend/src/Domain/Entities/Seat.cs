@@ -14,6 +14,8 @@ namespace Domain.Entities
         public SeatType Type { get; set; } = SeatType.Normal;
         public SeatStatus Status { get; set; } = SeatStatus.Available;
         public DateTime? LockExpirationTime { get; set; }
+        /// <summary>User đang giữ ghế tạm (khi Status = Locked và chưa hết hạn).</summary>
+        public Guid? LockedByUserId { get; set; }
 
         public Trip? Trip { get; set; }
     }

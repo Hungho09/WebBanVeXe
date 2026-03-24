@@ -8,6 +8,7 @@ using Domain.Entities;
 using Domain.Enums;
 using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Infrastructure.Persistence;
 
 namespace Infrastructure.Services
@@ -16,35 +17,23 @@ namespace Infrastructure.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IBookingRepository _bookingRepository;
+        private readonly ITripService _tripService;
 
-        public BookingService(ApplicationDbContext context, IBookingRepository bookingRepository)
+        public BookingService(
+            ApplicationDbContext context,
+            IBookingRepository bookingRepository,
+            ITripService tripService)
         {
             _context = context;
             _bookingRepository = bookingRepository;
+            _tripService = tripService;
         }
 
-        public async Task<bool> LockSeatAsync(Guid seatId)
-        {
-            var seat = await _context.Seats.FindAsync(seatId);
-            if (seat == null || seat.Status != SeatStatus.Available)
-                return false;
+        public Task<bool> LockSeatAsync(Guid seatId, Guid userId) =>
+            _tripService.LockSeatAsync(seatId, userId);
 
-            seat.Status = SeatStatus.Locked;
-            // Optionally, we could set a lock expiration time here
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> UnlockSeatAsync(Guid seatId)
-        {
-            var seat = await _context.Seats.FindAsync(seatId);
-            if (seat == null || seat.Status != SeatStatus.Locked)
-                return false;
-
-            seat.Status = SeatStatus.Available;
-            await _context.SaveChangesAsync();
-            return true;
-        }
+        public Task<bool> UnlockSeatAsync(Guid seatId, Guid userId) =>
+            _tripService.UnlockSeatAsync(seatId, userId);
 
         public async Task<BookingResponseDto> CreateBookingAsync(CreateBookingDto dto)
         {
@@ -57,73 +46,91 @@ namespace Infrastructure.Services
             var trip = await _context.Trips.Include(t => t.Route).FirstOrDefaultAsync(t => t.Id == dto.TripId);
             if (trip == null) throw new InvalidOperationException("Chuyến đi không tồn tại.");
 
-            var seats = await _context.Seats
-                .Where(s => dto.SeatIds.Contains(s.Id) && s.TripId == dto.TripId)
-                .ToListAsync();
-            if (seats.Count != dto.SeatIds.Count)
-                throw new InvalidOperationException("Không tìm thấy ghế hoặc ghế không thuộc chuyến đã chọn.");
-
-            ValidateSeatsForBooking(seats);
-
-            var booking = new Booking
+            await using IDbContextTransaction tx = await _context.Database.BeginTransactionAsync();
+            try
             {
-                Id = Guid.NewGuid(),
-                UserId = dto.UserId,
-                TripId = dto.TripId,
-                TotalAmount = seats.Count * trip.Price,
-                BookingStatus = BookingStatus.Pending,
-                CreatedAt = DateTime.UtcNow
-            };
+                var seats = await _context.Seats
+                    .Where(s => dto.SeatIds.Contains(s.Id) && s.TripId == dto.TripId)
+                    .ToListAsync();
+                if (seats.Count != dto.SeatIds.Count)
+                    throw new InvalidOperationException("Không tìm thấy ghế hoặc ghế không thuộc chuyến đã chọn.");
 
-            foreach (var seat in seats)
-            {
-                seat.Status = SeatStatus.Booked;
-                booking.BookingDetails.Add(new BookingDetail
+                ValidateSeatsForBooking(seats, dto.UserId);
+
+                var booking = new Booking
                 {
                     Id = Guid.NewGuid(),
-                    BookingId = booking.Id,
-                    SeatId = seat.Id,
-                    Price = trip.Price
-                });
-            }
+                    UserId = dto.UserId,
+                    TripId = dto.TripId,
+                    TotalAmount = seats.Count * trip.Price,
+                    BookingStatus = BookingStatus.Pending,
+                    CreatedAt = DateTime.UtcNow
+                };
 
-            await _bookingRepository.AddAsync(booking);
-            await _bookingRepository.SaveChangesAsync();
-
-            return new BookingResponseDto
-            {
-                Id = booking.Id,
-                UserId = booking.UserId,
-                UserName = user.UserName,
-                TripId = booking.TripId,
-                TotalAmount = booking.TotalAmount,
-                BookingStatus = booking.BookingStatus.ToString(),
-                CreatedAt = booking.CreatedAt,
-                Details = booking.BookingDetails.Select(bd =>
+                foreach (var seat in seats)
                 {
-                    var seat = seats.First(s => s.Id == bd.SeatId);
-                    return new BookingDetailDto
+                    seat.Status = SeatStatus.Booked;
+                    seat.LockExpirationTime = null;
+                    seat.LockedByUserId = null;
+                    booking.BookingDetails.Add(new BookingDetail
                     {
-                        Id = bd.Id,
-                        SeatId = bd.SeatId,
-                        SeatNumber = seat.SeatNumber,
-                        Price = bd.Price
-                    };
-                }).ToList()
-            };
+                        Id = Guid.NewGuid(),
+                        BookingId = booking.Id,
+                        SeatId = seat.Id,
+                        Price = trip.Price
+                    });
+                }
+
+                await _bookingRepository.AddAsync(booking);
+                await _bookingRepository.SaveChangesAsync();
+                await tx.CommitAsync();
+
+                return new BookingResponseDto
+                {
+                    Id = booking.Id,
+                    UserId = booking.UserId,
+                    UserName = user.UserName,
+                    TripId = booking.TripId,
+                    TotalAmount = booking.TotalAmount,
+                    BookingStatus = booking.BookingStatus.ToString(),
+                    CreatedAt = booking.CreatedAt,
+                    Details = booking.BookingDetails.Select(bd =>
+                    {
+                        var seat = seats.First(s => s.Id == bd.SeatId);
+                        return new BookingDetailDto
+                        {
+                            Id = bd.Id,
+                            SeatId = bd.SeatId,
+                            SeatNumber = seat.SeatNumber,
+                            Price = bd.Price
+                        };
+                    }).ToList()
+                };
+            }
+            catch
+            {
+                await tx.RollbackAsync();
+                throw;
+            }
         }
 
         /// <summary>
-        /// Ghế phải thuộc chuyến (đã lọc trước đó). Cho phép Available hoặc Locked (đã giữ ghế trước khi thanh toán).
+        /// Ghế phải thuộc chuyến (đã lọc trước đó). Locked chỉ hợp lệ nếu cùng user đang giữ và chưa hết hạn.
         /// </summary>
-        private static void ValidateSeatsForBooking(IReadOnlyCollection<Seat> seats)
+        private static void ValidateSeatsForBooking(IReadOnlyCollection<Seat> seats, Guid bookingUserId)
         {
+            var now = DateTime.UtcNow;
             foreach (var s in seats)
             {
                 switch (s.Status)
                 {
                     case SeatStatus.Available:
+                        continue;
                     case SeatStatus.Locked:
+                        if (!s.LockExpirationTime.HasValue || s.LockExpirationTime <= now)
+                            throw new InvalidOperationException("Thời gian giữ ghế đã hết. Vui lòng chọn lại ghế.");
+                        if (s.LockedByUserId != bookingUserId)
+                            throw new InvalidOperationException("Một hoặc nhiều ghế đang được người khác giữ.");
                         continue;
                     case SeatStatus.Booked:
                         throw new InvalidOperationException("Một hoặc nhiều ghế đã được đặt.");
@@ -159,7 +166,11 @@ namespace Infrastructure.Services
             {
                 var seat = detail.Seat ?? await _context.Seats.FindAsync(detail.SeatId);
                 if (seat != null)
+                {
                     seat.Status = SeatStatus.Available;
+                    seat.LockExpirationTime = null;
+                    seat.LockedByUserId = null;
+                }
             }
 
             await _bookingRepository.UpdateAsync(booking);

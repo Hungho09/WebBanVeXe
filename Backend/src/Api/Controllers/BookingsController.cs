@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Application.Interfaces;
 using Application.DTOs.Booking;
+using Application.DTOs.Trip;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 
@@ -19,9 +20,11 @@ namespace Api.Controllers
         }
 
         [HttpPost("lock-seat/{seatId}")]
-        public async Task<IActionResult> LockSeat(Guid seatId)
+        public async Task<IActionResult> LockSeat(Guid seatId, [FromBody] LockSeatRequestDto? request)
         {
-            var result = await _bookingService.LockSeatAsync(seatId);
+            if (request == null || request.UserId == Guid.Empty)
+                return BadRequest(new { message = "Cần UserId để giữ ghế." });
+            var result = await _bookingService.LockSeatAsync(seatId, request.UserId);
             if (!result)
                 return BadRequest(new { message = "Ghế không khả dụng hoặc đã có người giữ." });
             
@@ -29,9 +32,11 @@ namespace Api.Controllers
         }
 
         [HttpPost("unlock-seat/{seatId}")]
-        public async Task<IActionResult> UnlockSeat(Guid seatId)
+        public async Task<IActionResult> UnlockSeat(Guid seatId, [FromBody] LockSeatRequestDto? request)
         {
-            var result = await _bookingService.UnlockSeatAsync(seatId);
+            if (request == null || request.UserId == Guid.Empty)
+                return BadRequest(new { message = "Cần UserId để mở khóa ghế." });
+            var result = await _bookingService.UnlockSeatAsync(seatId, request.UserId);
             if (!result)
                 return BadRequest(new { message = "Không thể mở khóa ghế." });
             

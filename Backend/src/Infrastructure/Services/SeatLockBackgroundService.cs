@@ -52,6 +52,7 @@ namespace Infrastructure.Services
                     {
                         seat.Status = SeatStatus.Available;
                         seat.LockExpirationTime = null;
+                        seat.LockedByUserId = null;
                     }
 
                     await context.SaveChangesAsync(stoppingToken);
