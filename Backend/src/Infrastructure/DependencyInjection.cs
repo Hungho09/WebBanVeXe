@@ -60,6 +60,9 @@ namespace Infrastructure
             // Seat Management
             services.AddScoped<Application.Interfaces.ISeatService, Infrastructure.Services.SeatService>();
 
+            // Booking Management
+            services.AddScoped<Application.Interfaces.IBookingService, Infrastructure.Services.BookingService>();
+
             // Background Services
             services.AddHostedService<Infrastructure.Services.SeatLockBackgroundService>();
 
