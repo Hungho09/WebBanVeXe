@@ -32,19 +32,19 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-if (app.Configuration.GetValue<bool>("Database:AutoMigrate"))
-{
-    using var migrateScope = app.Services.CreateScope();
-    var db = migrateScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    await db.Database.MigrateAsync();
-}
+// if (app.Configuration.GetValue<bool>("Database:AutoMigrate"))
+// {
+//     using var migrateScope = app.Services.CreateScope();
+//     var db = migrateScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//     await db.Database.MigrateAsync();
+// }
 
-if (app.Configuration.GetValue<bool>("DemoData:SeedOnStartup"))
-{
-    using var seedScope = app.Services.CreateScope();
-    var log = seedScope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("DemoData");
-    await DemoDataSeeder.SeedAsync(seedScope.ServiceProvider, log);
-}
+// if (app.Configuration.GetValue<bool>("DemoData:SeedOnStartup"))
+// {
+//     using var seedScope = app.Services.CreateScope();
+//     var log = seedScope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("DemoData");
+//     await DemoDataSeeder.SeedAsync(seedScope.ServiceProvider, log);
+// }
 
 
 // Configure the HTTP request pipeline.

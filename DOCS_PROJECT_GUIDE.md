@@ -1,110 +1,78 @@
-# 🚌 Codenhalam-WebBanVeXe — Hướng Dẫn Kỹ Thuật & Cài Đặt
+# HƯỚNG DẪN THIẾT LẬP VÀ CHẠY HỆ THỐNG WEB ĐẶT VÉ XE
 
-Chào mừng bạn đến với dự án Hệ thống Đặt vé Xe khách Trực tuyến. Tài liệu này cung cấp cái nhìn tổng quan về tư duy thiết kế, kiến trúc hệ thống và hướng dẫn chi tiết để một người mới có thể thiết lập dự án từ con số 0.
-
----
-
-## 🏗️ 1. Tư Duy Thiết Kế & Kiến Trúc (Architecture)
-
-Dự án được xây dựng dựa trên nguyên lý **Clean Architecture**, giúp mã nguồn dễ bảo trì, mở rộng và kiểm thử.
-
-### 🏠 Cơ Cấu Thư Mục (Structure)
-- **`backend/src/Domain`**: Chứa các Entity (User, Trip, Seat, Booking...), Enums và Interfaces cơ bản. Không phụ thuộc vào bất kỳ thư viện ngoài nào (Core logic).
-- **`backend/src/Application`**: Chứa logic nghiệp vụ (Services), DTOs và Interfaces. Đây là nơi xử lý các quy tắc tính toán (ví dụ: logic giữ ghế 10 phút).
-- **`backend/src/Infrastructure`**: Chứa implementation của các interface (Persistence, Notification...). Sử dụng **Entity Framework Core (SQLite)** để quản lý cơ sở dữ liệu.
-- **`backend/src/api`**: Tầng giao tiếp (REST API Controllers). Chịu trách nhiệm nhận yêu cầu từ Frontend và trả về kết quả.
-- **`Frontend`**: Xây dựng bằng **Angular 19+**, sử dụng kiến trúc **Standalone Components** hiện đại, không cần Module phức tạp.
-
-### 🗝️ Logic Cốt Lõi (Epic 3 & 4)
-- **Seat Locking Engine**: Khi khách hàng chọn ghế, hệ thống sẽ giữ ghế (`Status = Locked`) trong 10 phút thông qua `TripService`.
-- **Background Worker**: `SeatLockBackgroundService` chạy ngầm để giải phóng các ghế đã hết hạn giữ mà không được thanh toán.
-- **Reporting System**: `ReportingService` tổng hợp doanh thu theo ngày/tháng và các tuyến đường phổ biến cho Admin Dashboard.
+Dự án này là một web application hỗ trợ đặt vé xe khách trực tuyến dành cho cả khách hàng và quản trị viên (Admin). Hệ thống được phát triển theo kiến trúc Clean Architecture.
 
 ---
 
-## 🛠️ 2. Yêu Cầu Hệ Thống (Prerequisites)
-
-- **.NET SDK 9.0** trở lên.
-- **Node.js v20+** & **npm**.
-- **Angular CLI v19+** (Cài đặt bằng: `npm install -g @angular/cli`).
+## 🏗️ 1. Kiến trúc Công nghệ (Tech Stack)
+- **Backend**: ASP.NET Core 9.0 (C#) sử dụng Entity Framework Core.
+- **Frontend**: Angular 19+ (Standalone Components).
+- **Database**: Microsoft SQL Server (Hỗ trợ LocalDB).
+- **Security**: JWT Authentication kết hợp BCrypt hashing.
 
 ---
 
-## 🚀 3. Hướng Dẫn Cài Đặt Từ Đầu (Clone & Build)
+## 🛠️ 2. Yêu cầu Hệ thống (Prerequisites)
+Để hệ thống có thể chạy được, trên máy tính của bạn cần có:
+- **.NET SDK 9.0**: [Link tải](https://dotnet.microsoft.com/download/dotnet/9.0)
+- **Node.js (v18+) & npm**: [Link tải](https://nodejs.org/)
+- **SQL Server**: Phiên bản SQL Server Express hoặc LocalDB (Đi kèm Visual Studio).
+- **Angular CLI**: Cài đặt bằng lệnh `npm install -g @angular/cli`.
 
-### Bước 1: Clone dự án
-```powershell
-git clone https://github.com/theanh-512/Codenhalam-WebBanVeXe.git
-cd Codenhalam-WebBanVeXe
+---
+
+## 🗄️ 3. Thiết lập Cơ sở dữ liệu (Database Setup)
+
+Để triển khai database vào SQL Server theo yêu cầu của thầy/cô, bạn thực hiện theo các bước:
+
+1.  **Mở SQL Server Management Studio (SSMS)** và kết nối tới server của bạn (thường là `(localdb)\mssqllocaldb` hoặc `.\SQLEXPRESS`).
+2.  **Mở và chạy file Schema**:
+    - Tìm file: `backend/src/api/schema.sql` trong mã nguồn.
+    - Copy toàn bộ nội dung và thực thi (Execute) tại SSMS để tạo cấu trúc bảng.
+3.  **Mở và chạy file Dữ liệu mẫu (Seed Data)**:
+    - Tìm file: `backend/src/api/seed_data.sql`.
+    - Thực thi để nạp dữ liệu về Chuyến xe, Tuyến đường, và Tài khoản Admin.
+
+**Lưu ý**: Đảm bảo chuỗi kết nối (Connection String) trong file `backend/src/api/appsettings.json` trỏ chính xác vào server của bạn.
+
+---
+
+## 🚀 4. Hướng dẫn Chạy Hệ thống
+
+### Bước 1: Khởi chạy Backend
+Mở Terminal tại thư mục gốc của dự án (`Codenhalam-WebBanVeXe/backend/src/api`) và chạy:
+```bash
+dotnet restore
+dotnet run
 ```
+Backend sẽ mặc định chạy tại: `http://localhost:5048`
 
-### Bước 2: Thiết lập Backend
-1. Di chuyển vào thư mục API:
-   ```powershell
-   cd backend/src/api
-   ```
-2. Cài đặt các công cụ Entity Framework (nếu chưa có):
-   ```powershell
-   dotnet tool install --global dotnet-ef
-   ```
-3. Khôi phục packages:
-   ```powershell
-   dotnet restore
-   ```
-4. **Quan trọng**: Nếu bạn bắt đầu mới hoàn toàn, hãy xóa tệp `vexe.db` cũ (nếu có) để hệ thống tự động khởi tạo lại cấu trúc chuẩn nhất.
-5. Chạy Backend:
-   ```powershell
-   dotnet run
-   ```
-   *Lưu ý: Hệ thống đã được cấu hình tự động chạy Migration và Seed dữ liệu mẫu (Admin, Tuyến đường, Xe, Chuyến đi) ngay khi khởi động.*
-
-### Bước 3: Thiết lập Frontend
-1. Mở terminal mới tại thư mục `frontend`:
-   ```powershell
-   cd frontend
-   ```
-2. Cài đặt dependencies:
-   ```powershell
-   npm install
-   ```
-3. Chạy Frontend với Proxy:
-   ```powershell
-   npm run start
-   ```
-   *Lưu ý: Dự án sử dụng `proxy.conf.json` để chuyển hướng các yêu cầu `/api` từ cổng 4200 sang 5048 của Backend nhằm tránh lỗi CORS.*
+### Bước 2: Khởi chạy Frontend
+Mở một Terminal khác tại thư mục `Frontend` và chạy:
+```bash
+npm install
+npm run start
+```
+Hệ thống sẽ chạy tại: `http://localhost:4200`
 
 ---
 
-## 🔑 4. Thông Tin Đăng Nhập Mặc Định
+## 👤 5. Thông tin Tài khoản Mặc định (Login)
 
-Dữ liệu mẫu (Demo Data) cung cấp tài khoản Admin để truy cập Dashboard:
-- **Tài khoản**: `admin`
-- **Mật khẩu**: `Admin@123`
-- **Vai trò**: Admin
+Sau khi nạp file `seed_data.sql`, bạn có thể đăng nhập với các tài khoản:
 
----
-
-## ⚠️ 5. Các Lỗi Thường Gặp & Cách Xử Lý
-
-### 1. Lỗi "Duplicate column" hoặc "Out of sync Migration"
-Nếu bạn clone code về mà gặp lỗi database, hãy thực hiện reset triệt để:
-1. Xóa nội dung thư mục `backend/src/Infrastructure/Migrations/`.
-2. Xóa tệp `backend/src/api/vexe.db`.
-3. Chạy lệnh: `dotnet ef migrations add Initial --project backend/src/Infrastructure/Infrastructure.csproj --startup-project backend/src/api/Api.csproj`.
-4. Sau đó chạy lại `dotnet run`.
-
-### 2. Lỗi "Process cannot access the file" (Building error)
-Lỗi này do tiến trình API cũ chưa tắt hẳn.
-- Cách xử lý: Tắt terminal chạy Backend hoặc dùng lệnh: `taskkill /F /IM Api.exe /T`.
+| Quyền | Tên đăng nhập | Mật khẩu | Mô tả |
+| :--- | :--- | :--- | :--- |
+| **Admin** | `admin` | `Admin@123` | Toàn quyền quản trị, quản lý xe, trip. |
+| **Customer** | `customer1` | `Admin@123` | Tài khoản dành cho khách hàng đặt vé. |
 
 ---
 
-## 📅 6. Quy Trình Phát Triển (Workflow)
-
-Nếu bạn muốn đóng góp code:
-1. Luôn thực hiện `git pull` trước khi bắt đầu.
-2. Nếu có thay đổi model ở `Domain`, hãy tạo migration mới và push kèm code.
-3. Luôn Build cả 2 đầu Backend & Frontend để đảm bảo tính nhất quán.
+## 📑 6. Một số tính năng chính
+- **Cơ sở dữ liệu tập trung**: Quản lý Tuyến đường, Điểm dừng, Đội xe (VIP, SleepBus).
+- **Admin Dashboard**: Thêm mới chuyến đi, cập nhật trạng thái hoạt động của xe.
+- **Tìm kiếm thông minh**: Tìm kiếm chuyến đi theo lộ trình Đà Lạt - Sài Gòn,...
+- **Đặt vé trực quan**: Chọn ghế ngồi theo sơ đồ tầng 1/tầng 2.
 
 ---
-**Codenhalam Team** — *"Cái gì không làm được thì mình vừa khóc vừa làm"*
+*Dự án thuộc bài tập lớn môn Thiết kế Web - GVHD: [Tên thầy/cô].*

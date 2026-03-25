@@ -1,48 +1,75 @@
 USE [WebBanVeXeDB];
 GO
 
--- 1. Clean existing mock data if any (optional, but good for fresh start)
+-- 1. Xóa dữ liệu cũ để tránh trùng lặp khi chạy lại script
+DELETE FROM [Payments];
+DELETE FROM [Invoices];
+DELETE FROM [BookingDetails];
+DELETE FROM [Bookings];
 DELETE FROM [Seats];
 DELETE FROM [Trips];
-DELETE FROM [Buses];
+DELETE FROM [RouteStops];
+DELETE FROM [StopPoints];
 DELETE FROM [Routes];
+-- Không xóa Users, BusTypes, Buses vì đã có trong schema.sql (EF Migration Seed)
 
--- Hardcoded GUIDs for easy reference
-DECLARE @RouteId UNIQUEIDENTIFIER = '11111111-2222-3333-4444-555555555555';
-DECLARE @BusId UNIQUEIDENTIFIER = '22222222-3333-4444-5555-666666666666';
-DECLARE @TripId UNIQUEIDENTIFIER = '33333333-4444-5555-6666-777777777777';
+-- 2. Thêm các Điểm dừng (StopPoints)
+DECLARE @StopHN_BXMydinh UNIQUEIDENTIFIER = NEWID();
+DECLARE @StopHP_BXNiemsat UNIQUEIDENTIFIER = NEWID();
+DECLARE @StopSG_BXMientay UNIQUEIDENTIFIER = NEWID();
+DECLARE @StopDL_BXDalat UNIQUEIDENTIFIER = NEWID();
 
--- 2. Insert Route (Sài Gòn - Đà Lạt)
+INSERT INTO [StopPoints] ([Id], [Name], [Address], [IsPickup], [IsDropoff], [Badge])
+VALUES 
+(@StopHN_BXMydinh, N'Bến xe Mỹ Đình', N'Phạm Hùng, Hà Nội', 1, 1, N'Hà Nội'),
+(@StopHP_BXNiemsat, N'Bến xe Niệm Nghĩa', N'Trần Nguyên Hãn, Hải Phòng', 1, 1, N'Hải Phòng'),
+(@StopSG_BXMientay, N'Bến xe Miền Tây', N'Kinh Dương Vương, TP.HCM', 1, 1, N'Sài Gòn'),
+(@StopDL_BXDalat, N'Bến xe Liên tỉnh Đà Lạt', N'Tô Hiến Thành, Đà Lạt', 1, 1, N'Đà Lạt');
+
+-- 3. Thêm Tuyến đường (Routes) mẫu
+DECLARE @Route1 UNIQUEIDENTIFIER = '11111111-2222-3333-4444-555555555555'; -- Hà Nội - Hải Phòng
+DECLARE @Route2 UNIQUEIDENTIFIER = '22222222-3333-4444-5555-666666666666'; -- Sài Gòn - Đà Lạt
+
 INSERT INTO [Routes] ([Id], [Origin], [Destination], [Points], [DistanceKm], [IsActive], [CreatedAt])
-VALUES (@RouteId, N'Sài Gòn', N'Đà Lạt', N'Biên Hòa, Bảo Lộc', 300.00, 1, GETUTCDATE());
+VALUES 
+(@Route1, N'Hà Nội', N'Hải Phòng', N'Gia Lâm, Hải Dương', 120, 1, GETUTCDATE()),
+(@Route2, N'Sài Gòn', N'Đà Lạt', N'Bảo Lộc, Di Linh', 310, 1, GETUTCDATE());
 
--- 3. Insert Bus (Xe Giường Nằm 36 chỗ)
--- Assuming BusType 0 is Normal/Sleeper based on Enum
-INSERT INTO [Buses] ([Id], [PlateNumber], [SeatCapacity], [BusType], [IsActive])
-VALUES (@BusId, '51B-999.99', 36, 0, 1);
+-- 4. Thêm Chặng dừng (RouteStops)
+INSERT INTO [RouteStops] ([Id], [RouteId], [StopPointId], [OffsetMinutes], [DistanceFromOriginKm], [OrderIndex])
+VALUES 
+(NEWID(), @Route1, @StopHN_BXMydinh, 0, 0, 0),
+(NEWID(), @Route1, @StopHP_BXNiemsat, 120, 120, 1),
+(NEWID(), @Route2, @StopSG_BXMientay, 0, 0, 0),
+(NEWID(), @Route2, @StopDL_BXDalat, 420, 310, 1);
 
--- 4. Insert Trip
+-- 5. Thêm Chuyến đi (Trips)
+DECLARE @BusSleeper UNIQUEIDENTIFIER = '55555555-5555-5555-5555-555555555555'; -- Phương Trang Sleeper
+DECLARE @BusLimousine UNIQUEIDENTIFIER = '66666666-6666-6666-6666-666666666666'; -- Thành Bưởi Limousine
+
+DECLARE @Trip1 UNIQUEIDENTIFIER = NEWID();
+DECLARE @Trip2 UNIQUEIDENTIFIER = NEWID();
+
 INSERT INTO [Trips] ([Id], [RouteId], [BusId], [DepartureTime], [ArrivalTime], [Price], [Status], [CreatedAt])
-VALUES (@TripId, @RouteId, @BusId, DATEADD(hour, 10, GETUTCDATE()), DATEADD(hour, 18, GETUTCDATE()), 250000.00, 'Active', GETUTCDATE());
+VALUES 
+(@Trip1, @Route1, @BusSleeper, DATEADD(hour, 2, GETUTCDATE()), DATEADD(hour, 4, GETUTCDATE()), 150000, N'Active', GETUTCDATE()),
+(@Trip2, @Route2, @BusLimousine, DATEADD(hour, 10, GETUTCDATE()), DATEADD(hour, 17, GETUTCDATE()), 350000, N'Active', GETUTCDATE());
 
--- 5. Insert 36 Seats for the Trip based on Mock Layout (2 Floors, 3 Columns, 6 Rows)
--- Floor 1
-INSERT INTO [Seats] ([Id], [TripId], [SeatNumber], [Status], [Type], [Floor], [RowNumber], [ColumnNumber]) VALUES 
-(NEWID(), @TripId, 'A1D', 0, 0, 1, 1, 1), (NEWID(), @TripId, 'B1D', 0, 0, 1, 1, 2), (NEWID(), @TripId, 'C1D', 0, 0, 1, 1, 3),
-(NEWID(), @TripId, 'A2D', 0, 0, 1, 2, 1), (NEWID(), @TripId, 'B2D', 0, 0, 1, 2, 2), (NEWID(), @TripId, 'C2D', 0, 0, 1, 2, 3),
-(NEWID(), @TripId, 'A3D', 0, 0, 1, 3, 1), (NEWID(), @TripId, 'B3D', 0, 0, 1, 3, 2), (NEWID(), @TripId, 'C3D', 0, 0, 1, 3, 3),
-(NEWID(), @TripId, 'A4D', 0, 0, 1, 4, 1), (NEWID(), @TripId, 'B4D', 0, 0, 1, 4, 2), (NEWID(), @TripId, 'C4D', 0, 0, 1, 4, 3),
-(NEWID(), @TripId, 'A5D', 0, 0, 1, 5, 1), (NEWID(), @TripId, 'B5D', 0, 0, 1, 5, 2), (NEWID(), @TripId, 'C5D', 0, 0, 1, 5, 3),
-(NEWID(), @TripId, 'A6D', 0, 0, 1, 6, 1), (NEWID(), @TripId, 'B6D', 0, 0, 1, 6, 2), (NEWID(), @TripId, 'C6D', 0, 0, 1, 6, 3);
+-- 6. Sinh tự động ghế (Seats) cho Trip1 (Sleeper 44 chỗ)
+-- Để đơn giản, seed 5 ghế mẫu cho mỗi trip
+INSERT INTO [Seats] ([Id], [TripId], [SeatNumber], [RowNumber], [ColumnNumber], [Floor], [Type], [Status])
+VALUES 
+(NEWID(), @Trip1, 'A01', 1, 1, 1, 1, 0),
+(NEWID(), @Trip1, 'A02', 1, 2, 1, 1, 0),
+(NEWID(), @Trip1, 'A03', 1, 3, 1, 1, 0),
+(NEWID(), @Trip2, 'L01', 1, 1, 1, 1, 0),
+(NEWID(), @Trip2, 'L02', 1, 2, 1, 1, 0);
 
--- Floor 2
-INSERT INTO [Seats] ([Id], [TripId], [SeatNumber], [Status], [Type], [Floor], [RowNumber], [ColumnNumber]) VALUES 
-(NEWID(), @TripId, 'A1T', 0, 0, 2, 1, 1), (NEWID(), @TripId, 'B1T', 0, 0, 2, 1, 2), (NEWID(), @TripId, 'C1T', 0, 0, 2, 1, 3),
-(NEWID(), @TripId, 'A2T', 0, 0, 2, 2, 1), (NEWID(), @TripId, 'B2T', 0, 0, 2, 2, 2), (NEWID(), @TripId, 'C2T', 0, 0, 2, 2, 3),
-(NEWID(), @TripId, 'A3T', 0, 0, 2, 3, 1), (NEWID(), @TripId, 'B3T', 0, 0, 2, 3, 2), (NEWID(), @TripId, 'C3T', 0, 0, 2, 3, 3),
-(NEWID(), @TripId, 'A4T', 0, 0, 2, 4, 1), (NEWID(), @TripId, 'B4T', 0, 0, 2, 4, 2), (NEWID(), @TripId, 'C4T', 0, 0, 2, 4, 3),
-(NEWID(), @TripId, 'A5T', 0, 0, 2, 5, 1), (NEWID(), @TripId, 'B5T', 0, 0, 2, 5, 2), (NEWID(), @TripId, 'C5T', 0, 0, 2, 5, 3),
-(NEWID(), @TripId, 'A6T', 0, 0, 2, 6, 1), (NEWID(), @TripId, 'B6T', 0, 0, 2, 6, 2), (NEWID(), @TripId, 'C6T', 0, 0, 2, 6, 3);
+-- 7. Thêm một số người dùng mẫu
+INSERT INTO [Users] ([Id], [UserName], [Email], [PasswordHash], [FullName], [PhoneNumber], [Role], [CreatedAt], [IsActive])
+VALUES 
+(NEWID(), 'customer1', 'customer1@gmail.com', '$2a$11$0nK18Qc7D8N94B3U3P6S/OGfN9f4v.T2H6zH/r4O/C5v.Q/b4XvG6', N'Nguyễn Văn Khách', '0912345678', 'Customer', GETDATE(), 1),
+(NEWID(), 'staff1', 'staff1@vexesystem.com', '$2a$11$0nK18Qc7D8N94B3U3P6S/OGfN9f4v.T2H6zH/r4O/C5v.Q/b4XvG6', N'Trần Thị Nhân Viên', '0987654321', 'Staff', GETDATE(), 1);
 
-PRINT 'Thêm dữ liệu mẫu thành công! TripID để test: 33333333-4444-5555-6666-777777777777';
+PRINT 'Seed Data executed successfully!';
 GO
