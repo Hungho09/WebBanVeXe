@@ -16,5 +16,6 @@ namespace Domain.Interfaces
         Task SaveChangesAsync();
         Task<bool> HasConflictAsync(Guid busId, DateTime departureTime, DateTime arrivalTime, Guid? excludeTripId = null);
         Task<Trip?> GetBySeatIdAsync(Guid seatId);
+        Task<IEnumerable<Trip>> SearchAsync(string? origin, string? destination, DateTime? date);
     }
 }

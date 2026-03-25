@@ -85,5 +85,33 @@ namespace Infrastructure.Repositories
                 .Include(t => t.Seats)
                 .FirstOrDefaultAsync(t => t.Seats.Any(s => s.Id == seatId));
         }
+
+        public async Task<IEnumerable<Trip>> SearchAsync(string? origin, string? destination, DateTime? date)
+        {
+            var query = _context.Trips
+                .Include(t => t.Route)
+                .Include(t => t.Bus)
+                    .ThenInclude(b => b!.BusType)
+                .Include(t => t.Seats)
+                .Where(t => t.Status == Domain.Enums.TripStatus.Active);
+
+            if (!string.IsNullOrEmpty(origin))
+            {
+                query = query.Where(t => t.Route!.Origin.Contains(origin));
+            }
+
+            if (!string.IsNullOrEmpty(destination))
+            {
+                query = query.Where(t => t.Route!.Destination.Contains(destination));
+            }
+
+            if (date.HasValue)
+            {
+                var targetDate = date.Value.Date;
+                query = query.Where(t => t.DepartureTime.Date == targetDate);
+            }
+
+            return await query.OrderBy(t => t.DepartureTime).ToListAsync();
+        }
     }
 }

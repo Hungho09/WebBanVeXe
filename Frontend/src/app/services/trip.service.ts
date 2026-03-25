@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface Trip {
@@ -14,6 +14,7 @@ export interface Trip {
   arrivalTime: string;
   price: number;
   status: string;
+  availableSeats?: number;
 }
 
 export interface Seat {
@@ -36,6 +37,14 @@ export class TripService {
 
   getTrips(): Observable<Trip[]> {
     return this.http.get<Trip[]>(this.apiUrl);
+  }
+
+  searchTrips(origin: string, destination: string, date: string): Observable<Trip[]> {
+    let params = new HttpParams();
+    if (origin) params = params.set('origin', origin);
+    if (destination) params = params.set('destination', destination);
+    if (date) params = params.set('date', date);
+    return this.http.get<Trip[]>(`${this.apiUrl}/search`, { params });
   }
 
   getTrip(id: string): Observable<Trip> {

@@ -45,7 +45,7 @@
             <div class="discount-badge" *ngIf="trip.price > 300000">GIẢM 10%</div>
         </div>
         
-        <div class="seat-available">Còn 9 chỗ trống</div>
+        <div class="seat-available">Còn {{ trip.availableSeats || 0 }} chỗ trống</div>
 
         <button class="btn-select" (click)="onSelect()">Chọn chuyến</button>
         

@@ -56,7 +56,9 @@ export class BookingSearch implements OnInit {
 
   loadTrips() {
     this.isLoading = true;
-    this.tripService.getTrips().subscribe({
+    
+    // Convert YYYY-MM-DD back if needed, but our backend can handle standard ISO or short date
+    this.tripService.searchTrips(this.origin, this.destination, this.date).subscribe({
       next: (data) => {
         this.trips = data.filter(t => t.status === 'Active');
         this.distinctCompanies = Array.from(new Set(this.trips.map(t => 'Nhà xe ' + t.busPlate.split('-')[0]))); // Demo logic
@@ -89,26 +91,9 @@ export class BookingSearch implements OnInit {
     // Core search filters
     if (this.routeId) {
        result = result.filter(t => t.routeId === this.routeId);
-    } else {
-        if (this.origin) {
-          const q = this.origin.trim().toLowerCase();
-          result = result.filter(t => (t.routeName || '').toLowerCase().includes(q));
-        }
-        if (this.destination) {
-          const q = this.destination.trim().toLowerCase();
-          result = result.filter(t => (t.routeName || '').toLowerCase().includes(q));
-        }
     }
-
-    if (this.date) {
-      try {
-        // Robust date comparison (compare YYYY-MM-DD part)
-        const searchStr = new Date(this.date).toISOString().split('T')[0];
-        result = result.filter(t => t.departureTime.split('T')[0] === searchStr);
-      } catch (e) {
-        console.warn('Invalid date in search:', this.date);
-      }
-    }
+    
+    // Notice: Origin, Destination, and Date are now pre-filtered by the backend!
 
     // Sidebar filters
     if (this.activeFilters.companies && this.activeFilters.companies.length > 0) {

@@ -16,5 +16,6 @@ namespace Application.Interfaces
         Task<bool> LockSeatAsync(Guid seatId, Guid userId);
         Task<bool> UnlockSeatAsync(Guid seatId, Guid userId);
         Task<IEnumerable<TripPointDto>> GetTripPointsAsync(Guid tripId);
+        Task<IEnumerable<TripDto>> SearchTripsAsync(string? origin, string? destination, DateTime? date);
     }
 }

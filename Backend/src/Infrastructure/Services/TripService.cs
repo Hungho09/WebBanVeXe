@@ -257,8 +257,22 @@ namespace Infrastructure.Services
                     Longitude = rs.StopPoint.Longitude
                 });
         }
+
+        public async Task<IEnumerable<TripDto>> SearchTripsAsync(string? origin, string? destination, DateTime? date)
+        {
+            var trips = await _tripRepository.SearchAsync(origin, destination, date);
+            return trips.Select(MapToDto);
+        }
+
         private TripDto MapToDto(Trip trip)
         {
+            var availableSeats = 0;
+            if (trip.Seats != null && trip.Seats.Any())
+            {
+                var now = DateTime.UtcNow;
+                availableSeats = trip.Seats.Count(s => s.Status == Domain.Enums.SeatStatus.Available || (s.Status == Domain.Enums.SeatStatus.Locked && s.LockExpirationTime.HasValue && s.LockExpirationTime <= now));
+            }
+
             return new TripDto
             {
                 Id = trip.Id,
@@ -272,9 +286,11 @@ namespace Infrastructure.Services
                 ArrivalTime = trip.ArrivalTime,
                 Price = trip.Price,
                 Status = trip.Status.ToString(),
+                AvailableSeats = availableSeats,
                 CreatedAt = trip.CreatedAt,
                 UpdatedAt = trip.UpdatedAt
             };
         }
     }
 }
+

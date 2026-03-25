@@ -26,6 +26,13 @@ namespace Api.Controllers
             return Ok(trips);
         }
 
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<TripDto>>> Search([FromQuery] string? origin, [FromQuery] string? destination, [FromQuery] DateTime? date)
+        {
+            var trips = await _tripService.SearchTripsAsync(origin, destination, date);
+            return Ok(trips);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<TripDto>> GetById(Guid id)
         {
