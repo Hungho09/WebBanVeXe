@@ -6,6 +6,8 @@ export interface CreateBookingDto {
   userId: string;
   tripId: string;
   seatIds: string[];
+  pickupPointId?: string;
+  dropoffPointId?: string;
 }
 
 export interface BookingDetailDto {

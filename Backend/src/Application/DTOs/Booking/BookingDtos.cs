@@ -8,6 +8,8 @@ namespace Application.DTOs.Booking
         public Guid UserId { get; set; }
         public Guid TripId { get; set; }
         public List<Guid> SeatIds { get; set; } = new();
+        public Guid? PickupPointId { get; set; }
+        public Guid? DropoffPointId { get; set; }
     }
 
     public class BookingResponseDto

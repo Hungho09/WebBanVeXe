@@ -75,40 +75,60 @@
       <!-- POINT SELECTION STEP -->
       <div class="step-content animate-fade" *ngIf="activeStep === 'point'">
         <div class="points-grid">
+          <!-- CỘT BÊN TRÁI: ĐIỂM ĐÓN -->
           <div class="card p-card">
-            <div class="card-header"><h3>Điểm đón</h3></div>
+            <div class="card-header">
+              <h3>Điểm đón</h3>
+              <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" [(ngModel)]="pickupSearch" placeholder="Tìm điểm đón...">
+              </div>
+            </div>
+            
             <div class="points-list">
-              <div *ngFor="let p of pickupPoints" 
+              <div *ngFor="let p of filteredPickups" 
                    class="point-item"
-                   [class.selected]="selectedPickupId === pointId(p)"
-                   (click)="selectedPickupId = pointId(p)">
+                   [class.selected]="selectedPickupId === p.id"
+                   (click)="selectedPickupId = p.id">
                 <div class="point-radio">
-                  <div class="radio-outer"><div class="radio-inner" *ngIf="selectedPickupId === p.id"></div></div>
+                  <input type="radio" [checked]="selectedPickupId === p.id">
                 </div>
                 <div class="point-main">
                   <div class="p-time-row">
                     <span class="p-time">{{ p.expectedTime | date:'HH:mm' }}</span>
                     <span class="p-dot">•</span>
                     <span class="p-name">{{ p.name }}</span>
-                    <span class="badge" *ngIf="p.badge">{{ p.badge }}</span>
+                    <span class="badge near" *ngIf="p.distanceToUser && p.distanceToUser < 5">Gần bạn ({{ p.distanceToUser | number:'1.1-1' }}km)</span>
                   </div>
                   <div class="p-addr">{{ p.address }}</div>
-                  <button class="btn-map" (click)="$event.stopPropagation(); showMap(p)">
-                    <i class="fas fa-map-marked-alt"></i> Bản đồ
+                  <button class="btn-map-link" (click)="$event.stopPropagation(); showMap(p)">
+                    <i class="fas fa-map-marker-alt"></i> Xem bản đồ
                   </button>
                 </div>
+              </div>
+              <div *ngIf="filteredPickups.length === 0" class="no-results">
+                Không tìm thấy điểm đón phù hợp
               </div>
             </div>
           </div>
 
+          <!-- CỘT BÊN PHẢI: ĐIỂM TRẢ -->
           <div class="card p-card">
-            <div class="card-header"><h3>Điểm trả</h3></div>
+            <div class="card-header">
+              <h3>Điểm trả</h3>
+              <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" [(ngModel)]="dropoffSearch" placeholder="Tìm điểm trả...">
+              </div>
+            </div>
+
             <div class="points-list">
+              <!-- Option: Trả tận nơi -->
               <div class="point-item special" 
                    [class.selected]="selectedDropoffId === 'door-to-door'"
                    (click)="selectedDropoffId = 'door-to-door'">
                 <div class="point-radio">
-                  <div class="radio-outer"><div class="radio-inner" *ngIf="selectedDropoffId === 'door-to-door'"></div></div>
+                  <input type="radio" [checked]="selectedDropoffId === 'door-to-door'">
                 </div>
                 <div class="point-main">
                   <div class="p-time-row">
@@ -119,12 +139,13 @@
                 </div>
               </div>
 
-              <div *ngFor="let p of dropoffPoints" 
+              <!-- List of Points -->
+              <div *ngFor="let p of filteredDropoffs" 
                    class="point-item"
-                   [class.selected]="selectedDropoffId === pointId(p)"
-                   (click)="selectedDropoffId = pointId(p)">
+                   [class.selected]="selectedDropoffId === p.id"
+                   (click)="selectedDropoffId = p.id">
                 <div class="point-radio">
-                  <div class="radio-outer"><div class="radio-inner" *ngIf="selectedDropoffId === pointId(p)"></div></div>
+                  <input type="radio" [checked]="selectedDropoffId === p.id">
                 </div>
                 <div class="point-main">
                   <div class="p-time-row">
@@ -133,13 +154,16 @@
                     <span class="p-name">{{ p.name }}</span>
                   </div>
                   <div class="p-addr">{{ p.address }}</div>
-                  <div class="p-actions">
-                    <button class="btn-map" (click)="$event.stopPropagation(); showMap(p)">
-                      <i class="fas fa-map-marked-alt"></i> Bản đồ
+                  <div class="p-footer">
+                    <button class="btn-map-link" (click)="$event.stopPropagation(); showMap(p)">
+                      <i class="fas fa-map-marker-alt"></i> Xem bản đồ
                     </button>
                     <span class="badge shuttle" *ngIf="p.name.includes('Bến xe')">Trung chuyển 5km</span>
                   </div>
                 </div>
+              </div>
+              <div *ngIf="filteredDropoffs.length === 0" class="no-results">
+                Không tìm thấy điểm trả phù hợp
               </div>
             </div>
           </div>

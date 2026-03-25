@@ -252,7 +252,9 @@ namespace Infrastructure.Services
                     DistanceFromOrigin = rs.DistanceFromOriginKm,
                     Badge = rs.StopPoint.Badge,
                     IsPickup = rs.StopPoint.IsPickup,
-                    IsDropoff = rs.StopPoint.IsDropoff
+                    IsDropoff = rs.StopPoint.IsDropoff,
+                    Latitude = rs.StopPoint.Latitude,
+                    Longitude = rs.StopPoint.Longitude
                 });
         }
         private TripDto MapToDto(Trip trip)
