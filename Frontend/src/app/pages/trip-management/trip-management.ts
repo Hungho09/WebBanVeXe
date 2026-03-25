@@ -65,8 +65,8 @@ export class TripManagement implements OnInit {
   loadBuses() {
     this.busService.getBuses().subscribe({
       next: (buses) => {
-        // Only show Available buses (status=2) for new trip creation
-        this.availableBuses = buses.filter(b => b.status === 2);
+        // Only show Available buses for new trip creation
+        this.availableBuses = buses.filter(b => b.status === "Available" as any); // Use string matching for Backend Enum serialization
       },
       error: (err) => console.error('Lỗi tải danh sách xe', err)
     });

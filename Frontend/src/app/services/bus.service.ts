@@ -8,7 +8,7 @@ export interface BusType {
   seatCount: number;
 }
 
-export type BusStatus = 1 | 2 | 3; // 1=Active, 2=Available, 3=Inactive
+export type BusStatus = 'Active' | 'Available' | 'Inactive';
 
 export interface Bus {
   id: string;
