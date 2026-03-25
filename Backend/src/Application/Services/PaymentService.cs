@@ -87,7 +87,7 @@ namespace Application.Services
 
                     // Story 3.5 & 3.6: Generate invoice and send confirmation after success
                     try {
-                        await _invoiceService.CreateInvoiceAsync(booking.Id);
+                        await _invoiceService.CreateForBookingAsync(booking.Id);
                         await _notificationService.SendBookingConfirmationAsync(booking.Id);
                     } catch (Exception) { /* Log and ignore non-critical failures */ }
 

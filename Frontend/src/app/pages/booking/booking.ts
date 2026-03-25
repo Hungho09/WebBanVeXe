@@ -370,8 +370,19 @@ export class Booking implements OnInit, OnDestroy {
       return;
     }
 
+    const uid = userProfile.id ?? '';
+    const isGuid = (v: unknown) =>
+      typeof v === 'string' &&
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/.test(v);
+
+    if (!isGuid(uid)) {
+      this.toastService.showError('Không lấy được UserId hợp lệ. Vui lòng đăng nhập lại để đặt vé.');
+      this.router.navigate(['/login'], { queryParams: { returnUrl: `/booking/${this.tripId}` } });
+      return;
+    }
+
     const bookingDto: CreateBookingDto = {
-      userId: userProfile.id || 'unknown',
+      userId: uid,
       tripId: this.tripId!,
       seatIds: this.selectedSeatIds,
       pickupPointId: this.selectedPickupId || undefined,
@@ -386,7 +397,8 @@ export class Booking implements OnInit, OnDestroy {
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        this.toastService.showError(err.error?.message || 'Đặt vé thất bại');
+        const msg = err?.error?.message || err?.message || 'Đặt vé thất bại';
+        this.toastService.showError(msg);
         this.isLoading = false;
       }
     });

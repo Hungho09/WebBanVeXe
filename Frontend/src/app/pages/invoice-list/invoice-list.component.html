@@ -1,0 +1,33 @@
+<section class="invoice-list-page">
+  <div class="container">
+    <h2>Danh sách hóa đơn</h2>
+
+    <p *ngIf="isLoading">Đang tải...</p>
+    <p *ngIf="!isLoading && errorMessage" class="error">{{ errorMessage }}</p>
+
+    <table *ngIf="!isLoading && !errorMessage && invoices.length > 0">
+      <thead>
+        <tr>
+          <th>Mã hóa đơn</th>
+          <th>Khách hàng</th>
+          <th>Email</th>
+          <th>Tổng tiền</th>
+          <th>Ngày tạo</th>
+          <th>Chi tiết</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let i of invoices">
+          <td>{{ i.invoiceNumber | invoiceFormat }}</td>
+          <td>{{ i.customerName }}</td>
+          <td>{{ i.customerEmail }}</td>
+          <td>{{ i.totalAmount | number }} đ</td>
+          <td>{{ i.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td><a [routerLink]="['/invoices', i.id]">Xem</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p *ngIf="!isLoading && !errorMessage && invoices.length === 0">Chưa có hóa đơn.</p>
+  </div>
+</section>

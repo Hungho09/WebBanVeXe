@@ -69,7 +69,8 @@ namespace Infrastructure
             services.AddHostedService<Infrastructure.Services.SeatLockBackgroundService>();
 
             // Booking Flow Extras
-            services.AddScoped<Application.Interfaces.IInvoiceService, Infrastructure.Services.InvoiceService>();
+            services.AddScoped<Application.Interfaces.IInvoiceService, Application.Services.InvoiceService>();
+            services.AddScoped<Application.Interfaces.IInvoiceNumberGenerator, Infrastructure.Services.InvoiceNumberGenerator>();
             services.AddScoped<Application.Interfaces.INotificationService, Infrastructure.Services.NotificationService>();
             
             // Reporting & Analytics

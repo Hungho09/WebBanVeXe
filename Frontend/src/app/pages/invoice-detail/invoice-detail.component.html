@@ -1,0 +1,20 @@
+<section class="invoice-detail-page">
+  <div class="container">
+    <h2>Chi tiết hóa đơn</h2>
+
+    <p *ngIf="isLoading">Đang tải...</p>
+    <p *ngIf="!isLoading && errorMessage" class="error">{{ errorMessage }}</p>
+
+    <div *ngIf="!isLoading && invoice" class="card">
+      <p><strong>Mã hóa đơn:</strong> {{ invoice.invoiceNumber | invoiceFormat }}</p>
+      <p><strong>Mã booking:</strong> {{ invoice.bookingId }}</p>
+      <p><strong>Khách hàng:</strong> {{ invoice.customerName }}</p>
+      <p><strong>Email:</strong> {{ invoice.customerEmail }}</p>
+      <p><strong>Tổng tiền:</strong> {{ invoice.totalAmount | number }} đ</p>
+      <p><strong>Ngày tạo:</strong> {{ invoice.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+      <p><strong>Trạng thái:</strong> {{ invoice.status }}</p>
+    </div>
+
+    <a routerLink="/invoices">Quay lại danh sách</a>
+  </div>
+</section>

@@ -1,0 +1,21 @@
+.invoice-detail-page {
+  padding: 24px 0;
+}
+
+.container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.error {
+  color: #dc2626;
+}
