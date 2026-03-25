@@ -26,6 +26,7 @@ export class BookingSearch implements OnInit {
   origin: string = '';
   destination: string = '';
   date: string = '';
+  routeId: string = '';
   
   trips: Trip[] = [];
   filteredTrips: Trip[] = [];
@@ -48,6 +49,7 @@ export class BookingSearch implements OnInit {
       this.origin = params['origin'] || '';
       this.destination = params['destination'] || '';
       this.date = params['date'] || '';
+      this.routeId = params['routeId'] || '';
       this.loadTrips();
     });
   }
@@ -85,15 +87,27 @@ export class BookingSearch implements OnInit {
     let result = [...this.trips];
     
     // Core search filters
-    if (this.origin) {
-      result = result.filter(t => t.routeName.toLowerCase().includes(this.origin.toLowerCase()));
+    if (this.routeId) {
+       result = result.filter(t => t.routeId === this.routeId);
+    } else {
+        if (this.origin) {
+          const q = this.origin.trim().toLowerCase();
+          result = result.filter(t => (t.routeName || '').toLowerCase().includes(q));
+        }
+        if (this.destination) {
+          const q = this.destination.trim().toLowerCase();
+          result = result.filter(t => (t.routeName || '').toLowerCase().includes(q));
+        }
     }
-    if (this.destination) {
-      result = result.filter(t => t.routeName.toLowerCase().includes(this.destination.toLowerCase()));
-    }
+
     if (this.date) {
-      const searchDate = new Date(this.date).toDateString();
-      result = result.filter(t => new Date(t.departureTime).toDateString() === searchDate);
+      try {
+        // Robust date comparison (compare YYYY-MM-DD part)
+        const searchStr = new Date(this.date).toISOString().split('T')[0];
+        result = result.filter(t => t.departureTime.split('T')[0] === searchStr);
+      } catch (e) {
+        console.warn('Invalid date in search:', this.date);
+      }
     }
 
     // Sidebar filters

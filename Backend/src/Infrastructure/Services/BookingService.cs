@@ -116,7 +116,12 @@ namespace Infrastructure.Services
 
                 return await MapToResponseDtoAsync(booking, seats);
             }
-            catch
+            catch (DbUpdateConcurrencyException)
+            {
+                await tx.RollbackAsync();
+                throw new InvalidOperationException("Ghế bạn chọn đã được người khác đặt hoặc hết thời gian chờ. Vui lòng làm mới lại trang.");
+            }
+            catch (Exception ex)
             {
                 await tx.RollbackAsync();
                 throw;

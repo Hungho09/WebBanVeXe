@@ -164,6 +164,7 @@ namespace Infrastructure.Persistence
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.SeatNumber).IsRequired().HasMaxLength(10);
+                entity.Property(e => e.RowVersion).IsRowVersion();
                 entity.HasOne(e => e.Trip).WithMany(t => t.Seats).HasForeignKey(e => e.TripId).OnDelete(DeleteBehavior.Restrict);
             });
 

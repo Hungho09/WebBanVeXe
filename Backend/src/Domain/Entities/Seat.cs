@@ -18,5 +18,8 @@ namespace Domain.Entities
         public Guid? LockedByUserId { get; set; }
 
         public Trip? Trip { get; set; }
+        
+        [System.ComponentModel.DataAnnotations.Timestamp]
+        public byte[]? RowVersion { get; set; }
     }
 }

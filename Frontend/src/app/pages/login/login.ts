@@ -45,12 +45,17 @@ export class Login implements OnInit {
       next: (response) => {
         this.isLoading = false;
         if (response.success && response.token) {
-          const uName = response.userName || response.UserName || 'Thành viên';
-          const uRole = response.role || response.Role || 'Customer';
-          const uId = response.userId || response.UserId || response.id || response.Id || '';
+          const userData = {
+            id: response.userId || response.UserId || response.id,
+            userName: response.userName || response.UserName,
+            fullName: response.fullName || response.FullName,
+            email: response.email || response.Email,
+            phoneNumber: response.phoneNumber || response.PhoneNumber,
+            role: response.role || response.Role || 'Customer'
+          };
           
-          this.authService.saveUser(response.token, uName, uId, uRole);
-          this.toastService.showSuccess(`Chào mừng trở lại, ${uName}!`);
+          this.authService.saveUser(response.token, userData);
+          this.toastService.showSuccess(`Chào mừng trở lại, ${userData.userName || 'Thành viên'}!`);
           this.router.navigateByUrl(this.returnUrl);
         } else {
           this.toastService.showError(response.message || 'Đăng nhập thất bại');

@@ -71,7 +71,7 @@ export class Booking implements OnInit, OnDestroy {
     private router: Router,
     private tripService: TripService,
     private bookingService: BookingService,
-    private authService: AuthService,
+    public authService: AuthService,
     private toastService: ToastService
   ) {}
 
@@ -341,10 +341,43 @@ export class Booking implements OnInit, OnDestroy {
     return (this.trip?.price || 0) * this.selectedSeatIds.length;
   }
 
+  get selectedSeatNumbers(): string {
+    return this.seats
+      .filter(s => this.selectedSeatIds.includes(s.id))
+      .map(s => s.seatNumber)
+      .join(', ');
+  }
+
+  get selectedPickupName(): string | undefined {
+    return this.points.find(p => p.id === this.selectedPickupId)?.name;
+  }
+
+  get selectedDropoffName(): string | undefined {
+    if (this.selectedDropoffId === 'door-to-door') return 'Trả tận nơi';
+    return this.points.find(p => p.id === this.selectedDropoffId)?.name;
+  }
+
+  formatTripTime(iso: string | undefined, onlyTime: boolean = false): string {
+    if (!iso) return '--:--';
+    const d = new Date(iso);
+    if (onlyTime) {
+      return d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+    return d.toLocaleString('vi-VN', { 
+      day: '2-digit', month: '2-digit', 
+      hour: '2-digit', minute: '2-digit', 
+      hour12: false 
+    });
+  }
+
   nextStep() {
     if (this.activeStep === 'seat') {
       if (this.selectedSeatIds.length === 0) {
         this.toastService.showWarning('Vui lòng chọn ít nhất 1 chỗ ngồi!');
+        return;
+      }
+      if (this.selectedSeatIds.length > 5) {
+        this.toastService.showWarning('Bạn chỉ được chọn tối đa 5 ghế mỗi lượt đặt!');
         return;
       }
       this.activeStep = 'point';
@@ -385,21 +418,27 @@ export class Booking implements OnInit, OnDestroy {
       userId: uid,
       tripId: this.tripId!,
       seatIds: this.selectedSeatIds,
-      pickupPointId: this.selectedPickupId || undefined,
-      dropoffPointId: this.selectedDropoffId || undefined
+      pickupPointId: (this.selectedPickupId && this.selectedPickupId !== 'door-to-door') ? this.selectedPickupId : undefined,
+      dropoffPointId: (this.selectedDropoffId && this.selectedDropoffId !== 'door-to-door') ? this.selectedDropoffId : undefined
     };
 
     this.isLoading = true;
     this.bookingService.createBooking(bookingDto).subscribe({
-      next: () => {
+      next: (res) => {
         this.stopTimer();
         this.toastService.showSuccess('Đặt vé thành công!');
+        // Link to invoice detail or dashboard
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
         const msg = err?.error?.message || err?.message || 'Đặt vé thất bại';
         this.toastService.showError(msg);
         this.isLoading = false;
+        // If concurrency error, reload seats
+        if (msg.includes('người khác đặt') || msg.includes('chỗ đã hết')) {
+          this.loadSeats(this.tripId!);
+          this.activeStep = 'seat';
+        }
       }
     });
   }

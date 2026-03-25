@@ -23,15 +23,6 @@ export class HeroSearchComponent implements OnInit, AfterViewInit, OnDestroy {
         return `url('${this.bgImageUrl}')`;
     }
 
-    search() {
-        this.router.navigate(['/search-results'], {
-            queryParams: {
-                origin: this.origin,
-                destination: this.destination,
-                date: this.selectedDate.toISOString()
-            }
-        });
-    }
 
     // ── Trip Type ──────────────────────────────────────
     tripType: 'oneWay' | 'roundTrip' = 'oneWay';
@@ -248,10 +239,18 @@ export class HeroSearchComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onSearchClick(): void {
-        this.searchEvent.emit({
+        const payload = {
             origin: (this.origin ?? '').trim(),
             destination: (this.destination ?? '').trim(),
-            departureDate: new Date(this.selectedDate.getTime()),
+            date: this.selectedDate.toISOString()
+        };
+
+        // Emit for Homepage (optional if it still wants to do something)
+        this.searchEvent.emit(payload);
+
+        // Standard navigation for any page using this component
+        this.router.navigate(['/search-results'], {
+            queryParams: payload
         });
     }
 }
