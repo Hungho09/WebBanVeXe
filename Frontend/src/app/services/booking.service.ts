@@ -51,10 +51,10 @@ export class BookingService {
   }
 
   lockSeat(seatId: string, userId: string): Observable<any> {
-    return this.http.post(`api/trip/seats/${seatId}/lock`, { userId });
+    return this.http.post(`api/bookings/lock-seat/${seatId}`, { userId });
   }
 
   unlockSeat(seatId: string, userId: string): Observable<any> {
-    return this.http.post(`api/trip/seats/${seatId}/unlock`, { userId });
+    return this.http.post(`api/bookings/unlock-seat/${seatId}`, { userId });
   }
 }

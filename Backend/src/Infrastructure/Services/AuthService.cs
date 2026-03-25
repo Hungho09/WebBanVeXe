@@ -53,6 +53,7 @@ namespace Infrastructure.Services
                 Success = true,
                 Message = "Login successful",
                 Token = token,
+                UserId = user.Id,
                 UserName = user.UserName,
                 Role = user.Role
             };
@@ -92,6 +93,7 @@ namespace Infrastructure.Services
                 Success = true,
                 Message = "Registration successful",
                 Token = token,
+                UserId = user.Id,
                 UserName = user.UserName,
                 Role = user.Role
             };
