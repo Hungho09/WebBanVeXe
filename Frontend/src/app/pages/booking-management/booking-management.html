@@ -1,0 +1,65 @@
+<div class="cms-section">
+    <div class="cms-header">
+        <h3>Quản lý Đặt vé & Đặt chỗ</h3>
+        <p>Xem toàn bộ danh sách đặt vé, quản lý trạng thái thanh toán và duyệt yêu cầu hủy vé từ khách hàng.</p>
+    </div>
+
+    <div class="stat-card">
+        <div class="card-title-row">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" placeholder="Tìm theo ID hoặc tên khách hàng...">
+            </div>
+            <button class="btn-cms-add" (click)="loadBookings()"><i class="fas fa-sync-alt"></i> Làm mới</button>
+        </div>
+
+        <div class="table-container">
+            <div *ngIf="isLoading" class="loading-spinner">Đang tải danh sách vé...</div>
+            
+            <table class="modern-table" *ngIf="!isLoading">
+                <thead>
+                    <tr>
+                        <th>Mã đơn</th>
+                        <th>Khách hàng</th>
+                        <th>Ngày đặt</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Chi tiết ghế</th>
+                        <th class="col-actions">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let b of filteredBookings">
+                        <td><small>{{ b.id.substring(0, 8) }}...</small></td>
+                        <td><strong>{{ b.userName }}</strong></td>
+                        <td>{{ b.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                        <td class="price-text">{{ b.totalAmount | currency:'VND':'symbol':'1.0-0' }}</td>
+                        <td>
+                            <span class="status-badge" [ngClass]="getStatusClass(b.bookingStatus)">
+                                {{ getStatusText(b.bookingStatus) }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="seats-list">
+                                <span class="seat-tag" *ngFor="let d of b.details">{{ d.seatNumber }}</span>
+                            </div>
+                        </td>
+                        <td class="col-actions">
+                            <button class="btn-icon" *ngIf="b.bookingStatus === 'CancelRequested'" 
+                                    (click)="approveCancel(b.id)" title="Duyệt hủy">
+                                <i class="fas fa-check-circle text-success"></i>
+                            </button>
+                            <button class="btn-icon" *ngIf="b.bookingStatus === 'Pending' || b.bookingStatus === 'Paid'" 
+                                    (click)="cancelBooking(b.id)" title="Hủy vé">
+                                <i class="fas fa-times-circle text-danger"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="filteredBookings.length === 0">
+                        <td colspan="7" class="empty-state">Không tìm thấy đơn đặt vé nào.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 
 export interface User {
   id: string;
@@ -22,18 +22,23 @@ export class UserService {
   constructor(private http: HttpClient) {}
 
   getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(this.apiUrl);
+    return this.http.get<User[]>('/api/Users').pipe(
+      catchError(err => {
+        console.error('Lỗi lấy danh sách người dùng:', err);
+        return throwError(() => err);
+      })
+    );
   }
 
   createUser(userData: any): Observable<any> {
-    return this.http.post(this.apiUrl, userData);
+    return this.http.post('/api/Users', userData);
   }
 
   updateUser(id: string, userData: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, userData);
+    return this.http.put(`/api/Users/${id}`, userData);
   }
 
   deleteUser(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`/api/Users/${id}`);
   }
 }

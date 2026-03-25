@@ -24,5 +24,17 @@ namespace Application.DTOs.Reporting
         public int TotalUsers { get; set; }
         public int ActiveTrips { get; set; }
         public string MostPopularRoute { get; set; } = "N/A";
+        public List<RecentBookingDto> RecentBookings { get; set; } = new();
+    }
+
+    public class RecentBookingDto
+    {
+        public Guid Id { get; set; }
+        public string CustomerName { get; set; } = "";
+        public string CustomerAvatar { get; set; } = "";
+        public string RouteName { get; set; } = "";
+        public DateTime DepartureTime { get; set; }
+        public string BusPlate { get; set; } = "";
+        public string Status { get; set; } = "";
     }
 }

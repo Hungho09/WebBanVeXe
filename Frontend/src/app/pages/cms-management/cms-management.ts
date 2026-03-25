@@ -84,7 +84,10 @@ export class CmsManagement implements OnInit {
     };
     this.cmsService.saveRemoteConfig(fullConfig).subscribe({
       next: () => this.toast.showSuccess(message),
-      error: () => this.toast.showError('Không thể lưu dữ liệu lên server')
+      error: (err: any) => {
+        const msg = err.status === 403 ? 'Bạn không có quyền quản trị CMS' : (err.error?.message || 'Không thể lưu dữ liệu lên server');
+        this.toast.showError(msg);
+      }
     });
   }
 

@@ -87,16 +87,26 @@ export class CmsService {
 
   // New API Methods
   getRemoteConfig(): Observable<CmsConfig> {
-    return this.http.get<any>(`${this.apiUrl}/${this.CONFIG_KEY}`).pipe(
+    // Calling with PascalCase to match Controller just in case
+    return this.http.get<any>(`/api/Cms/${this.CONFIG_KEY}`).pipe(
       map(res => {
         if (res && res.contentJson && res.contentJson !== '{}') {
-          const config = JSON.parse(res.contentJson);
-          this.saveToLocal(config); // Cache to local
-          return config;
+          try {
+            const config = JSON.parse(res.contentJson);
+            this.saveToLocal(config);
+            return config;
+          } catch (e) {
+            console.error('Lỗi parse JSON từ server:', e);
+          }
         }
-        return this.getLocalConfig(); // Fallback to local/default
+        // If content is empty or invalid, try to use local or default
+        return this.getLocalConfig();
       }),
-      catchError(() => of(this.getLocalConfig()))
+      catchError(err => {
+        console.error('Lỗi kết nối API CMS:', err);
+        // Still return local as fallback but log properly
+        return of(this.getLocalConfig());
+      })
     );
   }
 
@@ -105,7 +115,7 @@ export class CmsService {
       configKey: this.CONFIG_KEY,
       contentJson: JSON.stringify(config)
     };
-    return this.http.post(this.apiUrl, dto).pipe(
+    return this.http.post('/api/Cms', dto).pipe(
       tap(() => this.saveToLocal(config))
     );
   }

@@ -26,16 +26,16 @@ export class BusManagement implements OnInit {
   busTypes: BusType[] = [];
 
   /** Status label map */
-  statusLabels: Record<number, string> = {
-    1: 'Đang hoạt động',
-    2: 'Có sẵn',
-    3: 'Ngưng hoạt động'
+  statusLabels: Record<string, string> = {
+    'Active': 'Đang hoạt động',
+    'Available': 'Có sẵn',
+    'Inactive': 'Ngưng hoạt động'
   };
 
-  statusBadgeClass: Record<number, string> = {
-    1: 'status-badge active',
-    2: 'status-badge available',
-    3: 'status-badge inactive'
+  statusBadgeClass: Record<string, string> = {
+    'Active': 'status-badge active',
+    'Available': 'status-badge available',
+    'Inactive': 'status-badge inactive'
   };
 
   constructor(
@@ -49,7 +49,7 @@ export class BusManagement implements OnInit {
       busTypeId: ['', Validators.required],
       seatCount: [{ value: 0, disabled: true }],
       imageUrl: [''],
-      status: [2]
+      status: ['Available']
     });
   }
 
@@ -109,11 +109,11 @@ export class BusManagement implements OnInit {
     }
   }
 
-  getStatusLabel(status: number): string {
+  getStatusLabel(status: any): string {
     return this.statusLabels[status] ?? 'Không xác định';
   }
 
-  getStatusClass(status: number): string {
+  getStatusClass(status: any): string {
     return this.statusBadgeClass[status] ?? 'status-badge';
   }
 
@@ -122,7 +122,7 @@ export class BusManagement implements OnInit {
     this.currentBusId = null;
     this.imagePreview = null;
     this.selectedFile = null;
-    this.busForm.reset({ status: 2 });
+    this.busForm.reset({ status: 'Available' });
     this.isModalOpen = true;
   }
 
@@ -137,7 +137,7 @@ export class BusManagement implements OnInit {
       busTypeId: bus.busType.id,
       seatCount: bus.seatCount,
       imageUrl: bus.imageUrl,
-      status: bus.status ?? 2
+      status: bus.status || 'Available'
     });
     this.isModalOpen = true;
   }
@@ -168,8 +168,8 @@ export class BusManagement implements OnInit {
       companyName: raw.companyName,
       busTypeId: raw.busTypeId,
       imageUrl: raw.imageUrl || null,
-      status: Number(raw.status),
-      isActive: Number(raw.status) !== 3
+      status: raw.status,
+      isActive: raw.status !== 'Inactive'
     };
     
     if (this.isEditMode && this.currentBusId) {
