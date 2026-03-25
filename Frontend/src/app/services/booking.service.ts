@@ -6,6 +6,8 @@ export interface CreateBookingDto {
   userId: string;
   tripId: string;
   seatIds: string[];
+  pickupPointId?: string;
+  dropoffPointId?: string;
 }
 
 export interface BookingDetailDto {
@@ -50,11 +52,11 @@ export class BookingService {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
-  lockSeat(seatId: string): Observable<any> {
-    return this.http.post(`api/trip/seats/${seatId}/lock`, {});
+  lockSeat(seatId: string, userId: string): Observable<any> {
+    return this.http.post(`api/bookings/lock-seat/${seatId}`, { userId });
   }
 
-  unlockSeat(seatId: string): Observable<any> {
-    return this.http.post(`api/trip/seats/${seatId}/unlock`, {});
+  unlockSeat(seatId: string, userId: string): Observable<any> {
+    return this.http.post(`api/bookings/unlock-seat/${seatId}`, { userId });
   }
 }

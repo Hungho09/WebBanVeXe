@@ -12,5 +12,7 @@ namespace Application.DTOs.Trip
         public string? Badge { get; set; }
         public bool IsPickup { get; set; }
         public bool IsDropoff { get; set; }
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
     }
 }

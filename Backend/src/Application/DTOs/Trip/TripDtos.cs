@@ -36,6 +36,8 @@ namespace Application.DTOs.Trip
         public DateTime DepartureTime { get; set; }
         public DateTime ArrivalTime { get; set; }
         public decimal Price { get; set; }
+
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public TripStatus Status { get; set; }
     }
 }

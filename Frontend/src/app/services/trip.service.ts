@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 
 export interface Trip {
   id: string;
@@ -14,6 +14,16 @@ export interface Trip {
   arrivalTime: string;
   price: number;
   status: string;
+}
+
+export interface Seat {
+  id: string;
+  tripId: string;
+  seatNumber: string;
+  status: string;
+  rowNumber: number;
+  columnNumber: number;
+  floor: number;
 }
 
 @Injectable({
@@ -32,8 +42,8 @@ export class TripService {
     return this.http.get<Trip>(`${this.apiUrl}/${id}`);
   }
 
-  getSeatsByTrip(tripId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/${tripId}/seats`);
+  getSeatsByTrip(tripId: string): Observable<Seat[]> {
+    return this.http.get<Seat[]>(`${this.apiUrl}/${tripId}/seats`);
   }
 
   createTrip(trip: any): Observable<Trip> {
@@ -46,10 +56,6 @@ export class TripService {
 
   deleteTrip(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
-  }
-
-  getSeats(tripId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/${tripId}/seats`);
   }
 
   getTripPoints(tripId: string): Observable<any[]> {

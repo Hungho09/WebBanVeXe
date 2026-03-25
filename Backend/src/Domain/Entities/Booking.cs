@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Domain.Enums;
 
 namespace Domain.Entities
@@ -11,6 +12,12 @@ namespace Domain.Entities
         public decimal TotalAmount { get; set; }
         public BookingStatus BookingStatus { get; set; } = BookingStatus.Pending;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        
+        public Guid? PickupPointId { get; set; }
+        public Guid? DropoffPointId { get; set; }
+        
+        public StopPoint? PickupPoint { get; set; }
+        public StopPoint? DropoffPoint { get; set; }
 
         public User? User { get; set; }
         public Trip? Trip { get; set; }

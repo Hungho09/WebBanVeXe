@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260324215001_AddSeatLockedByUserId")]
+    partial class AddSeatLockedByUserId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
@@ -29,12 +32,6 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("DropoffPointId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("PickupPointId")
-                        .HasColumnType("TEXT");
-
                     b.Property<decimal>("TotalAmount")
                         .HasPrecision(18, 2)
                         .HasColumnType("TEXT");
@@ -46,10 +43,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DropoffPointId");
-
-                    b.HasIndex("PickupPointId");
 
                     b.HasIndex("TripId");
 
@@ -1513,14 +1506,6 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Booking", b =>
                 {
-                    b.HasOne("Domain.Entities.StopPoint", "DropoffPoint")
-                        .WithMany()
-                        .HasForeignKey("DropoffPointId");
-
-                    b.HasOne("Domain.Entities.StopPoint", "PickupPoint")
-                        .WithMany()
-                        .HasForeignKey("PickupPointId");
-
                     b.HasOne("Domain.Entities.Trip", "Trip")
                         .WithMany("Bookings")
                         .HasForeignKey("TripId")
@@ -1532,10 +1517,6 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("DropoffPoint");
-
-                    b.Navigation("PickupPoint");
 
                     b.Navigation("Trip");
 

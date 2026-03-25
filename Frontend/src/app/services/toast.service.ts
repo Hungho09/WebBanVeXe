@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 import { Subject } from 'rxjs';
 
 export interface ToastMessage {
@@ -10,11 +10,13 @@ export interface ToastMessage {
   providedIn: 'root'
 })
 export class ToastService {
+  private readonly zone = inject(NgZone);
   private toastSubject = new Subject<ToastMessage>();
   toast$ = this.toastSubject.asObservable();
 
   show(message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info') {
-    this.toastSubject.next({ message, type });
+    // Đảm bảo emit trong NgZone để Angular luôn chạy change detection (kể cả gọi từ HTTP/async).
+    this.zone.run(() => this.toastSubject.next({ message, type }));
   }
 
   showSuccess(message: string) {

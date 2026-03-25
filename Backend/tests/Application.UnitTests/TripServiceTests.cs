@@ -1,5 +1,7 @@
 using Application.DTOs.Trip;
+using Application.Interfaces;
 using Domain.Entities;
+using Domain.Enums;
 using Domain.Interfaces;
 using Infrastructure.Services;
 using Moq;
@@ -13,12 +15,16 @@ namespace Application.UnitTests
     public class TripServiceTests
     {
         private readonly Mock<ITripRepository> _tripRepositoryMock;
+        private readonly Mock<ISeatService> _seatServiceMock;
+        private readonly Mock<IBusRepository> _busRepositoryMock;
         private readonly TripService _tripService;
 
         public TripServiceTests()
         {
             _tripRepositoryMock = new Mock<ITripRepository>();
-            _tripService = new TripService(_tripRepositoryMock.Object);
+            _seatServiceMock = new Mock<ISeatService>();
+            _busRepositoryMock = new Mock<IBusRepository>();
+            _tripService = new TripService(_tripRepositoryMock.Object, _seatServiceMock.Object, _busRepositoryMock.Object);
         }
 
         [Fact]
@@ -34,9 +40,13 @@ namespace Application.UnitTests
                 Price = 250000
             };
 
+            _busRepositoryMock.Setup(b => b.GetByIdAsync(dto.BusId))
+                .ReturnsAsync(new Bus { Id = dto.BusId, Status = BusStatus.Available });
+            _busRepositoryMock.Setup(b => b.UpdateAsync(It.IsAny<Bus>())).Returns(Task.CompletedTask);
+
             _tripRepositoryMock.Setup(r => r.HasConflictAsync(dto.BusId, dto.DepartureTime, dto.ArrivalTime, null))
                 .ReturnsAsync(false);
-            
+
             _tripRepositoryMock.Setup(r => r.AddAsync(It.IsAny<Trip>()))
                 .Returns(Task.CompletedTask);
 
@@ -51,6 +61,7 @@ namespace Application.UnitTests
             Assert.NotNull(result);
             _tripRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Trip>()), Times.Once);
             _tripRepositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
+            _busRepositoryMock.Verify(b => b.UpdateAsync(It.IsAny<Bus>()), Times.Once);
         }
 
         [Fact]
@@ -77,6 +88,9 @@ namespace Application.UnitTests
                 DepartureTime = DateTime.UtcNow.AddHours(2),
                 ArrivalTime = DateTime.UtcNow.AddHours(5)
             };
+
+            _busRepositoryMock.Setup(b => b.GetByIdAsync(dto.BusId))
+                .ReturnsAsync(new Bus { Id = dto.BusId, Status = BusStatus.Available });
 
             _tripRepositoryMock.Setup(r => r.HasConflictAsync(dto.BusId, dto.DepartureTime, dto.ArrivalTime, null))
                 .ReturnsAsync(true);

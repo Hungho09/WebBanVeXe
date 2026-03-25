@@ -159,7 +159,7 @@ namespace Infrastructure.Persistence
                 entity.HasOne(e => e.Bus).WithMany(b => b.Trips).HasForeignKey(e => e.BusId).OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Configure Seat
+            // Configure Seat (must match Trip.Seats collection to avoid shadow TripId1)
             modelBuilder.Entity<Seat>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -184,7 +184,7 @@ namespace Infrastructure.Persistence
                 entity.HasOne(e => e.Trip).WithMany(t => t.Bookings).HasForeignKey(e => e.TripId).OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Configure BookingDetail
+            // Configure BookingDetail (must match Booking.BookingDetails to avoid shadow BookingId1)
             modelBuilder.Entity<BookingDetail>(entity =>
             {
                 entity.HasKey(e => e.Id);

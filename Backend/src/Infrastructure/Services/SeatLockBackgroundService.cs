@@ -53,6 +53,7 @@ namespace Infrastructure.Services
                         seat.Status = SeatStatus.Available;
                         seat.LockedByUserId = null;
                         seat.LockExpirationTime = null;
+                        seat.LockedByUserId = null;
                     }
 
                     await context.SaveChangesAsync(stoppingToken);

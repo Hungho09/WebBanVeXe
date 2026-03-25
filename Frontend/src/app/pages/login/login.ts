@@ -55,9 +55,9 @@ export class Login implements OnInit {
       next: (response) => {
         this.isLoading = false;
         if (response.success && response.token) {
-          const uName = response.userName || response.UserName || response['userName'] || 'Thành viên';
-          const uRole = response.role || response.Role || response['role'] || 'Customer';
-          const uId = response.userId || response.Id || response['userId'] || 'user-id-placeholder';
+          const uName = response.userName || response.UserName || 'Thành viên';
+          const uRole = response.role || response.Role || 'Customer';
+          const uId = response.userId || response.UserId || response.id || response.Id || '';
           
           this.authService.saveUser(response.token, uName, uId, uRole);
           this.toastService.showSuccess(`Chào mừng trở lại, ${uName}!`);

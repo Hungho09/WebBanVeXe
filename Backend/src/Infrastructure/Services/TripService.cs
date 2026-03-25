@@ -148,18 +148,25 @@ namespace Infrastructure.Services
                 RowNumber = s.RowNumber,
                 ColumnNumber = s.ColumnNumber,
                 Floor = s.Floor,
-                Type = s.Type.ToString()
+                Type = s.Type.ToString(),
+                LockExpirationTime = s.LockExpirationTime
             });
         }
 
         public async Task<bool> LockSeatAsync(Guid seatId, Guid userId)
         {
+<<<<<<< HEAD
+=======
+            if (userId == Guid.Empty) return false;
+
+>>>>>>> 9197da9e81287ec8d327737d1f37f56927fc8b7e
             var trip = await _tripRepository.GetBySeatIdAsync(seatId);
             if (trip == null) return false;
 
             var seat = trip.Seats.FirstOrDefault(s => s.Id == seatId);
-            if (seat == null || seat.Status == Domain.Enums.SeatStatus.Booked) return false;
+            if (seat == null) return false;
 
+<<<<<<< HEAD
             // If already locked by someone else and not expired, return false
             if (seat.Status == Domain.Enums.SeatStatus.Locked && seat.LockExpirationTime > DateTime.UtcNow && seat.LockedByUserId != userId)
                 return false;
@@ -167,14 +174,51 @@ namespace Infrastructure.Services
             seat.Status = Domain.Enums.SeatStatus.Locked;
             seat.LockedByUserId = userId;
             seat.LockExpirationTime = DateTime.UtcNow.AddMinutes(10); // Hold for 10 minutes (Epic 3.2)
+=======
+            var now = DateTime.UtcNow;
 
-            _tripRepository.Update(trip);
-            await _tripRepository.SaveChangesAsync();
-            return true;
+            if (seat.Status == Domain.Enums.SeatStatus.Booked)
+                return false;
+
+            if (seat.Status == Domain.Enums.SeatStatus.Locked &&
+                (!seat.LockExpirationTime.HasValue || seat.LockExpirationTime <= now))
+            {
+                seat.Status = Domain.Enums.SeatStatus.Available;
+                seat.LockExpirationTime = null;
+                seat.LockedByUserId = null;
+            }
+>>>>>>> 9197da9e81287ec8d327737d1f37f56927fc8b7e
+
+            if (seat.Status == Domain.Enums.SeatStatus.Available)
+            {
+                seat.Status = Domain.Enums.SeatStatus.Locked;
+                seat.LockExpirationTime = now.AddMinutes(10);
+                seat.LockedByUserId = userId;
+                _tripRepository.Update(trip);
+                await _tripRepository.SaveChangesAsync();
+                return true;
+            }
+
+            if (seat.Status == Domain.Enums.SeatStatus.Locked && seat.LockExpirationTime > now)
+            {
+                if (seat.LockedByUserId == userId)
+                {
+                    seat.LockExpirationTime = now.AddMinutes(10);
+                    _tripRepository.Update(trip);
+                    await _tripRepository.SaveChangesAsync();
+                    return true;
+                }
+
+                return false;
+            }
+
+            return false;
         }
 
         public async Task<bool> UnlockSeatAsync(Guid seatId, Guid userId)
         {
+            if (userId == Guid.Empty) return false;
+
             var trip = await _tripRepository.GetBySeatIdAsync(seatId);
             if (trip == null) return false;
 
@@ -183,9 +227,25 @@ namespace Infrastructure.Services
             if (seat == null || seat.Status != Domain.Enums.SeatStatus.Locked || (seat.LockedByUserId != null && seat.LockedByUserId != userId))
                 return false;
 
+            var now = DateTime.UtcNow;
+
+            if (seat.LockExpirationTime.HasValue && seat.LockExpirationTime <= now)
+            {
+                seat.Status = Domain.Enums.SeatStatus.Available;
+                seat.LockExpirationTime = null;
+                seat.LockedByUserId = null;
+                _tripRepository.Update(trip);
+                await _tripRepository.SaveChangesAsync();
+                return true;
+            }
+
+            if (seat.LockedByUserId != userId)
+                return false;
+
             seat.Status = Domain.Enums.SeatStatus.Available;
             seat.LockedByUserId = null;
             seat.LockExpirationTime = null;
+            seat.LockedByUserId = null;
 
             _tripRepository.Update(trip);
             await _tripRepository.SaveChangesAsync();
@@ -208,7 +268,9 @@ namespace Infrastructure.Services
                     DistanceFromOrigin = rs.DistanceFromOriginKm,
                     Badge = rs.StopPoint.Badge,
                     IsPickup = rs.StopPoint.IsPickup,
-                    IsDropoff = rs.StopPoint.IsDropoff
+                    IsDropoff = rs.StopPoint.IsDropoff,
+                    Latitude = rs.StopPoint.Latitude,
+                    Longitude = rs.StopPoint.Longitude
                 });
         }
         private TripDto MapToDto(Trip trip)

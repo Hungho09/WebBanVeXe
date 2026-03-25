@@ -1,4 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  inject
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ToastService, ToastMessage } from '../../../services/toast.service';
 import { Subscription } from 'rxjs';
@@ -11,29 +17,43 @@ import { Subscription } from 'rxjs';
   styleUrl: './toast.css'
 })
 export class ToastComponent implements OnInit, OnDestroy {
-  toasts: (ToastMessage & { id: number })[] = [];
-  private subscription: Subscription = new Subscription();
-  private nextId = 0;
+  private readonly toastService = inject(ToastService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
-  constructor(private toastService: ToastService) {}
+  toasts: (ToastMessage & { id: number })[] = [];
+  private subscription = new Subscription();
+  private nextId = 0;
+  private removeTimers = new Map<number, ReturnType<typeof setTimeout>>();
 
   ngOnInit() {
-    this.subscription = this.toastService.toast$.subscribe(toast => {
+    this.subscription = this.toastService.toast$.subscribe((toast) => {
       const id = this.nextId++;
-      this.toasts.push({ ...toast, id });
-      
-      // Auto-remove after 4 seconds
-      setTimeout(() => {
+      this.toasts = [...this.toasts, { ...toast, id }];
+      this.cdr.detectChanges();
+
+      const timer = setTimeout(() => {
+        this.removeTimers.delete(id);
         this.removeToast(id);
       }, 4000);
+      this.removeTimers.set(id, timer);
     });
   }
 
   removeToast(id: number) {
-    this.toasts = this.toasts.filter(t => t.id !== id);
+    const t = this.removeTimers.get(id);
+    if (t !== undefined) {
+      clearTimeout(t);
+      this.removeTimers.delete(id);
+    }
+    this.toasts = this.toasts.filter((x) => x.id !== id);
+    this.cdr.detectChanges();
   }
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+    for (const t of this.removeTimers.values()) {
+      clearTimeout(t);
+    }
+    this.removeTimers.clear();
   }
 }

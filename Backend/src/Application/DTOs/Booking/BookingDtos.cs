@@ -8,6 +8,8 @@ namespace Application.DTOs.Booking
         public Guid UserId { get; set; }
         public Guid TripId { get; set; }
         public List<Guid> SeatIds { get; set; } = new();
+        public Guid? PickupPointId { get; set; }
+        public Guid? DropoffPointId { get; set; }
     }
 
     public class BookingResponseDto
@@ -19,6 +21,10 @@ namespace Application.DTOs.Booking
         public decimal TotalAmount { get; set; }
         public string BookingStatus { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
+        public Guid? PickupPointId { get; set; }
+        public string? PickupPointName { get; set; }
+        public Guid? DropoffPointId { get; set; }
+        public string? DropoffPointName { get; set; }
         public List<BookingDetailDto> Details { get; set; } = new();
     }
 

@@ -29,8 +29,8 @@ export class AuthService {
   // Get current userInfo
   getUser() {
     return {
-      userName: localStorage.getItem('user_name'),
       id: localStorage.getItem('user_id'),
+      userName: localStorage.getItem('user_name'),
       role: localStorage.getItem('user_role')
     };
   }
@@ -43,8 +43,8 @@ export class AuthService {
   // Logout
   logout() {
     localStorage.removeItem('auth_token');
-    localStorage.removeItem('user_name');
     localStorage.removeItem('user_id');
+    localStorage.removeItem('user_name');
     localStorage.removeItem('user_role');
   }
 }
