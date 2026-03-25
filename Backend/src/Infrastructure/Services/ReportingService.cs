@@ -73,13 +73,37 @@ namespace Infrastructure.Services
                 }
             }
 
+            // Story 4.4: Recent bookings for Dashboard
+            var recentBookings = await _context.Bookings
+                .Include(b => b.User)
+                .Include(b => b.Trip)
+                    .ThenInclude(t => t!.Route)
+                .Include(b => b.Trip)
+                    .ThenInclude(t => t!.Bus)
+                .OrderByDescending(b => b.CreatedAt)
+                .Take(5)
+                .Select(b => new RecentBookingDto
+                {
+                    Id = b.Id,
+                    CustomerName = b.User != null ? b.User.FullName : "Khách vãng lai",
+                    CustomerAvatar = "https://i.pravatar.cc/150?u=" + b.UserId,
+                    RouteName = (b.Trip != null && b.Trip.Route != null)
+                        ? b.Trip.Route.Origin + " - " + b.Trip.Route.Destination
+                        : "Unknown",
+                    DepartureTime = b.Trip != null ? b.Trip.DepartureTime : DateTime.MinValue,
+                    BusPlate = (b.Trip != null && b.Trip.Bus != null) ? b.Trip.Bus.PlateNumber : "N/A",
+                    Status = b.BookingStatus.ToString()
+                })
+                .ToListAsync();
+
             return new DashboardStatsDto
             {
                 TotalBookings = totalBookings,
                 TotalRevenue = totalRevenue,
                 TotalUsers = totalUsers,
                 ActiveTrips = activeTrips,
-                MostPopularRoute = routeName
+                MostPopularRoute = routeName,
+                RecentBookings = recentBookings
             };
         }
     }

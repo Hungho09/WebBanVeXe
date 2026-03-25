@@ -39,7 +39,7 @@ export class BusService {
   }
 
   getAvailableBuses(): Observable<Bus[]> {
-    return this.http.get<Bus[]>(`${this.apiUrl}?status=2`);
+    return this.http.get<Bus[]>(`${this.apiUrl}?status=Available`);
   }
 
   createBus(bus: any): Observable<Bus> {

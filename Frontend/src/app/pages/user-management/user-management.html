@@ -1,23 +1,23 @@
-<div class="mgmt-container px-8">
-  <div class="mgmt-header flex justify-between items-center mb-6">
+<div class="mgmt-container">
+  <div class="mgmt-header flex justify-between items-center mb-10">
     <div class="header-left">
-      <h1 class="text-3xl font-extrabold text-slate-800">Quản lý Tài khoản</h1>
-      <p class="text-slate-500 font-medium">Quản lý danh sách thành viên và phân quyền nhân viên.</p>
+      <h1 class="text-4xl font-black text-slate-800 tracking-tight">Quản lý Tài khoản</h1>
+      <p class="text-slate-500 font-medium text-lg mt-2">Hệ thống quản lý định danh người dùng và phân quyền quản trị.</p>
     </div>
-    <button class="btn-new" (click)="openAddModal()">
-        <i class="fas fa-plus mr-2"></i> Thêm Người Dùng
+    <button class="btn-primary-mgmt" (click)="openAddModal()">
+        <i class="fas fa-plus-circle mr-2"></i> Thêm Tài Khoản Mới
     </button>
   </div>
 
-  <div class="table-card p-0 overflow-hidden">
-    <table class="modern-table">
+  <div class="mgmt-card overflow-hidden">
+    <table class="mgmt-table">
       <thead>
         <tr>
           <th>Người dùng</th>
-          <th>Liên hệ</th>
-          <th>Vai trò</th>
-          <th>Trạng thái</th>
-          <th>Ngày tạo</th>
+          <th>Liên hệ & Thông tin</th>
+          <th>Vai trò hệ thống</th>
+          <th>Trạng thái hồ sơ</th>
+          <th>Ngày khởi tạo</th>
           <th class="text-center">Thao tác</th>
         </tr>
       </thead>
@@ -25,34 +25,41 @@
         <tr *ngFor="let user of users">
           <td>
             <div class="user-info flex items-center">
-              <div class="avatar-circle" [style.background]="'#F19E8E'">{{ user.fullName.charAt(0) }}</div>
-              <div class="ml-3">
-                <div class="font-bold text-slate-800">{{ user.fullName }}</div>
-                <div class="text-xs text-slate-400">@{{ user.userName }}</div>
+              <div class="avatar-circle" [style.background]="user.role === 'Admin' ? 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)' : 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)'">
+                {{ user.fullName.charAt(0) }}
+              </div>
+              <div class="ml-4">
+                <div class="font-bold text-slate-800 text-base">{{ user.fullName }}</div>
+                <div class="text-xs font-semibold text-slate-400 uppercase tracking-widest">@{{ user.userName }}</div>
               </div>
             </div>
           </td>
           <td>
-            <div class="text-sm font-medium">{{ user.email }}</div>
-            <div class="text-xs text-slate-400">{{ user.phoneNumber || 'N/A' }}</div>
+            <div class="text-sm font-semibold text-slate-700">{{ user.email }}</div>
+            <div class="text-xs text-slate-400 mt-1"><i class="fas fa-phone-alt mr-1"></i> {{ user.phoneNumber || 'Cần cập nhật' }}</div>
           </td>
           <td>
-            <span class="badge" [ngClass]="user.role.toLowerCase()">{{ user.role }}</span>
-          </td>
-          <td>
-            <span class="status-badge" [class.status-available]="user.isActive" [class.status-out]="!user.isActive">
-              {{ user.isActive ? 'Đang hoạt động' : 'Tạm khóa' }}
+            <span class="badge" [ngClass]="user.role.toLowerCase()">
+                <i class="fas fa-user-shield mr-2" *ngIf="user.role === 'Admin'"></i>
+                <i class="fas fa-user-tie mr-2" *ngIf="user.role === 'Employee'"></i>
+                <i class="fas fa-user mr-2" *ngIf="user.role === 'Customer'"></i>
+                {{ user.role }}
             </span>
           </td>
-          <td class="text-sm text-slate-500">
+          <td>
+            <div class="status-indicator" [class.active]="user.isActive">
+              {{ user.isActive ? 'Đang hoạt động' : 'Đã khóa' }}
+            </div>
+          </td>
+          <td class="text-sm font-medium text-slate-500">
             {{ user.createdAt | date:'dd/MM/yyyy' }}
           </td>
           <td>
-            <div class="flex justify-center gap-3 actions-cell">
-              <button (click)="openEditModal(user)" class="btn-icon edit" title="Sửa">
-                <i class="fas fa-edit"></i>
+            <div class="flex justify-center gap-3">
+              <button (click)="openEditModal(user)" class="btn-icon edit" title="Chỉnh sửa hồ sơ">
+                <i class="fas fa-pen-nib"></i>
               </button>
-              <button (click)="deleteUser(user.id)" class="btn-icon delete" title="Xóa">
+              <button (click)="deleteUser(user.id)" class="btn-icon delete" title="Xóa vĩnh viễn">
                 <i class="fas fa-trash-alt"></i>
               </button>
             </div>
@@ -60,78 +67,84 @@
         </tr>
       </tbody>
     </table>
-    <div *ngIf="isLoading" class="p-10 text-center">
+    
+    <div *ngIf="isLoading" class="p-20 text-center">
        <div class="loader-spinner"></div>
-       <p class="mt-4 text-slate-400">Đang tải dữ liệu...</p>
+       <p class="mt-6 text-slate-400 font-bold animate-pulse">ĐANG TRUY XUẤT CƠ SỞ DỮ LIỆU...</p>
     </div>
-    <div *ngIf="!isLoading && users.length === 0" class="p-10 text-center text-slate-400">
-        Không có dữ liệu người dùng.
+    
+    <div *ngIf="!isLoading && users.length === 0" class="p-20 text-center text-slate-400">
+        <i class="fas fa-users-slash fa-4x mb-4 opacity-20"></i>
+        <p class="font-bold">Hiện tại chưa có người dùng nào trong hệ thống.</p>
     </div>
   </div>
 </div>
 
 <!-- Add/Edit Modal (Đã đồng bộ giao diện) -->
 <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h2 class="text-xl font-bold">{{ isEditMode ? 'Chỉnh sửa tài khoản' : 'Thêm tài khoản mới' }}</h2>
-      <button (click)="closeModal()" class="close-btn">&times;</button>
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header-padded">
+      <h2 class="text-2xl font-black text-slate-800">{{ isEditMode ? 'Cập Nhật Tài Khoản' : 'Khởi Tạo Thành Viên' }}</h2>
+      <button (click)="closeModal()" class="btn-icon">&times;</button>
     </div>
     <form #userForm="ngForm" (ngSubmit)="saveUser()">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Tên tài khoản</label>
-          <input type="text" name="userName" [(ngModel)]="selectedUser.userName" required placeholder="Nhập username">
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tên đăng nhập (Username)</label>
+            <input type="text" name="userName" [(ngModel)]="selectedUser.userName" required placeholder="Vd: theanh_admin" [disabled]="isEditMode">
+          </div>
+          <div class="form-group">
+              <div *ngIf="!isEditMode">
+                <label>Mật khẩu khởi tạo</label>
+                <input type="password" name="password" [(ngModel)]="selectedUser.password" required placeholder="Nhập mật khẩu an toàn">
+              </div>
+              <div *ngIf="isEditMode">
+                <label>Mật khẩu mới (Tùy chọn)</label>
+                <input type="password" name="newPassword" [(ngModel)]="selectedUser.newPassword" placeholder="Để trống nếu không đổi">
+              </div>
+          </div>
         </div>
-        <div class="form-group">
-            <div *ngIf="!isEditMode">
-              <label>Mật khẩu</label>
-              <input type="password" name="password" [(ngModel)]="selectedUser.password" required placeholder="********">
-            </div>
-            <div *ngIf="isEditMode">
-              <label>Mật khẩu mới (Để trống nếu không đổi)</label>
-              <input type="password" name="newPassword" [(ngModel)]="selectedUser.newPassword" placeholder="Nhập nếu muốn đổi">
-            </div>
+
+        <div class="form-row mt-4">
+          <div class="form-group">
+            <label>Họ và Tên đầy đủ</label>
+            <input type="text" name="fullName" [(ngModel)]="selectedUser.fullName" required placeholder="Vd: Nguyễn Thế Anh">
+          </div>
+          <div class="form-group">
+            <label>Email liên hệ</label>
+            <input type="email" name="email" [(ngModel)]="selectedUser.email" required placeholder="admin@example.com">
+          </div>
+        </div>
+
+        <div class="form-row mt-4">
+          <div class="form-group">
+            <label>Số điện thoại</label>
+            <input type="text" name="phoneNumber" [(ngModel)]="selectedUser.phoneNumber" placeholder="09xx xxx xxx">
+          </div>
+          <div class="form-group">
+            <label>Phân quyền (Role)</label>
+            <select name="role" [(ngModel)]="selectedUser.role">
+              <option value="Customer">💎 Khách hàng (User)</option>
+              <option value="Employee">💼 Nhân viên (Staff)</option>
+              <option value="Admin">🛠️ Quản trị viên (SuperAdmin)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group mt-6" *ngIf="isEditMode">
+          <label class="flex items-center cursor-pointer p-4 bg-slate-50 border border-slate-100 rounded-xl">
+            <input type="checkbox" name="isActive" [(ngModel)]="selectedUser.isActive" class="mr-3 w-5 h-5 accent-indigo-600"> 
+            <span class="font-bold text-slate-700">Kích hoạt trạng thái hoạt động</span>
+          </label>
         </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>Họ và tên</label>
-          <input type="text" name="fullName" [(ngModel)]="selectedUser.fullName" required placeholder="Nguyễn Văn A">
-        </div>
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" name="email" [(ngModel)]="selectedUser.email" required placeholder="example@gmail.com">
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Số điện thoại</label>
-          <input type="text" name="phoneNumber" [(ngModel)]="selectedUser.phoneNumber" placeholder="0123...">
-        </div>
-        <div class="form-group">
-          <label>Vai trò</label>
-          <select name="role" [(ngModel)]="selectedUser.role">
-            <option value="Customer">Khách hàng</option>
-            <option value="Employee">Nhân viên</option>
-            <option value="Admin">Quản trị viên</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-group mt-2" *ngIf="isEditMode">
-        <label class="flex items-center cursor-pointer">
-          <input type="checkbox" name="isActive" [(ngModel)]="selectedUser.isActive" class="mr-2 w-auto"> 
-          <span>Tài khoản đang hoạt động</span>
-        </label>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" (click)="closeModal()" class="btn-secondary">Hủy bỏ</button>
-        <button type="submit" [disabled]="!userForm.valid" class="btn-primary">
-          {{ isEditMode ? 'Lưu thay đổi' : 'Tạo mới' }}
+      <div class="modal-footer px-8 pb-8 pt-0 flex justify-end gap-4 bg-transparent border-none">
+        <button type="button" (click)="closeModal()" class="btn-cancel">Hủy bỏ</button>
+        <button type="submit" [disabled]="!userForm.valid" class="btn-save">
+          <i class="fas fa-check-circle mr-2"></i>
+          {{ isEditMode ? 'Lưu thay đổi' : 'Hoàn tất khởi tạo' }}
         </button>
       </div>
     </form>

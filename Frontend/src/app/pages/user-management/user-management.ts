@@ -7,7 +7,7 @@ import { ToastService } from '../../services/toast.service';
 @Component({
   selector: 'app-user-management',
   standalone: true,
-  imports: [CommonModule, FormsModule], // Thêm RouterLink
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './user-management.html',
   styleUrl: './user-management.css'
 })
@@ -88,7 +88,8 @@ export class UserManagement implements OnInit {
           this.closeModal();
         },
         error: (err: any) => {
-          this.toastService.showError(err.error?.message || 'Lỗi khi cập nhật');
+          const msg = err.status === 403 ? 'Bạn không có quyền quản trị' : (err.error?.message || 'Lỗi khi cập nhật');
+          this.toastService.showError(msg);
         }
       });
     } else {
@@ -113,7 +114,8 @@ export class UserManagement implements OnInit {
           this.loadUsers();
         },
         error: (err: any) => {
-          this.toastService.showError('Lỗi khi xóa người dùng');
+          const msg = err.status === 403 ? 'Bạn không có quyền xóa' : 'Lỗi khi xóa người dùng';
+          this.toastService.showError(msg);
         }
       });
     }

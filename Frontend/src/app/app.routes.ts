@@ -8,6 +8,7 @@ import { BusManagement } from './pages/bus-management/bus-management';
 import { TripManagement } from './pages/trip-management/trip-management';
 import { UserManagement } from './pages/user-management/user-management';
 import { CmsManagement } from './pages/cms-management/cms-management';
+import { BookingManagement } from './pages/booking-management/booking-management';
 import { AdminLayout } from './shared/layout/admin-layout/admin-layout';
 import { AuthGuard } from './guards/auth.guard';
 import { PaymentComponent } from './pages/payment/payment.component';
@@ -28,6 +29,7 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: Dashboard },
+      { path: 'booking-management', component: BookingManagement },
       { path: 'user-management', component: UserManagement, data: { roles: ['Admin'] } },
       { path: 'bus', component: BusManagement },
       { path: 'route', component: RouteManagement },

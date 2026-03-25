@@ -19,6 +19,13 @@ namespace Api.Controllers
             _bookingService = bookingService;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var bookings = await _bookingService.GetAllBookingsAsync();
+            return Ok(bookings);
+        }
+
         [HttpPost("lock-seat/{seatId}")]
         public async Task<IActionResult> LockSeat(Guid seatId, [FromBody] LockSeatRequestDto? request)
         {

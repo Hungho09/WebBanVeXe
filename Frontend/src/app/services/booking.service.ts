@@ -32,9 +32,17 @@ export interface BookingResponseDto {
   providedIn: 'root'
 })
 export class BookingService {
-  private apiUrl = 'api/bookings';
+  private apiUrl = '/api/bookings';
 
   constructor(private http: HttpClient) {}
+
+  getAllBookings(): Observable<BookingResponseDto[]> {
+    return this.http.get<BookingResponseDto[]>(this.apiUrl);
+  }
+
+  approveCancel(id: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/approve-cancel`, {});
+  }
 
   createBooking(dto: CreateBookingDto): Observable<BookingResponseDto> {
     return this.http.post<BookingResponseDto>(this.apiUrl, dto);

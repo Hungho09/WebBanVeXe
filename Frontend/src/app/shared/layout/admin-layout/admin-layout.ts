@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterOutlet, NavigationEnd, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../../../services/auth.service';
 import { AdminSidebarComponent } from '../admin-sidebar/admin-sidebar';
@@ -9,7 +9,7 @@ import { AdminTopnavComponent } from '../admin-topnav/admin-topnav';
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLinkActive, AdminSidebarComponent, AdminTopnavComponent],
+  imports: [CommonModule, RouterOutlet, AdminSidebarComponent, AdminTopnavComponent],
   templateUrl: './admin-layout.html',
   styleUrls: ['./admin-layout.css']
 })

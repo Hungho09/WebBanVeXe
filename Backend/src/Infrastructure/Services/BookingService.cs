@@ -163,6 +163,20 @@ namespace Infrastructure.Services
             return booking == null ? null : MapToResponseDto(booking);
         }
 
+        public async Task<IEnumerable<BookingResponseDto>> GetAllBookingsAsync()
+        {
+            var bookings = await _context.Bookings
+                .Include(b => b.User)
+                .Include(b => b.BookingDetails)
+                    .ThenInclude(bd => bd.Seat)
+                .Include(b => b.PickupPoint)
+                .Include(b => b.DropoffPoint)
+                .OrderByDescending(b => b.CreatedAt)
+                .ToListAsync();
+                
+            return bookings.Select(MapToResponseDto);
+        }
+
         public async Task<IEnumerable<BookingResponseDto>> GetUserBookingHistoryAsync(Guid userId)
         {
             var bookings = await _context.Bookings

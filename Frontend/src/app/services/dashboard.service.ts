@@ -2,12 +2,23 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+export interface RecentBooking {
+  id: string;
+  customerName: string;
+  customerAvatar: string;
+  routeName: string;
+  departureTime: string;
+  busPlate: string;
+  status: string;
+}
+
 export interface DashboardStats {
   totalBookings: number;
   totalRevenue: number;
   totalUsers: number;
   activeTrips: number;
   mostPopularRoute: string;
+  recentBookings: RecentBooking[];
 }
 
 export interface RevenueReport {
