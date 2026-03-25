@@ -64,7 +64,9 @@ namespace Infrastructure.Services
                     TripId = dto.TripId,
                     TotalAmount = seats.Count * trip.Price,
                     BookingStatus = BookingStatus.Pending,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
+                    PickupPointId = dto.PickupPointId,
+                    DropoffPointId = dto.DropoffPointId
                 };
 
                 foreach (var seat in seats)
@@ -94,6 +96,10 @@ namespace Infrastructure.Services
                     TotalAmount = booking.TotalAmount,
                     BookingStatus = booking.BookingStatus.ToString(),
                     CreatedAt = booking.CreatedAt,
+                    PickupPointId = booking.PickupPointId,
+                    PickupPointName = booking.PickupPointId.HasValue ? (await _context.StopPoints.FindAsync(booking.PickupPointId))?.Name : null,
+                    DropoffPointId = booking.DropoffPointId,
+                    DropoffPointName = booking.DropoffPointId.HasValue ? (await _context.StopPoints.FindAsync(booking.DropoffPointId))?.Name : null,
                     Details = booking.BookingDetails.Select(bd =>
                     {
                         var seat = seats.First(s => s.Id == bd.SeatId);
@@ -188,6 +194,10 @@ namespace Infrastructure.Services
                 TotalAmount = booking.TotalAmount,
                 BookingStatus = booking.BookingStatus.ToString(),
                 CreatedAt = booking.CreatedAt,
+                PickupPointId = booking.PickupPointId,
+                PickupPointName = booking.PickupPoint?.Name,
+                DropoffPointId = booking.DropoffPointId,
+                DropoffPointName = booking.DropoffPoint?.Name,
                 Details = booking.BookingDetails.Select(bd => new BookingDetailDto
                 {
                     Id = bd.Id,
