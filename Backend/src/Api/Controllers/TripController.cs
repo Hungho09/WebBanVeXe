@@ -54,6 +54,21 @@ namespace Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateTripDto dto)
         {
+            if (!ModelState.IsValid)
+            {
+                var errors = string.Join("; ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+                Console.WriteLine($"Model Validation Failed: {errors}");
+                return BadRequest(new { message = "Dữ liệu không hợp lệ: " + errors });
+            }
+
+            Console.WriteLine($"Updating Trip: id={id}, routeId={dto?.RouteId}, busId={dto?.BusId}, depTime={dto?.DepartureTime}, arrTime={dto?.ArrivalTime}, status={dto?.Status}");
+            
+            if (dto == null)
+            {
+                Console.WriteLine("Update DTO is null");
+                return BadRequest(new { message = "Request body is null or invalid JSON." });
+            }
+
             try
             {
                 var success = await _tripService.UpdateTripAsync(id, dto);
