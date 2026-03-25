@@ -117,6 +117,8 @@ export class TripManagement implements OnInit {
   saveTrip() {
     if (this.tripForm.valid) {
       const tripData = this.tripForm.value;
+      console.log('Update Trip ID:', this.currentTripId);
+      console.log('Form Data to Send:', tripData);
       
       if (this.isEditMode && this.currentTripId) {
         this.tripService.updateTrip(this.currentTripId, tripData).subscribe({
@@ -125,11 +127,13 @@ export class TripManagement implements OnInit {
             this.closeModal();
           },
           error: (err) => {
+            console.error('Update Error Response:', err);
             const msg = typeof err.error === 'string' ? err.error : (err.error?.message || err.message);
             alert('Lỗi khi cập nhật: ' + msg);
           }
         });
       } else {
+        console.log('Creating new trip...');
         this.tripService.createTrip(tripData).subscribe({
           next: () => {
             this.loadTrips();
