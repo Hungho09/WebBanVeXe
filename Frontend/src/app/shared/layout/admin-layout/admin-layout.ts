@@ -9,7 +9,7 @@ import { AdminTopnavComponent } from '../admin-topnav/admin-topnav';
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterOutlet, RouterLinkActive, AdminSidebarComponent, AdminTopnavComponent],
+  imports: [CommonModule, RouterOutlet, RouterLinkActive, AdminSidebarComponent, AdminTopnavComponent],
   templateUrl: './admin-layout.html',
   styleUrls: ['./admin-layout.css']
 })

@@ -4,10 +4,21 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Trip, TripService } from '../../services/trip.service';
 
+// Sub-components
+import { SearchFilterSidebarComponent } from './components/search-filter-sidebar/search-filter-sidebar';
+import { SearchResultCardComponent } from './components/search-result-card/search-result-card';
+import { SearchHeaderMiniComponent } from './components/search-header-mini/search-header-mini';
+
 @Component({
   selector: 'app-booking-search',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [
+    CommonModule,
+    FormsModule,
+    SearchFilterSidebarComponent,
+    SearchResultCardComponent,
+    SearchHeaderMiniComponent
+  ],
   templateUrl: './booking-search.html',
   styleUrl: './booking-search.css'
 })
@@ -21,6 +32,10 @@ export class BookingSearch implements OnInit {
   isLoading = true;
   
   sortBy: string = 'default';
+  activeFilters: any = {};
+
+  // For Sidebar
+  distinctCompanies: string[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -42,6 +57,7 @@ export class BookingSearch implements OnInit {
     this.tripService.getTrips().subscribe({
       next: (data) => {
         this.trips = data.filter(t => t.status === 'Active');
+        this.distinctCompanies = Array.from(new Set(this.trips.map(t => 'Nhà xe ' + t.busPlate.split('-')[0]))); // Demo logic
         this.applyFilters();
         this.isLoading = false;
       },
@@ -51,29 +67,45 @@ export class BookingSearch implements OnInit {
     });
   }
 
+  onFilterChange(filters: any) {
+    this.activeFilters = filters;
+    this.applyFilters();
+  }
+
+  onSortChange(type: string) {
+    this.sortBy = type;
+    this.applyFilters();
+  }
+
+  onHeaderUpdate(payload: any) {
+    this.router.navigate(['/search-results'], { queryParams: payload });
+  }
+
   applyFilters() {
     let result = [...this.trips];
     
+    // Core search filters
     if (this.origin) {
       result = result.filter(t => t.routeName.toLowerCase().includes(this.origin.toLowerCase()));
     }
-    
     if (this.destination) {
       result = result.filter(t => t.routeName.toLowerCase().includes(this.destination.toLowerCase()));
     }
-    
-    // Simple date filter (checking if departure date matches)
     if (this.date) {
       const searchDate = new Date(this.date).toDateString();
       result = result.filter(t => new Date(t.departureTime).toDateString() === searchDate);
     }
 
-    this.sortTrips(result);
-  }
+    // Sidebar filters
+    if (this.activeFilters.companies && this.activeFilters.companies.length > 0) {
+      result = result.filter(t => this.activeFilters.companies.some((c: string) => ('Nhà xe ' + t.busPlate.split('-')[0]).includes(c)));
+    }
 
-  onSortChange(type: string) {
-    this.sortBy = type;
-    this.sortTrips(this.filteredTrips);
+    if (this.activeFilters.maxPrice) {
+      result = result.filter(t => t.price <= this.activeFilters.maxPrice);
+    }
+
+    this.sortTrips(result);
   }
 
   sortTrips(list: Trip[]) {
@@ -91,28 +123,14 @@ export class BookingSearch implements OnInit {
         list.sort((a, b) => b.price - a.price);
         break;
       default:
-        // Default might be by creation time or original order
+        // Original order
         break;
     }
     this.filteredTrips = list;
   }
 
-  formatTime(dateStr: string): string {
-    const d = new Date(dateStr);
-    return d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-  }
-
-  formatDate(dateStr: string): string {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
-  }
-
-  getDuration(start: string, end: string): string {
-    const s = new Date(start);
-    const e = new Date(end);
-    const diff = e.getTime() - s.getTime();
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    return `${hours}h ${minutes}m`;
+  onSelectTrip(id: string) {
+    this.router.navigate(['/booking', id]);
   }
 }
+

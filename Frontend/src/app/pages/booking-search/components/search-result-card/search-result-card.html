@@ -1,0 +1,57 @@
+<div class="result-card">
+    
+    <div class="card-left">
+        <img [src]="'/assets/bus-thumb.png'" alt="bus" class="bus-img">
+        <div class="confirm-badge">XÁC NHẬN TỨC THÌ</div>
+    </div>
+
+    <div class="card-center">
+        <div class="company-head">
+            <span class="company-name">Hải Phòng Travel</span>
+            <div class="rating">
+                <i class="fas fa-star"></i>
+                <span>4.8 (120)</span>
+            </div>
+        </div>
+        
+        <div class="bus-type">Limousine 9 Chỗ (Vip)</div>
+
+        <div class="time-row">
+            <div class="time-block">
+                <span class="time">{{ formatTime(trip.departureTime) }}</span>
+                <span class="place">{{ trip.routeName.split(' - ')[0] }}</span>
+            </div>
+            
+            <div class="duration-block">
+                <div class="line"></div>
+                <span class="duration text-muted">{{ getDuration(trip.departureTime, trip.arrivalTime) }}</span>
+            </div>
+
+            <div class="time-block">
+                <span class="time">{{ formatTime(trip.arrivalTime) }}</span>
+                <span class="place">{{ trip.routeName.split(' - ')[1] }}</span>
+            </div>
+        </div>
+
+        <div class="status-labels">
+            <span class="label green"><i class="fas fa-check-circle"></i> Huỷ miễn phí</span>
+            <span class="label blue"><i class="fas fa-shield-alt"></i> Theo dõi hành trình</span>
+        </div>
+    </div>
+
+    <div class="card-right">
+        <div class="price-container">
+            <span class="price-val">{{ trip.price | number }} đ</span>
+            <div class="discount-badge" *ngIf="trip.price > 300000">Giảm 10%</div>
+        </div>
+        
+        <div class="seat-available">Còn 9 chỗ trống</div>
+
+        <button class="btn-select" (click)="onSelect()">Chọn chuyến</button>
+        
+        <div class="payment-note">Không cần thanh toán trước</div>
+        
+        <a href="#" class="btn-details" (click)="$event.preventDefault()">Thông tin chi tiết <i class="fas fa-chevron-down"></i></a>
+    </div>
+
+</div>

@@ -1,0 +1,140 @@
+.sidebar-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 250px;
+    padding: 8px;
+    background: transparent;
+}
+
+.card {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+}
+
+.section-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--text-main);
+}
+
+.sort-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sort-item {
+    font-size: 13px;
+    padding: 8px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-color);
+    transition: var(--transition-fast);
+}
+
+.sort-item:hover { color: var(--accent-indigo); }
+.sort-item.active { color: var(--accent-indigo); font-weight: 700; }
+
+.custom-radio {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.active .custom-radio { border-color: var(--accent-indigo); }
+.active .custom-radio::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--accent-indigo);
+    border-radius: 50%;
+}
+
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+}
+
+.btn-clear {
+    background: none;
+    border: none;
+    color: #2474e5;
+    font-size: 11px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.accordion-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.accordion-body {
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.checkbox-row {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.checkbox-row input {
+    cursor: pointer;
+}
+
+.scrollable {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+/* Custom scrollbar */
+.scrollable::-webkit-scrollbar { width: 4px; }
+.scrollable::-webkit-scrollbar-track { background: #f1f1f1; }
+.scrollable::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+
+.price-slider {
+    width: 100%;
+}
+
+.price-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 6px;
+}
+
+.current-price {
+    color: var(--accent-indigo);
+    font-weight: 700;
+}
+
+.empty-msg {
+    font-size: 12px;
+    color: #999;
+}

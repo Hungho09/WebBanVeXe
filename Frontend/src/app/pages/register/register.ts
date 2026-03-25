@@ -8,7 +8,7 @@ import { ToastService } from '../../services/toast.service';
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [RouterLink, CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })

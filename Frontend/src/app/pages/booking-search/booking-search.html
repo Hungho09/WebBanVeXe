@@ -1,149 +1,56 @@
-<div class="search-page-container">
-  <div class="search-header px-4 py-6 bg-white shadow-sm border-b sticky top-0 z-50">
-    <div class="container mx-auto flex flex-col md:flex-row justify-between items-center bg-gray-50 rounded-lg p-4">
-      <div class="header-info flex items-center space-x-3 text-slate-700">
-        <i class="fas fa-bus text-2xl text-blue-600"></i>
-        <div>
-          <h2 class="text-xl font-bold">{{ origin || 'Mọi nơi' }} &rarr; {{ destination || 'Mọi nơi' }}</h2>
-          <p class="text-sm text-slate-500">{{ (date ? formatDate(date) : 'Tất cả các ngày') }} | {{ filteredTrips.length }} chuyến xe được tìm thấy</p>
+<div class="search-page-wrapper">
+    <div class="container">
+        
+        <!-- Top Mini Search Bar -->
+        <app-search-header-mini 
+            [origin]="origin" 
+            [destination]="destination" 
+            [date]="date"
+            (searchChange)="onHeaderUpdate($event)">
+        </app-search-header-mini>
+
+        <div class="search-layout">
+            
+            <!-- Left Sidebar -->
+            <aside class="search-sidebar">
+                <app-search-filter-sidebar 
+                    [companies]="distinctCompanies"
+                    (sortChange)="onSortChange($event)"
+                    (filterChange)="onFilterChange($event)">
+                </app-search-filter-sidebar>
+            </aside>
+
+            <!-- Main Results -->
+            <main class="search-results-main">
+                
+                <div class="results-info" *ngIf="!isLoading">
+                    <span class="count">{{ filteredTrips.length }} kết quả chuyến xe cáp phù hợp</span>
+                    <p class="route-label">{{ origin }} → {{ destination }} ({{ date | date:'dd/MM/yyyy' }})</p>
+                </div>
+
+                <!-- Loading State -->
+                <div class="loading-spinner" *ngIf="isLoading">
+                    <i class="fas fa-spinner fa-spin"></i> Đang tìm kiếm những chuyến đi tốt nhất...
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state card" *ngIf="!isLoading && filteredTrips.length === 0">
+                    <img src="/assets/no-result.png" alt="Nothing found">
+                    <h3>Rất tiếc, không tìm thấy chuyến phù hợp</h3>
+                    <p>Bạn hãy thử thay đổi bộ lọc hoặc ngày đi khác nhé.</p>
+                </div>
+
+                <!-- Results List -->
+                <div class="trips-list" *ngIf="!isLoading">
+                    <app-search-result-card 
+                        *ngFor="let trip of filteredTrips" 
+                        [trip]="trip"
+                        (selectTrip)="onSelectTrip($event)">
+                    </app-search-result-card>
+                </div>
+
+            </main>
+
         </div>
-      </div>
-      <button routerLink="/homepage" class="mt-4 md:mt-0 text-blue-600 hover:text-blue-700 font-medium flex items-center">
-        <i class="fas fa-search mr-2"></i> Đổi tìm kiếm
-      </button>
     </div>
-  </div>
-
-  <div class="container mx-auto px-4 py-8">
-    <div class="flex flex-col lg:flex-row gap-8">
-      
-      <!-- Sidebar / Sorting -->
-      <aside class="sidebar-filters w-full lg:w-1/4">
-        <div class="filter-card bg-white rounded-xl shadow-md p-6 sticky top-28 border border-slate-100">
-          <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center border-b pb-4">
-            <i class="fas fa-sort-amount-down mr-3 text-blue-500"></i> Sắp xếp theo
-          </h3>
-          
-          <div class="space-y-4">
-            <div class="sort-option" (click)="onSortChange('default')" [class.active]="sortBy === 'default'">
-                <label class="flex items-center cursor-pointer">
-                    <input type="radio" name="sort" class="hidden" [checked]="sortBy === 'default'">
-                    <span class="custom-radio mr-3"></span>
-                    <span class="text-slate-700">Mặc định</span>
-                </label>
-            </div>
-            
-            <div class="sort-option" (click)="onSortChange('early')" [class.active]="sortBy === 'early'">
-                <label class="flex items-center cursor-pointer">
-                    <input type="radio" name="sort" class="hidden" [checked]="sortBy === 'early'">
-                    <span class="custom-radio mr-3"></span>
-                    <span class="text-slate-700">Giờ đi sớm nhất</span>
-                </label>
-            </div>
-            
-            <div class="sort-option" (click)="onSortChange('late')" [class.active]="sortBy === 'late'">
-                <label class="flex items-center cursor-pointer">
-                    <input type="radio" name="sort" class="hidden" [checked]="sortBy === 'late'">
-                    <span class="custom-radio mr-3"></span>
-                    <span class="text-slate-700">Giờ đi muộn nhất</span>
-                </label>
-            </div>
-            
-            <div class="sort-option" (click)="onSortChange('priceAsc')" [class.active]="sortBy === 'priceAsc'">
-                <label class="flex items-center cursor-pointer">
-                    <input type="radio" name="sort" class="hidden" [checked]="sortBy === 'priceAsc'">
-                    <span class="custom-radio mr-3"></span>
-                    <span class="text-slate-700">Giá tăng dần</span>
-                </label>
-            </div>
-            
-            <div class="sort-option" (click)="onSortChange('priceDesc')" [class.active]="sortBy === 'priceDesc'">
-                <label class="flex items-center cursor-pointer">
-                    <input type="radio" name="sort" class="hidden" [checked]="sortBy === 'priceDesc'">
-                    <span class="custom-radio mr-3"></span>
-                    <span class="text-slate-700">Giá giảm dần</span>
-                </label>
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      <!-- Main Results List -->
-      <main class="w-full lg:w-3/4">
-        <div *ngIf="isLoading" class="flex flex-col items-center justify-center py-20 bg-white rounded-xl shadow-sm">
-          <div class="loader-spinner"></div>
-          <p class="mt-4 text-slate-500 font-medium">Đang tìm kiếm chuyến xe tốt nhất cho bạn...</p>
-        </div>
-
-        <div *ngIf="!isLoading && filteredTrips.length === 0" class="text-center py-20 bg-white rounded-xl shadow-sm border border-dashed border-slate-300">
-          <div class="mb-6">
-            <i class="fas fa-bus-alt text-6xl text-slate-200"></i>
-          </div>
-          <h3 class="text-xl font-bold text-slate-800">Không tìm thấy chuyến xe nào</h3>
-          <p class="text-slate-500 mt-2">Vui lòng thử lại với ngày khác hoặc điểm đi/đến khác.</p>
-          <button routerLink="/homepage" class="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Quay lại trang chủ</button>
-        </div>
-
-        <div class="trip-results space-y-4" *ngIf="!isLoading && filteredTrips.length > 0">
-           <div *ngFor="let trip of filteredTrips" class="trip-card bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 overflow-hidden flex flex-col md:flex-row">
-             
-             <!-- Bus Info Left -->
-             <div class="bus-image-section w-full md:w-56 shrink-0 relative">
-               <img [src]="trip.busImageUrl || '/assets/images/bus-default.jpg'" class="h-full w-full object-cover">
-               <div class="bus-type-tag absolute bottom-2 left-2 px-2 py-1 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold rounded uppercase tracking-wider">
-                 {{ trip.busTypeName || 'Giường nằm 40 chỗ' }}
-               </div>
-             </div>
-
-             <!-- Main Content Middle -->
-             <div class="trip-details p-6 flex-grow">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h4 class="text-lg font-bold text-slate-800">{{ trip.routeName }}</h4>
-                        <p class="text-sm text-slate-400 font-medium"><i class="fas fa-barcode mr-1"></i> Biển số: {{ trip.busPlate }}</p>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-2xl font-black text-blue-600">{{ trip.price | number:'1.0-0' }}đ</div>
-                    </div>
-                </div>
-
-                <div class="trip-time-row flex items-center justify-between mt-6 bg-slate-50 p-4 rounded-lg">
-                    <div class="time-block text-center">
-                        <div class="text-xl font-bold text-slate-800">{{ formatTime(trip.departureTime) }}</div>
-                        <div class="text-xs text-slate-500 font-bold uppercase tracking-tighter">{{ formatDate(trip.departureTime) }}</div>
-                    </div>
-                    
-                    <div class="duration-block flex flex-col items-center flex-grow px-4">
-                        <div class="text-[10px] font-bold text-blue-500 mb-1 tracking-widest uppercase">{{ getDuration(trip.departureTime, trip.arrivalTime) }}</div>
-                        <div class="route-line w-full relative h-[2px] bg-slate-200">
-                            <span class="start-dot absolute left-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full border-2 border-slate-300 bg-white"></span>
-                            <i class="fas fa-bus absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-blue-600 bg-slate-50 px-2 text-xs"></i>
-                            <span class="end-dot absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full border-2 border-blue-600 bg-blue-600"></span>
-                        </div>
-                    </div>
-
-                    <div class="time-block text-center">
-                        <div class="text-xl font-bold text-slate-800">{{ formatTime(trip.arrivalTime) }}</div>
-                        <div class="text-xs text-slate-500 font-bold uppercase tracking-tighter">{{ formatDate(trip.arrivalTime) }}</div>
-                    </div>
-                </div>
-             </div>
-
-             <!-- Action Right -->
-             <div class="action-section p-6 w-full md:w-48 shrink-0 flex flex-col justify-center items-center gap-3 border-l border-slate-50 bg-slate-50/30">
-                <div class="text-green-600 text-sm font-bold flex items-center">
-                    <i class="fas fa-check-circle mr-1"></i> Còn chỗ
-                </div>
-                <button [routerLink]="['/booking', trip.id]" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-transform active:scale-95 shadow-lg shadow-blue-200">
-                    Chọn chuyến
-                </button>
-                <div class="text-[10px] text-slate-400 font-medium italic">Không cần đặt cọc</div>
-             </div>
-
-           </div>
-        </div>
-      </main>
-
-    </div>
-  </div>
 </div>

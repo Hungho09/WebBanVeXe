@@ -1,0 +1,68 @@
+<div class="sidebar-container">
+    
+    <!-- Sort Section -->
+    <div class="filter-section card">
+        <h3 class="section-title">Sắp xếp</h3>
+        <ul class="sort-list">
+            <li *ngFor="let opt of sortOptions" 
+                class="sort-item" 
+                [class.active]="sortBy === opt.value"
+                (click)="onSortSelect(opt.value)">
+                <span class="custom-radio"></span>
+                {{ opt.label }}
+            </li>
+        </ul>
+    </div>
+
+    <!-- Filter Header -->
+    <div class="filter-header card">
+        <span class="title">Lọc</span>
+        <button class="btn-clear" (click)="clearFilters()">Xóa lọc</button>
+    </div>
+
+    <!-- Time Filter -->
+    <div class="filter-section card accordion">
+        <div class="accordion-head">
+            <span>Giờ đi</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="accordion-body">
+            <div *ngFor="let t of timeFilters" class="checkbox-row">
+                <input type="checkbox" [id]="t.value">
+                <label [for]="t.value">{{ t.label }}</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bus Company Filter -->
+    <div class="filter-section card accordion">
+        <div class="accordion-head">
+            <span>Nhà xe</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="accordion-body scrollable">
+            <div *ngFor="let company of companies" class="checkbox-row">
+                <input type="checkbox" [id]="'company-'+company" [checked]="selectedCompanies[company]" (change)="toggleCompany(company)">
+                <label [for]="'company-'+company">{{ company }}</label>
+            </div>
+            <div *ngIf="companies.length === 0" class="empty-msg">Đang tải nhà xe...</div>
+        </div>
+    </div>
+
+    <!-- Price Filter -->
+    <div class="filter-section card accordion">
+        <div class="accordion-head">
+            <span>Giá vé</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="accordion-body">
+            <input type="range" class="price-slider" min="50000" max="1000000" step="10000" [(ngModel)]="priceRange" (change)="onPriceChange()">
+            <div class="price-labels">
+                <span>50k</span>
+                <span class="current-price">{{ priceRange | number }} đ</span>
+                <span>1M</span>
+            </div>
+        </div>
+    </div>
+
+</div>

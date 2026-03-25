@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class FreshInitial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -233,11 +233,23 @@ namespace Infrastructure.Migrations
                     TripId = table.Column<Guid>(type: "TEXT", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "TEXT", precision: 18, scale: 2, nullable: false),
                     BookingStatus = table.Column<int>(type: "INTEGER", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    PickupPointId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    DropoffPointId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Bookings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Bookings_StopPoints_DropoffPointId",
+                        column: x => x.DropoffPointId,
+                        principalTable: "StopPoints",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Bookings_StopPoints_PickupPointId",
+                        column: x => x.PickupPointId,
+                        principalTable: "StopPoints",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Bookings_Trips_TripId",
                         column: x => x.TripId,
@@ -264,7 +276,8 @@ namespace Infrastructure.Migrations
                     Floor = table.Column<int>(type: "INTEGER", nullable: false),
                     Type = table.Column<int>(type: "INTEGER", nullable: false),
                     Status = table.Column<int>(type: "INTEGER", nullable: false),
-                    LockExpirationTime = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    LockExpirationTime = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    LockedByUserId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -369,6 +382,15 @@ namespace Infrastructure.Migrations
                 table: "Users",
                 columns: new[] { "Id", "CreatedAt", "Email", "FullName", "IsActive", "PasswordHash", "PhoneNumber", "Role", "UserName" },
                 values: new object[] { new Guid("11111111-1111-1111-1111-111111111111"), new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin@vexesystem.com", "System Administrator", true, "$2a$11$0nK18Qc7D8N94B3U3P6S/OGfN9f4v.T2H6zH/r4O/C5v.Q/b4XvG6", "0123456789", "Admin", "admin" });
+
+            migrationBuilder.InsertData(
+                table: "Buses",
+                columns: new[] { "Id", "BusTypeId", "CompanyName", "ImageUrl", "PlateNumber", "SeatCount", "Status" },
+                values: new object[,]
+                {
+                    { new Guid("55555555-5555-5555-5555-555555555555"), new Guid("33333333-3333-3333-3333-333333333333"), "Phương Trang (FUTA)", null, "51B-123.45", 44, 2 },
+                    { new Guid("66666666-6666-6666-6666-666666666666"), new Guid("22222222-2222-2222-2222-222222222222"), "Thành Bưởi", null, "51B-678.90", 9, 1 }
+                });
 
             migrationBuilder.InsertData(
                 table: "SeatTemplates",
@@ -476,6 +498,16 @@ namespace Infrastructure.Migrations
                 name: "IX_BookingDetails_SeatId",
                 table: "BookingDetails",
                 column: "SeatId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_DropoffPointId",
+                table: "Bookings",
+                column: "DropoffPointId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_PickupPointId",
+                table: "Bookings",
+                column: "PickupPointId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Bookings_TripId",
