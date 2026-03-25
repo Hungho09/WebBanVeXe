@@ -160,6 +160,7 @@ CREATE TABLE [Seats] (
     [Status] int NOT NULL,
     [LockExpirationTime] datetime2 NULL,
     [LockedByUserId] uniqueidentifier NULL,
+    [RowVersion] rowversion,
     CONSTRAINT [PK_Seats] PRIMARY KEY ([Id]),
     CONSTRAINT [FK_Seats_Trips_TripId] FOREIGN KEY ([TripId]) REFERENCES [Trips] ([Id]) ON DELETE NO ACTION
 );

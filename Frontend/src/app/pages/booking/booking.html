@@ -50,15 +50,19 @@
                             <span class="floor-title">Tầng {{ floor }}</span>
                             <div class="bus-body">
                                 <i class="fas fa-dharmachakra steering-wheel" *ngIf="floor === 1"></i>
-                                <div class="seat-grid-custom">
-                                    <div class="seat-box" 
+                                <div class="seat-grid-custom" [style.grid-template-columns]="'repeat(' + maxColumns + ', 1fr)'">
+                                    <div class="seat-wrapper" 
                                          *ngFor="let s of getSeatsByFloor(floor)"
-                                         [class.available]="s.status === 'Available'"
-                                         [class.booked]="s.status === 'Booked' || (s.status === 'Locked' && !isSelected(s.id))"
-                                         [class.selected]="isSelected(s.id)"
-                                         [class.vip]="s.type === 'VIP'"
-                                         (click)="toggleSeat(s)">
-                                        {{ s.seatNumber }}
+                                         [style.grid-column]="s.columnNumber"
+                                         [style.grid-row]="s.rowNumber">
+                                        <div class="seat-box" 
+                                             [class.available]="s.status === 'Available'"
+                                             [class.booked]="s.status === 'Booked' || (s.status === 'Locked' && !isSelected(s.id))"
+                                             [class.selected]="isSelected(s.id)"
+                                             [class.vip]="s.type === 'VIP'"
+                                             (click)="toggleSeat(s)">
+                                            {{ s.seatNumber }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -67,75 +71,110 @@
                 </div>
             </div>
 
-            <!-- STEP 2: Points Selection -->
-            <div class="card animate-fade" *ngIf="activeStep === 'point'">
-                <div class="card-header">
-                    <h3>Điểm đón & Điểm trả</h3>
+            <!-- STEP 2: Points Selection (Redesigned) -->
+            <div class="card animate-fade border-none" *ngIf="activeStep === 'point'">
+                <div class="card-header pb-0">
+                    <h3 class="step-title">Điểm đón & Điểm trả</h3>
+                    <p class="step-hint">Vui lòng chọn chính xác điểm bạn muốn lên và xuống xe.</p>
                 </div>
 
-                <div class="points-grid">
-                    <!-- Pickup Section -->
-                    <div class="point-column">
-                        <label class="section-label" style="font-weight:700; color:#4b5563; font-size:0.75rem; display:block; margin-bottom:0.5rem;">ĐIỂM ĐÓN</label>
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Tìm điểm đón..." [(ngModel)]="pickupSearch">
+                <div class="points-parallel-grid">
+                    <!-- Pickup Column -->
+                    <div class="point-col">
+                        <div class="col-header">
+                            <i class="fas fa-location-arrow"></i>
+                            <h4>ĐIỂM Đ đón</h4>
                         </div>
-                        <div class="points-list">
-                            <div class="point-item" 
+                        
+                        <div class="search-filter-bar">
+                            <div class="search-input">
+                                <i class="fas fa-search"></i>
+                                <input type="text" placeholder="Tìm điểm đón..." [(ngModel)]="pickupSearch">
+                            </div>
+                            <select class="sort-select" [(ngModel)]="pickupSort">
+                                <option value="time">Sớm nhất</option>
+                                <option value="distance" *ngIf="userCoords">Gần nhất</option>
+                            </select>
+                        </div>
+
+                        <div class="points-scrollable-list custom-scrollbar">
+                            <div class="point-card-item" 
                                  *ngFor="let p of filteredPickups"
                                  [class.selected]="selectedPickupId === p.id"
                                  (click)="selectedPickupId = p.id">
-                                <div class="point-radio">
-                                    <input type="radio" [checked]="selectedPickupId === p.id">
-                                </div>
-                                <div class="point-main">
-                                    <div class="p-time-row">
-                                        <span class="p-time">{{ formatTripTime(p.expectedTime, true) }}</span>
-                                        <span class="p-dot">·</span>
-                                        <span class="p-name">{{ p.name }}</span>
+                                
+                                <div class="item-radio">
+                                    <div class="radio-outer" [class.checked]="selectedPickupId === p.id">
+                                        <div class="radio-inner" *ngIf="selectedPickupId === p.id"></div>
                                     </div>
-                                    <div class="p-addr">{{ p.address }}</div>
-                                    <div class="p-footer" style="display:flex; justify-content:space-between; align-items:center;">
-                                        <button class="btn-map-link" (click)="showMap(p); $event.stopPropagation()">
-                                            <i class="fas fa-map-marked-alt"></i> Xem bản đồ
+                                </div>
+
+                                <div class="item-content">
+                                    <div class="top-line">
+                                        <span class="p-time">{{ formatTripTime(p.expectedTime, true) }}</span>
+                                        <span class="p-name">{{ p.name }}</span>
+                                        <span class="badge badge-suggest" *ngIf="p.distanceToUser && p.distanceToUser < 5">Gần nhất</span>
+                                    </div>
+                                    <div class="addr-line">{{ p.address }}</div>
+                                    <div class="footer-line">
+                                        <button class="btn-map-mini" (click)="showMap(p); $event.stopPropagation()">
+                                            <i class="fas fa-map-marked-alt"></i> Bản đồ
                                         </button>
-                                        <span class="badge" *ngIf="p.badge" [class.near]="p.badge==='Gần bạn'" [class.shuttle]="p.badge==='Trung chuyển'">{{ p.badge }}</span>
+                                        <span class="dist-info" *ngIf="p.distanceToUser">Khoảng cách: {{ p.distanceToUser | number:'1.1-1' }} km</span>
                                     </div>
                                 </div>
                             </div>
+                            <div class="empty-msg" *ngIf="filteredPickups.length === 0">Không tìm thấy điểm đón phù hợp</div>
                         </div>
                     </div>
 
-                    <!-- Dropoff Section -->
-                    <div class="point-column">
-                        <label class="section-label" style="font-weight:700; color:#4b5563; font-size:0.75rem; display:block; margin-bottom:0.5rem;">ĐIỂM TRẢ</label>
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Tìm điểm trả..." [(ngModel)]="dropoffSearch">
+                    <!-- Dropoff Column -->
+                    <div class="point-col">
+                        <div class="col-header">
+                            <i class="fas fa-map-pin"></i>
+                            <h4>ĐIỂM TRẢ</h4>
                         </div>
-                        <div class="points-list">
-                            <div class="point-item" 
+                        
+                        <div class="search-filter-bar">
+                            <div class="search-input">
+                                <i class="fas fa-search"></i>
+                                <input type="text" placeholder="Tìm điểm trả..." [(ngModel)]="dropoffSearch">
+                            </div>
+                            <select class="sort-select" [(ngModel)]="dropoffSort">
+                                <option value="time">Sớm nhất</option>
+                                <option value="distance" *ngIf="userCoords">Gần nhất</option>
+                            </select>
+                        </div>
+
+                        <div class="points-scrollable-list custom-scrollbar">
+                            <div class="point-card-item" 
                                  *ngFor="let p of filteredDropoffs"
                                  [class.selected]="selectedDropoffId === p.id"
                                  (click)="selectedDropoffId = p.id">
-                                <div class="point-radio">
-                                    <input type="radio" [checked]="selectedDropoffId === p.id">
-                                </div>
-                                <div class="point-main">
-                                    <div class="p-time-row">
-                                        <span class="p-time">{{ formatTripTime(p.expectedTime, true) }}</span>
-                                        <span class="p-dot">·</span>
-                                        <span class="p-name">{{ p.name }}</span>
+                                
+                                <div class="item-radio">
+                                    <div class="radio-outer" [class.checked]="selectedDropoffId === p.id">
+                                        <div class="radio-inner" *ngIf="selectedDropoffId === p.id"></div>
                                     </div>
-                                    <div class="p-addr">{{ p.address }}</div>
-                                    <div class="p-footer">
-                                        <button class="btn-map-link" (click)="showMap(p); $event.stopPropagation()">
-                                            <i class="fas fa-map-marked-alt"></i> Xem bản đồ
+                                </div>
+
+                                <div class="item-content">
+                                    <div class="top-line">
+                                        <div class="flex-wrap">
+                                            <span class="p-time">{{ formatTripTime(p.expectedTime, true) }}</span>
+                                            <span class="p-name">{{ p.name }}</span>
+                                        </div>
+                                        <span class="badge" [class.badge-primary]="p.badge === 'Phổ biến'" [class.badge-info]="p.badge === 'Miễn phí'" *ngIf="p.badge">{{ p.badge }}</span>
+                                    </div>
+                                    <div class="addr-line">{{ p.address }}</div>
+                                    <div class="footer-line">
+                                        <button class="btn-map-mini" (click)="showMap(p); $event.stopPropagation()">
+                                            <i class="fas fa-map-marked-alt"></i> Bản đồ
                                         </button>
                                     </div>
                                 </div>
                             </div>
+                            <div class="empty-msg" *ngIf="filteredDropoffs.length === 0">Không tìm thấy điểm trả phù hợp</div>
                         </div>
                     </div>
                 </div>

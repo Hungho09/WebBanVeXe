@@ -12,5 +12,6 @@ namespace Application.Interfaces
         Task<RouteDto> CreateRouteAsync(CreateRouteDto createRouteDto);
         Task<bool> UpdateRouteAsync(Guid id, UpdateRouteDto updateRouteDto);
         Task<bool> DeleteRouteAsync(Guid id);
+        Task<(IEnumerable<string> Origins, IEnumerable<string> Destinations)> GetDistinctLocationsAsync();
     }
 }

@@ -13,5 +13,6 @@ namespace Application.DTOs.Trip
         public int Floor { get; set; }
         public string Type { get; set; } = string.Empty;
         public DateTime? LockExpirationTime { get; set; }
+        public Guid? LockedByUserId { get; set; }
     }
 }

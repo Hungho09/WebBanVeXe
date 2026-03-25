@@ -5,6 +5,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { RouteService } from '../../../../services/route.service';
 
 @Component({
     selector: 'app-hero-search',
@@ -17,7 +18,7 @@ export class HeroSearchComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() bgImageUrl: string = '';
     @Output() searchEvent = new EventEmitter<any>();
 
-    constructor(private router: Router) {}
+    constructor(private router: Router, private routeService: RouteService) {}
 
     getBgStyle(): string {
         return `url('${this.bgImageUrl}')`;
@@ -34,22 +35,9 @@ export class HeroSearchComponent implements OnInit, AfterViewInit, OnDestroy {
             : type;
     }
 
-    // ── Provinces / Location ───────────────────────────
-    provinces: string[] = [
-        'An Giang', 'Bà Rịa - Vũng Tàu', 'Bạc Liêu', 'Bắc Giang', 'Bắc Kạn',
-        'Bắc Ninh', 'Bến Tre', 'Bình Dương', 'Bình Định', 'Bình Phước',
-        'Bình Thuận', 'Cà Mau', 'Cao Bằng', 'Cần Thơ', 'Đà Nẵng',
-        'Đắk Lắk', 'Đắk Nông', 'Điện Biên', 'Đồng Nai', 'Đồng Tháp',
-        'Gia Lai', 'Hà Giang', 'Hà Nam', 'Hà Nội', 'Hà Tĩnh',
-        'Hải Dương', 'Hải Phòng', 'Hậu Giang', 'Hòa Bình', 'Hồ Chí Minh',
-        'Hưng Yên', 'Khánh Hòa', 'Kiên Giang', 'Kon Tum', 'Lai Châu',
-        'Lạng Sơn', 'Lào Cai', 'Lâm Đồng', 'Long An', 'Nam Định',
-        'Nghệ An', 'Ninh Bình', 'Ninh Thuận', 'Phú Thọ', 'Phú Yên',
-        'Quảng Bình', 'Quảng Nam', 'Quảng Ngãi', 'Quảng Ninh', 'Quảng Trị',
-        'Sóc Trăng', 'Sơn La', 'Tây Ninh', 'Thái Bình', 'Thái Nguyên',
-        'Thanh Hóa', 'Thừa Thiên Huế', 'Tiền Giang', 'Trà Vinh', 'Tuyên Quang',
-        'Vĩnh Long', 'Vĩnh Phúc', 'Yên Bái'
-    ];
+    // ── Database Locations ───────────────────────────
+    dbOrigins: string[] = [];
+    dbDestinations: string[] = [];
 
     origin: string = '';
     destination: string = '';
@@ -57,13 +45,13 @@ export class HeroSearchComponent implements OnInit, AfterViewInit, OnDestroy {
     showDestinationDropdown: boolean = false;
 
     get filteredOrigins(): string[] {
-        return this.provinces
+        return this.dbOrigins
             .filter(p => !this.origin || p.toLowerCase().includes(this.origin.toLowerCase()))
             .filter(p => p !== this.destination);
     }
 
     get filteredDestinations(): string[] {
-        return this.provinces
+        return this.dbDestinations
             .filter(p => !this.destination || p.toLowerCase().includes(this.destination.toLowerCase()))
             .filter(p => p !== this.origin);
     }
@@ -176,7 +164,20 @@ export class HeroSearchComponent implements OnInit, AfterViewInit, OnDestroy {
     startX = 0;
     scrollLeftStart = 0;
 
-    ngOnInit() { this.generateDates(new Date()); }
+    ngOnInit() { 
+        this.generateDates(new Date()); 
+        this.loadLocations();
+    }
+
+    loadLocations() {
+        this.routeService.getLocations().subscribe({
+            next: (res: { origins: string[], destinations: string[] }) => {
+                this.dbOrigins = res.origins;
+                this.dbDestinations = res.destinations;
+            },
+            error: (err: any) => console.error('Error loading locations from DB:', err)
+        });
+    }
     ngAfterViewInit() { this.scrollToCenter(); }
     ngOnDestroy() {}
 
@@ -242,7 +243,7 @@ export class HeroSearchComponent implements OnInit, AfterViewInit, OnDestroy {
         const payload = {
             origin: (this.origin ?? '').trim(),
             destination: (this.destination ?? '').trim(),
-            date: this.selectedDate.toISOString()
+            date: this.formatDateForQuery(this.selectedDate)
         };
 
         // Emit for Homepage (optional if it still wants to do something)
@@ -252,5 +253,12 @@ export class HeroSearchComponent implements OnInit, AfterViewInit, OnDestroy {
         this.router.navigate(['/search-results'], {
             queryParams: payload
         });
+    }
+
+    private formatDateForQuery(date: Date): string {
+        const y = date.getFullYear();
+        const m = (date.getMonth() + 1).toString().padStart(2, '0');
+        const d = date.getDate().toString().padStart(2, '0');
+        return `${y}-${m}-${d}`;
     }
 }

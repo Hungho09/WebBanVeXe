@@ -88,9 +88,65 @@
             <input type="number" formControlName="distanceKm">
           </div>
 
-          <div class="form-group">
-            <label>Các điểm đón/trả dọc lộ trình (nếu có)</label>
-            <input type="text" formControlName="points" placeholder="Ví dụ: Phủ Lý, Ninh Bình...">
+          <div class="form-group points-editor-section">
+            <label class="section-title">Quản lý các điểm đón/trả dọc lộ trình</label>
+            
+            <!-- Quick Add Form -->
+            <div class="quick-add-point-card">
+              <div class="qa-grid">
+                <input type="text" [(ngModel)]="newPoint.name" [ngModelOptions]="{standalone: true}" placeholder="Tên trạm (ví dụ: Bến xe Miền Đông)">
+                <input type="text" [(ngModel)]="newPoint.address" [ngModelOptions]="{standalone: true}" placeholder="Địa chỉ chi tiết">
+                <div class="qa-footer">
+                  <div class="time-input">
+                    <input type="number" [(ngModel)]="newPoint.offsetMinutes" [ngModelOptions]="{standalone: true}">
+                    <span>phút từ xuất phát</span>
+                  </div>
+                  <select [(ngModel)]="newPoint.type" [ngModelOptions]="{standalone: true}">
+                    <option value="pickup">Chỉ đón</option>
+                    <option value="dropoff">Chỉ trả</option>
+                    <option value="both">Đón & Trả</option>
+                  </select>
+                  <button type="button" class="btn-add-point" (click)="addPoint()">
+                    <i class="fas fa-plus"></i> Thêm điểm
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Parallel Lists -->
+            <div class="points-columns mt-4">
+              <div class="point-col">
+                <div class="col-header pickup">
+                  <i class="fas fa-sign-in-alt"></i> DIỂM ĐÓN
+                  <input type="text" class="mini-search" placeholder="Tìm..." [(ngModel)]="pickupSearch" [ngModelOptions]="{standalone: true}">
+                </div>
+                <div class="point-list-scroll">
+                  <div class="point-list-item" *ngFor="let p of filteredPickups">
+                    <div class="p-info">
+                      <span class="p-time">+{{ p.offsetMinutes }}'</span>
+                      <span class="p-name">{{ p.name }}</span>
+                    </div>
+                    <button type="button" class="btn-del" (click)="removePoint(p.id)"><i class="fas fa-times"></i></button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="point-col">
+                <div class="col-header dropoff">
+                  <i class="fas fa-sign-out-alt"></i> DIỂM TRẢ
+                  <input type="text" class="mini-search" placeholder="Tìm..." [(ngModel)]="dropoffSearch" [ngModelOptions]="{standalone: true}">
+                </div>
+                <div class="point-list-scroll">
+                  <div class="point-list-item" *ngFor="let p of filteredDropoffs">
+                    <div class="p-info">
+                      <span class="p-time">+{{ p.offsetMinutes }}'</span>
+                      <span class="p-name">{{ p.name }}</span>
+                    </div>
+                    <button type="button" class="btn-del" (click)="removePoint(p.id)"><i class="fas fa-times"></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
   
           <div class="form-group" style="margin-top: 2rem;">

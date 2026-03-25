@@ -14,5 +14,6 @@ namespace Domain.Interfaces
         void Delete(Route route);
         Task SaveChangesAsync();
         Task<bool> ExistsAsync(string origin, string destination);
+        Task<(IEnumerable<string> Origins, IEnumerable<string> Destinations)> GetDistinctLocationsAsync();
     }
 }

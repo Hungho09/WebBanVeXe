@@ -56,6 +56,8 @@ export class Booking implements OnInit, OnDestroy {
 
   pickupSearch = '';
   dropoffSearch = '';
+  pickupSort: 'time' | 'distance' = 'time';
+  dropoffSort: 'time' | 'distance' = 'time';
   userCoords: { lat: number; lng: number } | null = null;
 
   // Payment methods
@@ -107,9 +109,21 @@ export class Booking implements OnInit, OnDestroy {
   }
 
   loadSeats(tripId: string): void {
+    const userId = this.authService.getUser()?.id;
     this.tripService.getSeatsByTrip(tripId).subscribe({
       next: (seats: any[]) => {
         this.seats = seats;
+        
+        // Auto-select seats locked by me (across refreshes)
+        if (userId) {
+            seats.forEach(s => {
+                if (s.status === 'Locked' && s.lockedByUserId === userId && !this.selectedSeatIds.includes(s.id)) {
+                    this.selectedSeatIds.push(s.id);
+                    this.startTimer();
+                }
+            });
+        }
+        
         this.isLoading = false;
       },
       error: () => {
@@ -242,30 +256,83 @@ export class Booking implements OnInit, OnDestroy {
     return Array.from(floorSet).sort((a, b) => a - b);
   }
 
+  get maxColumns(): number {
+    if (!this.seats || this.seats.length === 0) return 3;
+    const max = Math.max(...this.seats.map(s => s.columnNumber || 0));
+    return max > 0 ? max : 3;
+  }
+
   getSeatsByFloor(floorNum: number): Seat[] {
     return this.seats.filter(s => s.floor === floorNum);
   }
 
   get filteredPickups(): Point[] {
-    let list = this.points.filter(p => p.isPickup);
+    let list = [...this.points.filter(p => p.isPickup)];
     if (this.pickupSearch) {
       const s = this.pickupSearch.toLowerCase();
       list = list.filter(p => p.name.toLowerCase().includes(s) || p.address.toLowerCase().includes(s));
     }
-    // Sort by proximity then time
+    
     return list.sort((a, b) => {
-      if (a.distanceToUser && b.distanceToUser) return a.distanceToUser - b.distanceToUser;
+      if (this.pickupSort === 'distance' && a.distanceToUser !== undefined && b.distanceToUser !== undefined) {
+        return a.distanceToUser - b.distanceToUser;
+      }
       return new Date(a.expectedTime).getTime() - new Date(b.expectedTime).getTime();
     });
   }
-
+  
   get filteredDropoffs(): Point[] {
-    let list = this.points.filter(p => p.isDropoff);
+    let list = [...this.points.filter(p => p.isDropoff)];
+    
+    // Add special options
+    const doorToDoor: Point = {
+        id: 'door-to-door',
+        name: 'Trả tận nơi',
+        address: 'Hỗ trợ trả khách tận nơi trong nội thành',
+        expectedTime: this.trip?.arrivalTime,
+        distanceFromOrigin: 0,
+        badge: 'Phổ biến',
+        isPickup: false,
+        isDropoff: true
+    };
+    
+    // Logic for shuttle
+    const shuttle: Point = {
+        id: 'shuttle-dropoff',
+        name: 'Trung chuyển',
+        address: 'Trung chuyển miễn phí trong bán kính 5km',
+        expectedTime: this.trip?.arrivalTime,
+        distanceFromOrigin: 0,
+        badge: 'Miễn phí',
+        isPickup: false,
+        isDropoff: true
+    };
+
+    if (!this.dropoffSearch) {
+        list.unshift(shuttle);
+        list.unshift(doorToDoor);
+    } else {
+        const s = this.dropoffSearch.toLowerCase();
+        if (doorToDoor.name.toLowerCase().includes(s)) list.unshift(doorToDoor);
+        if (shuttle.name.toLowerCase().includes(s)) list.unshift(shuttle);
+    }
+
     if (this.dropoffSearch) {
       const s = this.dropoffSearch.toLowerCase();
       list = list.filter(p => p.name.toLowerCase().includes(s) || p.address.toLowerCase().includes(s));
     }
-    return list.sort((a, b) => new Date(a.expectedTime).getTime() - new Date(b.expectedTime).getTime());
+    
+    return list.sort((a, b) => {
+      // Keep special at top
+      const specials = ['door-to-door', 'shuttle-dropoff'];
+      if (specials.includes(a.id) && !specials.includes(b.id)) return -1;
+      if (!specials.includes(a.id) && specials.includes(b.id)) return 1;
+      
+      if (this.dropoffSort === 'distance' && a.distanceToUser !== undefined && b.distanceToUser !== undefined) {
+        return a.distanceToUser - b.distanceToUser;
+      }
+      return new Date(a.expectedTime).getTime() - new Date(b.expectedTime).getTime();
+    });
   }
 
   toggleSeat(seat: any): void {
@@ -418,8 +485,8 @@ export class Booking implements OnInit, OnDestroy {
       userId: uid,
       tripId: this.tripId!,
       seatIds: this.selectedSeatIds,
-      pickupPointId: (this.selectedPickupId && this.selectedPickupId !== 'door-to-door') ? this.selectedPickupId : undefined,
-      dropoffPointId: (this.selectedDropoffId && this.selectedDropoffId !== 'door-to-door') ? this.selectedDropoffId : undefined
+      pickupPointId: isGuid(this.selectedPickupId) ? this.selectedPickupId! : undefined,
+      dropoffPointId: isGuid(this.selectedDropoffId) ? this.selectedDropoffId! : undefined
     };
 
     this.isLoading = true;

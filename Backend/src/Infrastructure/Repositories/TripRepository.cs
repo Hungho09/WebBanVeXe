@@ -36,6 +36,7 @@ namespace Infrastructure.Repositories
                 .Include(t => t.Route)
                 .Include(t => t.Bus)
                     .ThenInclude(b => b!.BusType)
+                .Include(t => t.Seats)
                 .OrderByDescending(t => t.DepartureTime)
                 .ToListAsync();
         }

@@ -20,6 +20,20 @@ export class RouteManagement implements OnInit {
   routeForm: FormGroup;
   isEditMode = false;
   currentRouteId: string | null = null;
+  
+  // Point management
+  pickupSearch = '';
+  dropoffSearch = '';
+  pointSort: 'time' | 'distance' = 'time';
+  routePoints: any[] = [];
+  
+  // Quick add point form
+  newPoint = {
+    name: '',
+    address: '',
+    offsetMinutes: 0,
+    type: 'pickup' as 'pickup' | 'dropoff' | 'both'
+  };
 
   provinces = [
     'An Giang', 'Bà Rịa - Vũng Tàu', 'Bắc Giang', 'Bắc Kạn', 'Bạc Liêu', 'Bắc Ninh', 'Bến Tre', 'Bình Định', 
@@ -84,6 +98,14 @@ export class RouteManagement implements OnInit {
       points: route.points,
       isActive: route.isActive
     });
+    
+    // Parse points JSON
+    try {
+        this.routePoints = route.points ? JSON.parse(route.points) : [];
+    } catch {
+        this.routePoints = [];
+    }
+    
     this.isModalOpen = true;
   }
 
@@ -130,10 +152,53 @@ export class RouteManagement implements OnInit {
     }
   }
 
+  addPoint() {
+    if (!this.newPoint.name || !this.newPoint.address) return;
+    
+    const point = {
+        id: crypto.randomUUID(),
+        name: this.newPoint.name,
+        address: this.newPoint.address,
+        offsetMinutes: this.newPoint.offsetMinutes,
+        isPickup: this.newPoint.type === 'pickup' || this.newPoint.type === 'both',
+        isDropoff: this.newPoint.type === 'dropoff' || this.newPoint.type === 'both'
+    };
+    
+    this.routePoints.push(point);
+    this.updatePointsField();
+    
+    // Reset form
+    this.newPoint = { name: '', address: '', offsetMinutes: 0, type: 'pickup' };
+  }
+
+  removePoint(id: string) {
+    this.routePoints = this.routePoints.filter(p => p.id !== id);
+    this.updatePointsField();
+  }
+
+  updatePointsField() {
+    this.routeForm.patchValue({ points: JSON.stringify(this.routePoints) });
+  }
+
+  get filteredPickups() {
+    let list = this.routePoints.filter(p => p.isPickup);
+    if (this.pickupSearch) {
+        list = list.filter(p => p.name.toLowerCase().includes(this.pickupSearch.toLowerCase()));
+    }
+    return list.sort((a,b) => a.offsetMinutes - b.offsetMinutes);
+  }
+
+  get filteredDropoffs() {
+    let list = this.routePoints.filter(p => p.isDropoff);
+    if (this.dropoffSearch) {
+        list = list.filter(p => p.name.toLowerCase().includes(this.dropoffSearch.toLowerCase()));
+    }
+    return list.sort((a,b) => a.offsetMinutes - b.offsetMinutes);
+  }
+
   copyId(id: string) {
     navigator.clipboard.writeText(id).then(() => {
       // Flash feedback
-      const btn = document.querySelector(`[title="Sao chép ID đầy đủ"][data-id="${id}"]`);
       alert(`Đã sao chép ID: ${id}`);
     });
   }

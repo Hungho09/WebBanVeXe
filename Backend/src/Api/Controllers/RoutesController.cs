@@ -25,6 +25,13 @@ namespace Api.Controllers
             return Ok(routes);
         }
 
+        [HttpGet("locations")]
+        public async Task<IActionResult> GetLocations()
+        {
+            var (origins, destinations) = await _routeService.GetDistinctLocationsAsync();
+            return Ok(new { origins, destinations });
+        }
+
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {

@@ -121,7 +121,7 @@ namespace Infrastructure.Services
                 await tx.RollbackAsync();
                 throw new InvalidOperationException("Ghế bạn chọn đã được người khác đặt hoặc hết thời gian chờ. Vui lòng làm mới lại trang.");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await tx.RollbackAsync();
                 throw;

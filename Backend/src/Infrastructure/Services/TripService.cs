@@ -149,7 +149,8 @@ namespace Infrastructure.Services
                 ColumnNumber = s.ColumnNumber,
                 Floor = s.Floor,
                 Type = s.Type.ToString(),
-                LockExpirationTime = s.LockExpirationTime
+                LockExpirationTime = s.LockExpirationTime,
+                LockedByUserId = s.LockedByUserId
             });
         }
 

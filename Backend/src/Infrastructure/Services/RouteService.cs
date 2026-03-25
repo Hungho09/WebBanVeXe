@@ -108,6 +108,11 @@ namespace Infrastructure.Services
             return true;
         }
 
+        public async Task<(IEnumerable<string> Origins, IEnumerable<string> Destinations)> GetDistinctLocationsAsync()
+        {
+            return await _routeRepository.GetDistinctLocationsAsync();
+        }
+
         private RouteDto MapToDto(Route route)
         {
             return new RouteDto

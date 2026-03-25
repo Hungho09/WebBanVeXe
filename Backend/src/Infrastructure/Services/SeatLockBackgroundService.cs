@@ -28,7 +28,15 @@ namespace Infrastructure.Services
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                await DoWork(stoppingToken);
+                try
+                {
+                    await DoWork(stoppingToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error occurred executing seat lock background task.");
+                }
+                
                 await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
             }
 

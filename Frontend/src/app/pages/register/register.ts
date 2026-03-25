@@ -49,8 +49,15 @@ export class Register implements OnInit {
         this.isLoading = false;
         if (response.success && response.token) {
           // AUTO-LOGIN: Save the user info immediately
-          const uId = response.userId || response.Id || response['userId'] || 'new-user-id';
-          this.authService.saveUser(response.token, response.userName, uId, response.role);
+          const userData = {
+            id: response.userId || response.Id || 'new-user-id',
+            userName: response.userName || this.registerData.userName,
+            fullName: response.fullName || this.registerData.fullName,
+            email: response.email || this.registerData.email,
+            phoneNumber: response.phoneNumber || this.registerData.phoneNumber,
+            role: response.role || this.registerData.role || 'Customer'
+          };
+          this.authService.saveUser(response.token, userData);
           // Professional Toast
           this.toastService.showSuccess('Đăng ký và Đăng nhập thành công! Chào mừng bạn gia nhập Vexere.');
 

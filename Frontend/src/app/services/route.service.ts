@@ -40,4 +40,8 @@ export class RouteService {
   deleteRoute(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  getLocations(): Observable<{ origins: string[], destinations: string[] }> {
+    return this.http.get<{ origins: string[], destinations: string[] }>(`${this.apiUrl}/locations`);
+  }
 }

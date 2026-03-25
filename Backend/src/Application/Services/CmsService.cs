@@ -54,7 +54,8 @@ namespace Application.Services
                 config.UpdatedAt = DateTime.UtcNow;
             }
 
-            return await _context.SaveChangesAsync() > 0;
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

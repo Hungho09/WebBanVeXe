@@ -57,5 +57,12 @@ namespace Infrastructure.Repositories
                 .AnyAsync(r => r.Origin.ToLower() == origin.ToLower() 
                     && r.Destination.ToLower() == destination.ToLower());
         }
+
+        public async Task<(IEnumerable<string> Origins, IEnumerable<string> Destinations)> GetDistinctLocationsAsync()
+        {
+            var origins = await _context.Routes.Select(r => r.Origin).Distinct().OrderBy(o => o).ToListAsync();
+            var destinations = await _context.Routes.Select(r => r.Destination).Distinct().OrderBy(d => d).ToListAsync();
+            return (origins, destinations);
+        }
     }
 }
