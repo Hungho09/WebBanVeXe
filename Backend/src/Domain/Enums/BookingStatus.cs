@@ -3,7 +3,8 @@ namespace Domain.Enums
     public enum BookingStatus
     {
         Pending = 0,
-        Confirmed = 1,
-        Cancelled = 2
+        Paid = 1,
+        CancelRequested = 2,
+        Cancelled = 3
     }
 }

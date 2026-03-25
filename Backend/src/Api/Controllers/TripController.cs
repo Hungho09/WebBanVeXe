@@ -1,4 +1,5 @@
 using Application.DTOs.Trip;
+using Application.DTOs.Booking;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -54,6 +55,21 @@ namespace Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateTripDto dto)
         {
+            if (!ModelState.IsValid)
+            {
+                var errors = string.Join("; ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+                Console.WriteLine($"Model Validation Failed: {errors}");
+                return BadRequest(new { message = "Dữ liệu không hợp lệ: " + errors });
+            }
+
+            Console.WriteLine($"Updating Trip: id={id}, routeId={dto?.RouteId}, busId={dto?.BusId}, depTime={dto?.DepartureTime}, arrTime={dto?.ArrivalTime}, status={dto?.Status}");
+            
+            if (dto == null)
+            {
+                Console.WriteLine("Update DTO is null");
+                return BadRequest(new { message = "Request body is null or invalid JSON." });
+            }
+
             try
             {
                 var success = await _tripService.UpdateTripAsync(id, dto);
@@ -86,17 +102,21 @@ namespace Api.Controllers
         }
 
         [HttpPost("seats/{seatId}/lock")]
-        public async Task<IActionResult> LockSeat(Guid seatId)
+        public async Task<IActionResult> LockSeat(Guid seatId, [FromBody] LockSeatRequestDto? request)
         {
-            var success = await _tripService.LockSeatAsync(seatId);
+            if (request == null || request.UserId == Guid.Empty)
+                return BadRequest(new { message = "Cần UserId để giữ ghế." });
+            var success = await _tripService.LockSeatAsync(seatId, request.UserId);
             if (!success) return BadRequest(new { message = "Seat could not be locked. It might be already booked or locked by someone else." });
             return Ok(new { message = "Seat locked successfully" });
         }
 
         [HttpPost("seats/{seatId}/unlock")]
-        public async Task<IActionResult> UnlockSeat(Guid seatId)
+        public async Task<IActionResult> UnlockSeat(Guid seatId, [FromBody] LockSeatRequestDto? request)
         {
-            var success = await _tripService.UnlockSeatAsync(seatId);
+            if (request == null || request.UserId == Guid.Empty)
+                return BadRequest(new { message = "Cần UserId để mở khóa ghế." });
+            var success = await _tripService.UnlockSeatAsync(seatId, request.UserId);
             if (!success) return BadRequest(new { message = "Seat could not be unlocked." });
             return Ok(new { message = "Seat unlocked successfully" });
         }

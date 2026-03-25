@@ -11,11 +11,12 @@ import { CmsManagement } from './pages/cms-management/cms-management';
 import { AdminLayout } from './shared/layout/admin-layout/admin-layout';
 import { AuthGuard } from './guards/auth.guard';
 import { PaymentComponent } from './pages/payment/payment.component';
-import { Booking } from './pages/booking/booking';
+import { BookingSearch } from './pages/booking-search/booking-search';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'homepage', pathMatch: 'full' },
   { path: 'homepage', component: Homepage },
+  { path: 'search-results', component: BookingSearch },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
   { path: 'payment', component: PaymentComponent },

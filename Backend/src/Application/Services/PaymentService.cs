@@ -12,10 +12,14 @@ namespace Application.Services
     public class PaymentService : IPaymentService
     {
         private readonly IApplicationDbContext _context;
+        private readonly IInvoiceService _invoiceService;
+        private readonly INotificationService _notificationService;
 
-        public PaymentService(IApplicationDbContext context)
+        public PaymentService(IApplicationDbContext context, IInvoiceService invoiceService, INotificationService notificationService)
         {
             _context = context;
+            _invoiceService = invoiceService;
+            _notificationService = notificationService;
         }
 
         public async Task<PaymentResponseDto> ProcessPaymentAsync(PaymentRequestDto paymentRequestDto)
@@ -59,8 +63,8 @@ namespace Application.Services
                     payment.PaymentStatus = PaymentStatus.Success;
                     payment.PaidAt = DateTime.UtcNow;
 
-                    // Step 4: Update BookingStatus = Confirmed
-                    booking.BookingStatus = BookingStatus.Confirmed;
+                    // Step 4: Update BookingStatus = Paid
+                    booking.BookingStatus = BookingStatus.Paid;
 
                     // Step 5: Update all related Seats Status = Booked
                     var bookingDetails = await _context.BookingDetails
@@ -80,6 +84,12 @@ namespace Application.Services
                     
                     // Commit transaction
                     await transaction.CommitAsync();
+
+                    // Story 3.5 & 3.6: Generate invoice and send confirmation after success
+                    try {
+                        await _invoiceService.CreateInvoiceAsync(booking.Id);
+                        await _notificationService.SendBookingConfirmationAsync(booking.Id);
+                    } catch (Exception) { /* Log and ignore non-critical failures */ }
 
                     return new PaymentResponseDto
                     {

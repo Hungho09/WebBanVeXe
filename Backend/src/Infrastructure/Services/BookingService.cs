@@ -15,31 +15,43 @@ namespace Infrastructure.Services
     public class BookingService : IBookingService
     {
         private readonly ApplicationDbContext _context;
+        private readonly INotificationService _notificationService;
 
-        public BookingService(ApplicationDbContext context)
+        public BookingService(ApplicationDbContext context, INotificationService notificationService)
         {
             _context = context;
+            _notificationService = notificationService;
         }
 
-        public async Task<bool> LockSeatAsync(Guid seatId)
+        public async Task<bool> LockSeatAsync(Guid seatId, Guid userId)
         {
             var seat = await _context.Seats.FindAsync(seatId);
-            if (seat == null || seat.Status != SeatStatus.Available)
+            if (seat == null || seat.Status == SeatStatus.Booked)
+                return false;
+
+            // If already locked by someone else and not expired
+            if (seat.Status == SeatStatus.Locked && seat.LockExpirationTime > DateTime.UtcNow && seat.LockedByUserId != userId)
                 return false;
 
             seat.Status = SeatStatus.Locked;
-            // Optionally, we could set a lock expiration time here
+            seat.LockedByUserId = userId;
+            seat.LockExpirationTime = DateTime.UtcNow.AddMinutes(10);
+            
             await _context.SaveChangesAsync();
             return true;
         }
 
-        public async Task<bool> UnlockSeatAsync(Guid seatId)
+        public async Task<bool> UnlockSeatAsync(Guid seatId, Guid userId)
         {
             var seat = await _context.Seats.FindAsync(seatId);
-            if (seat == null || seat.Status != SeatStatus.Locked)
+            // Only unlock if it's locked and either owned by this user or just locked in general
+            if (seat == null || seat.Status != SeatStatus.Locked || (seat.LockedByUserId != null && seat.LockedByUserId != userId))
                 return false;
 
             seat.Status = SeatStatus.Available;
+            seat.LockedByUserId = null;
+            seat.LockExpirationTime = null;
+            
             await _context.SaveChangesAsync();
             return true;
         }
@@ -55,8 +67,15 @@ namespace Infrastructure.Services
             var seats = await _context.Seats.Where(s => dto.SeatIds.Contains(s.Id)).ToListAsync();
             if (seats.Count != dto.SeatIds.Count) throw new Exception("Không tìm thấy một số ghế đã chọn.");
 
-            if (seats.Any(s => s.Status == SeatStatus.Booked))
-                throw new Exception("Một hoặc nhiều ghế đã được người khác đặt.");
+            foreach (var seat in seats)
+            {
+                if (seat.Status == SeatStatus.Booked)
+                    throw new Exception($"Ghế {seat.SeatNumber} đã được người khác đặt.");
+                
+                // If it's locked by someone else and not expired, prevent booking
+                if (seat.Status == SeatStatus.Locked && seat.LockExpirationTime > DateTime.UtcNow && seat.LockedByUserId != dto.UserId)
+                    throw new Exception($"Ghế {seat.SeatNumber} hiện đang được giữ bởi người khác.");
+            }
 
             var booking = new Booking
             {
@@ -132,19 +151,53 @@ namespace Infrastructure.Services
         public async Task<bool> CancelBookingAsync(Guid bookingId)
         {
             var booking = await _context.Bookings
+                .Include(b => b.Trip)
                 .Include(b => b.BookingDetails)
                     .ThenInclude(bd => bd.Seat)
                 .FirstOrDefaultAsync(b => b.Id == bookingId);
 
             if (booking == null) return false;
+            if (booking.Trip == null) return false;
+
+            // Story 3.3 Rule: Cannot cancel after departure time
+            if (booking.Trip.DepartureTime <= DateTime.UtcNow)
+            {
+                throw new InvalidOperationException("Không thể hủy vé sau giờ khởi hành.");
+            }
+
+            // Simple cancel request logic (Epic 3.3 says CancelRequested status exists)
+            booking.BookingStatus = BookingStatus.CancelRequested;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> ApproveCancelBookingAsync(Guid bookingId)
+        {
+            var booking = await _context.Bookings
+                .Include(b => b.BookingDetails)
+                    .ThenInclude(bd => bd.Seat)
+                .FirstOrDefaultAsync(b => b.Id == bookingId);
+
+            if (booking == null || booking.BookingStatus != BookingStatus.CancelRequested) return false;
 
             booking.BookingStatus = BookingStatus.Cancelled;
             foreach (var detail in booking.BookingDetails)
             {
-                detail.Seat.Status = SeatStatus.Available;
+                if (detail.Seat != null)
+                {
+                    detail.Seat.Status = SeatStatus.Available;
+                    detail.Seat.LockedByUserId = null;
+                    detail.Seat.LockExpirationTime = null;
+                }
             }
 
             await _context.SaveChangesAsync();
+
+            // Notify customer
+            try {
+                await _notificationService.SendCancellationApprovalAsync(bookingId);
+            } catch (Exception) { }
+
             return true;
         }
 

@@ -29,4 +29,9 @@ namespace Application.DTOs.Booking
         public string SeatNumber { get; set; } = string.Empty;
         public decimal Price { get; set; } = 0;
     }
+
+    public class LockSeatRequestDto
+    {
+        public Guid UserId { get; set; }
+    }
 }

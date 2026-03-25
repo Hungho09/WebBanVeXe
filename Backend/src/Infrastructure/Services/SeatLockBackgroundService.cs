@@ -51,6 +51,7 @@ namespace Infrastructure.Services
                     foreach (var seat in expiredLocks)
                     {
                         seat.Status = SeatStatus.Available;
+                        seat.LockedByUserId = null;
                         seat.LockExpirationTime = null;
                     }
 

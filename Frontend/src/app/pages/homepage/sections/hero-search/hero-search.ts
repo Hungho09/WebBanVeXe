@@ -4,16 +4,8 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
-/**
- * HeroSearchComponent — Hero Banner + Search Box trang chủ
- *
- * Chứa: hero image rotation, trip type toggle, location dropdowns,
- *       date slider strip, custom calendar popup
- *
- * Inputs: bgImageUrl (URL ảnh nền hiện tại)
- * Outputs: searchEvent (khi click tìm chuyến)
- */
 @Component({
     selector: 'app-hero-search',
     standalone: true,
@@ -25,8 +17,20 @@ export class HeroSearchComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() bgImageUrl: string = '';
     @Output() searchEvent = new EventEmitter<any>();
 
+    constructor(private router: Router) {}
+
     getBgStyle(): string {
         return `url('${this.bgImageUrl}')`;
+    }
+
+    search() {
+        this.router.navigate(['/search-results'], {
+            queryParams: {
+                origin: this.origin,
+                destination: this.destination,
+                date: this.selectedDate.toISOString()
+            }
+        });
     }
 
     // ── Trip Type ──────────────────────────────────────

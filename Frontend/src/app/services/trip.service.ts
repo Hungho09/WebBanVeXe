@@ -8,6 +8,8 @@ export interface Trip {
   routeName: string;
   busId: string;
   busPlate: string;
+  busTypeName?: string;
+  busImageUrl?: string;
   departureTime: string;
   arrivalTime: string;
   price: number;

@@ -68,6 +68,13 @@ namespace Infrastructure
             // Background Services
             services.AddHostedService<Infrastructure.Services.SeatLockBackgroundService>();
 
+            // Booking Flow Extras
+            services.AddScoped<Application.Interfaces.IInvoiceService, Infrastructure.Services.InvoiceService>();
+            services.AddScoped<Application.Interfaces.INotificationService, Infrastructure.Services.NotificationService>();
+            
+            // Reporting & Analytics
+            services.AddScoped<Application.Interfaces.IReportingService, Infrastructure.Services.ReportingService>();
+
             // CMS Management
             services.AddScoped<Application.Interfaces.ICmsService, Application.Services.CmsService>();
 

@@ -152,40 +152,39 @@ namespace Infrastructure.Services
             });
         }
 
-        public async Task<bool> LockSeatAsync(Guid seatId)
+        public async Task<bool> LockSeatAsync(Guid seatId, Guid userId)
         {
-            // Note: Since TripService normally uses TripRepository, we might need a dedicated SeatRepository 
-            // but for simplicity and immediate implementation, we'll assume the repository can handle it 
-            // or we'll use the context if we have access. 
-            // Checking TripRepository implementation...
-            
             var trip = await _tripRepository.GetBySeatIdAsync(seatId);
             if (trip == null) return false;
 
             var seat = trip.Seats.FirstOrDefault(s => s.Id == seatId);
             if (seat == null || seat.Status == Domain.Enums.SeatStatus.Booked) return false;
 
-            // If already locked and not expired, return false
-            if (seat.Status == Domain.Enums.SeatStatus.Locked && seat.LockExpirationTime > DateTime.UtcNow)
+            // If already locked by someone else and not expired, return false
+            if (seat.Status == Domain.Enums.SeatStatus.Locked && seat.LockExpirationTime > DateTime.UtcNow && seat.LockedByUserId != userId)
                 return false;
 
             seat.Status = Domain.Enums.SeatStatus.Locked;
-            seat.LockExpirationTime = DateTime.UtcNow.AddMinutes(10);
+            seat.LockedByUserId = userId;
+            seat.LockExpirationTime = DateTime.UtcNow.AddMinutes(10); // Hold for 10 minutes (Epic 3.2)
 
             _tripRepository.Update(trip);
             await _tripRepository.SaveChangesAsync();
             return true;
         }
 
-        public async Task<bool> UnlockSeatAsync(Guid seatId)
+        public async Task<bool> UnlockSeatAsync(Guid seatId, Guid userId)
         {
             var trip = await _tripRepository.GetBySeatIdAsync(seatId);
             if (trip == null) return false;
 
             var seat = trip.Seats.FirstOrDefault(s => s.Id == seatId);
-            if (seat == null || seat.Status != Domain.Enums.SeatStatus.Locked) return false;
+            // Only unlock if it's locked and either owned by this user or just locked in general (Admin)
+            if (seat == null || seat.Status != Domain.Enums.SeatStatus.Locked || (seat.LockedByUserId != null && seat.LockedByUserId != userId))
+                return false;
 
             seat.Status = Domain.Enums.SeatStatus.Available;
+            seat.LockedByUserId = null;
             seat.LockExpirationTime = null;
 
             _tripRepository.Update(trip);
