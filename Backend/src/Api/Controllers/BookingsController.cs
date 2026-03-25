@@ -78,7 +78,6 @@ namespace Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> CancelBooking(Guid id)
         {
-<<<<<<< HEAD
             try
             {
                 var ok = await _bookingService.CancelBookingAsync(id);
@@ -97,11 +96,6 @@ namespace Api.Controllers
             var ok = await _bookingService.ApproveCancelBookingAsync(id);
             if (!ok) return BadRequest(new { message = "Không thể duyệt hủy vé này (vé không ở trạng thái yêu cầu hủy hoặc không tồn tại)." });
             return Ok(new { message = "Đã duyệt hủy vé và giải phóng ghế." });
-=======
-            var ok = await _bookingService.CancelBookingAsync(id);
-            if (!ok) return NotFound();
-            return NoContent();
->>>>>>> 9197da9e81287ec8d327737d1f37f56927fc8b7e
         }
     }
 }

@@ -155,39 +155,23 @@ namespace Infrastructure.Services
 
         public async Task<bool> LockSeatAsync(Guid seatId, Guid userId)
         {
-<<<<<<< HEAD
-=======
             if (userId == Guid.Empty) return false;
 
->>>>>>> 9197da9e81287ec8d327737d1f37f56927fc8b7e
             var trip = await _tripRepository.GetBySeatIdAsync(seatId);
             if (trip == null) return false;
 
             var seat = trip.Seats.FirstOrDefault(s => s.Id == seatId);
             if (seat == null) return false;
 
-<<<<<<< HEAD
-            // If already locked by someone else and not expired, return false
-            if (seat.Status == Domain.Enums.SeatStatus.Locked && seat.LockExpirationTime > DateTime.UtcNow && seat.LockedByUserId != userId)
-                return false;
-
-            seat.Status = Domain.Enums.SeatStatus.Locked;
-            seat.LockedByUserId = userId;
-            seat.LockExpirationTime = DateTime.UtcNow.AddMinutes(10); // Hold for 10 minutes (Epic 3.2)
-=======
             var now = DateTime.UtcNow;
 
             if (seat.Status == Domain.Enums.SeatStatus.Booked)
                 return false;
 
-            if (seat.Status == Domain.Enums.SeatStatus.Locked &&
-                (!seat.LockExpirationTime.HasValue || seat.LockExpirationTime <= now))
-            {
-                seat.Status = Domain.Enums.SeatStatus.Available;
-                seat.LockExpirationTime = null;
-                seat.LockedByUserId = null;
-            }
->>>>>>> 9197da9e81287ec8d327737d1f37f56927fc8b7e
+            // If already locked by someone else and not expired, return false
+            if (seat.Status == Domain.Enums.SeatStatus.Locked && seat.LockExpirationTime > now && seat.LockedByUserId != userId)
+                return false;
+
 
             if (seat.Status == Domain.Enums.SeatStatus.Available)
             {

@@ -16,13 +16,17 @@ namespace Infrastructure.Services
     public class BookingService : IBookingService
     {
         private readonly ApplicationDbContext _context;
-<<<<<<< HEAD
         private readonly INotificationService _notificationService;
+        private readonly IBookingRepository _bookingRepository;
 
-        public BookingService(ApplicationDbContext context, INotificationService notificationService)
+        public BookingService(
+            ApplicationDbContext context, 
+            INotificationService notificationService,
+            IBookingRepository bookingRepository)
         {
             _context = context;
             _notificationService = notificationService;
+            _bookingRepository = bookingRepository;
         }
 
         public async Task<bool> LockSeatAsync(Guid seatId, Guid userId)
@@ -57,26 +61,6 @@ namespace Infrastructure.Services
             await _context.SaveChangesAsync();
             return true;
         }
-=======
-        private readonly IBookingRepository _bookingRepository;
-        private readonly ITripService _tripService;
-
-        public BookingService(
-            ApplicationDbContext context,
-            IBookingRepository bookingRepository,
-            ITripService tripService)
-        {
-            _context = context;
-            _bookingRepository = bookingRepository;
-            _tripService = tripService;
-        }
-
-        public Task<bool> LockSeatAsync(Guid seatId, Guid userId) =>
-            _tripService.LockSeatAsync(seatId, userId);
-
-        public Task<bool> UnlockSeatAsync(Guid seatId, Guid userId) =>
-            _tripService.UnlockSeatAsync(seatId, userId);
->>>>>>> 9197da9e81287ec8d327737d1f37f56927fc8b7e
 
         public async Task<BookingResponseDto> CreateBookingAsync(CreateBookingDto dto)
         {
@@ -89,25 +73,8 @@ namespace Infrastructure.Services
             var trip = await _context.Trips.Include(t => t.Route).FirstOrDefaultAsync(t => t.Id == dto.TripId);
             if (trip == null) throw new InvalidOperationException("Chuyến đi không tồn tại.");
 
-<<<<<<< HEAD
-            var seats = await _context.Seats.Where(s => dto.SeatIds.Contains(s.Id)).ToListAsync();
-            if (seats.Count != dto.SeatIds.Count) throw new Exception("Không tìm thấy một số ghế đã chọn.");
-
-            foreach (var seat in seats)
-            {
-                if (seat.Status == SeatStatus.Booked)
-                    throw new Exception($"Ghế {seat.SeatNumber} đã được người khác đặt.");
-                
-                // If it's locked by someone else and not expired, prevent booking
-                if (seat.Status == SeatStatus.Locked && seat.LockExpirationTime > DateTime.UtcNow && seat.LockedByUserId != dto.UserId)
-                    throw new Exception($"Ghế {seat.SeatNumber} hiện đang được giữ bởi người khác.");
-            }
-
-            var booking = new Booking
-=======
             await using IDbContextTransaction tx = await _context.Database.BeginTransactionAsync();
             try
->>>>>>> 9197da9e81287ec8d327737d1f37f56927fc8b7e
             {
                 var seats = await _context.Seats
                     .Where(s => dto.SeatIds.Contains(s.Id) && s.TripId == dto.TripId)
@@ -143,35 +110,11 @@ namespace Infrastructure.Services
                     });
                 }
 
-                await _bookingRepository.AddAsync(booking);
-                await _bookingRepository.SaveChangesAsync();
+                _context.Bookings.Add(booking);
+                await _context.SaveChangesAsync();
                 await tx.CommitAsync();
 
-                return new BookingResponseDto
-                {
-                    Id = booking.Id,
-                    UserId = booking.UserId,
-                    UserName = user.UserName,
-                    TripId = booking.TripId,
-                    TotalAmount = booking.TotalAmount,
-                    BookingStatus = booking.BookingStatus.ToString(),
-                    CreatedAt = booking.CreatedAt,
-                    PickupPointId = booking.PickupPointId,
-                    PickupPointName = booking.PickupPointId.HasValue ? (await _context.StopPoints.FindAsync(booking.PickupPointId))?.Name : null,
-                    DropoffPointId = booking.DropoffPointId,
-                    DropoffPointName = booking.DropoffPointId.HasValue ? (await _context.StopPoints.FindAsync(booking.DropoffPointId))?.Name : null,
-                    Details = booking.BookingDetails.Select(bd =>
-                    {
-                        var seat = seats.First(s => s.Id == bd.SeatId);
-                        return new BookingDetailDto
-                        {
-                            Id = bd.Id,
-                            SeatId = bd.SeatId,
-                            SeatNumber = seat.SeatNumber,
-                            Price = bd.Price
-                        };
-                    }).ToList()
-                };
+                return await MapToResponseDtoAsync(booking, seats);
             }
             catch
             {
@@ -180,9 +123,6 @@ namespace Infrastructure.Services
             }
         }
 
-        /// <summary>
-        /// Ghế phải thuộc chuyến (đã lọc trước đó). Locked chỉ hợp lệ nếu cùng user đang giữ và chưa hết hạn.
-        /// </summary>
         private static void ValidateSeatsForBooking(IReadOnlyCollection<Seat> seats, Guid bookingUserId)
         {
             var now = DateTime.UtcNow;
@@ -212,38 +152,45 @@ namespace Infrastructure.Services
 
         public async Task<BookingResponseDto?> GetBookingByIdAsync(Guid id)
         {
-            var booking = await _bookingRepository.GetByIdAsync(id);
+            var booking = await _context.Bookings
+                .Include(b => b.User)
+                .Include(b => b.BookingDetails)
+                    .ThenInclude(bd => bd.Seat)
+                .Include(b => b.PickupPoint)
+                .Include(b => b.DropoffPoint)
+                .FirstOrDefaultAsync(b => b.Id == id);
+            
             return booking == null ? null : MapToResponseDto(booking);
         }
 
         public async Task<IEnumerable<BookingResponseDto>> GetUserBookingHistoryAsync(Guid userId)
         {
-            var bookings = await _bookingRepository.GetByUserIdAsync(userId);
+            var bookings = await _context.Bookings
+                .Include(b => b.User)
+                .Include(b => b.BookingDetails)
+                    .ThenInclude(bd => bd.Seat)
+                .Include(b => b.PickupPoint)
+                .Include(b => b.DropoffPoint)
+                .Where(b => b.UserId == userId)
+                .OrderByDescending(b => b.CreatedAt)
+                .ToListAsync();
+                
             return bookings.Select(MapToResponseDto);
         }
 
         public async Task<bool> CancelBookingAsync(Guid bookingId)
         {
-<<<<<<< HEAD
             var booking = await _context.Bookings
                 .Include(b => b.Trip)
-                .Include(b => b.BookingDetails)
-                    .ThenInclude(bd => bd.Seat)
                 .FirstOrDefaultAsync(b => b.Id == bookingId);
 
-=======
-            var booking = await _bookingRepository.GetByIdAsync(bookingId);
->>>>>>> 9197da9e81287ec8d327737d1f37f56927fc8b7e
             if (booking == null) return false;
-            if (booking.Trip == null) return false;
-
-            // Story 3.3 Rule: Cannot cancel after departure time
-            if (booking.Trip.DepartureTime <= DateTime.UtcNow)
+            
+            if (booking.Trip != null && booking.Trip.DepartureTime <= DateTime.UtcNow)
             {
                 throw new InvalidOperationException("Không thể hủy vé sau giờ khởi hành.");
             }
 
-            // Simple cancel request logic (Epic 3.3 says CancelRequested status exists)
             booking.BookingStatus = BookingStatus.CancelRequested;
             await _context.SaveChangesAsync();
             return true;
@@ -261,7 +208,6 @@ namespace Infrastructure.Services
             booking.BookingStatus = BookingStatus.Cancelled;
             foreach (var detail in booking.BookingDetails)
             {
-<<<<<<< HEAD
                 if (detail.Seat != null)
                 {
                     detail.Seat.Status = SeatStatus.Available;
@@ -272,25 +218,43 @@ namespace Infrastructure.Services
 
             await _context.SaveChangesAsync();
 
-            // Notify customer
             try {
                 await _notificationService.SendCancellationApprovalAsync(bookingId);
             } catch (Exception) { }
 
             return true;
-=======
-                var seat = detail.Seat ?? await _context.Seats.FindAsync(detail.SeatId);
-                if (seat != null)
-                {
-                    seat.Status = SeatStatus.Available;
-                    seat.LockExpirationTime = null;
-                    seat.LockedByUserId = null;
-                }
-            }
+        }
 
-            await _bookingRepository.UpdateAsync(booking);
-            return await _bookingRepository.SaveChangesAsync();
->>>>>>> 9197da9e81287ec8d327737d1f37f56927fc8b7e
+        private async Task<BookingResponseDto> MapToResponseDtoAsync(Booking booking, List<Seat> seats)
+        {
+            var pickupPoint = booking.PickupPointId.HasValue ? await _context.StopPoints.FindAsync(booking.PickupPointId) : null;
+            var dropoffPoint = booking.DropoffPointId.HasValue ? await _context.StopPoints.FindAsync(booking.DropoffPointId) : null;
+
+            return new BookingResponseDto
+            {
+                Id = booking.Id,
+                UserId = booking.UserId,
+                UserName = (await _context.Users.FindAsync(booking.UserId))?.UserName ?? "N/A",
+                TripId = booking.TripId,
+                TotalAmount = booking.TotalAmount,
+                BookingStatus = booking.BookingStatus.ToString(),
+                CreatedAt = booking.CreatedAt,
+                PickupPointId = booking.PickupPointId,
+                PickupPointName = pickupPoint?.Name,
+                DropoffPointId = booking.DropoffPointId,
+                DropoffPointName = dropoffPoint?.Name,
+                Details = booking.BookingDetails.Select(bd =>
+                {
+                    var seat = seats.First(s => s.Id == bd.SeatId);
+                    return new BookingDetailDto
+                    {
+                        Id = bd.Id,
+                        SeatId = bd.SeatId,
+                        SeatNumber = seat.SeatNumber,
+                        Price = bd.Price
+                    };
+                }).ToList()
+            };
         }
 
         private BookingResponseDto MapToResponseDto(Booking booking)

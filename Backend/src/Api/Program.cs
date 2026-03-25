@@ -1,9 +1,6 @@
 using Infrastructure;
 using Infrastructure.Persistence;
-<<<<<<< HEAD
 using Infrastructure.Persistence.SeedData;
-=======
->>>>>>> 9197da9e81287ec8d327737d1f37f56927fc8b7e
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Scalar.AspNetCore;
@@ -42,16 +39,13 @@ if (app.Configuration.GetValue<bool>("Database:AutoMigrate"))
     await db.Database.MigrateAsync();
 }
 
-<<<<<<< HEAD
 if (app.Configuration.GetValue<bool>("DemoData:SeedOnStartup"))
 {
     using var seedScope = app.Services.CreateScope();
     var log = seedScope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("DemoData");
     await DemoDataSeeder.SeedAsync(seedScope.ServiceProvider, log);
 }
-=======
 
->>>>>>> 9197da9e81287ec8d327737d1f37f56927fc8b7e
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
