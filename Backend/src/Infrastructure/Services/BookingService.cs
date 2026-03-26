@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Application.Interfaces;
 using Application.DTOs.Booking;
+using Application.DTOs.Invoice;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Interfaces;
@@ -163,6 +164,7 @@ namespace Infrastructure.Services
                     .ThenInclude(bd => bd.Seat)
                 .Include(b => b.PickupPoint)
                 .Include(b => b.DropoffPoint)
+                .Include(b => b.Invoice)
                 .FirstOrDefaultAsync(b => b.Id == id);
             
             return booking == null ? null : MapToResponseDto(booking);
@@ -297,7 +299,18 @@ namespace Infrastructure.Services
                     SeatId = bd.SeatId,
                     SeatNumber = bd.Seat?.SeatNumber ?? "N/A",
                     Price = bd.Price
-                }).ToList()
+                }).ToList(),
+                Invoice = booking.Invoice == null ? null : new InvoiceDto
+                {
+                    Id = booking.Invoice.Id,
+                    InvoiceNumber = booking.Invoice.InvoiceNumber,
+                    BookingId = booking.Invoice.BookingId,
+                    CustomerName = booking.Invoice.CustomerName,
+                    CustomerEmail = booking.Invoice.CustomerEmail,
+                    TotalAmount = booking.Invoice.TotalAmount,
+                    CreatedAt = booking.Invoice.CreatedAt,
+                    Status = booking.Invoice.Status.ToString()
+                }
             };
         }
     }

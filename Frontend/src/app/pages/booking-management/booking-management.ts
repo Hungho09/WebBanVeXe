@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { BookingService, BookingResponseDto } from '../../services/booking.service';
 import { ToastService } from '../../services/toast.service';
 
@@ -19,7 +20,8 @@ export class BookingManagement implements OnInit {
 
   constructor(
     private bookingService: BookingService,
-    private toast: ToastService
+    private toast: ToastService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -95,5 +97,9 @@ export class BookingManagement implements OnInit {
         error: (err) => this.toast.showError(err.error?.message || 'Lỗi khi hủy')
       });
     }
+  }
+
+  viewInvoice(invoiceId: string) {
+    this.router.navigate(['/invoices', invoiceId]);
   }
 }

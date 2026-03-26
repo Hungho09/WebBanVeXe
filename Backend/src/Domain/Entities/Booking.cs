@@ -21,6 +21,7 @@ namespace Domain.Entities
 
         public User? User { get; set; }
         public Trip? Trip { get; set; }
+        public Invoice? Invoice { get; set; }
         public ICollection<BookingDetail> BookingDetails { get; set; } = new List<BookingDetail>();
     }
 }

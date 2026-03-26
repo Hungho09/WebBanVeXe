@@ -37,5 +37,19 @@ namespace Api.Controllers
             var data = await _invoiceService.GetByBookingIdAsync(bookingId, cancellationToken);
             return data == null ? NotFound() : Ok(data);
         }
+
+        [HttpPost("create/{bookingId:guid}")]
+        public async Task<IActionResult> CreateInvoice(Guid bookingId, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var data = await _invoiceService.CreateForBookingAsync(bookingId, cancellationToken);
+                return Ok(data);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

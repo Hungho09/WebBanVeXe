@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Application.DTOs.Invoice;
 
 namespace Application.DTOs.Booking
 {
@@ -26,6 +27,7 @@ namespace Application.DTOs.Booking
         public Guid? DropoffPointId { get; set; }
         public string? DropoffPointName { get; set; }
         public List<BookingDetailDto> Details { get; set; } = new();
+        public InvoiceDto? Invoice { get; set; }
     }
 
     public class BookingDetailDto

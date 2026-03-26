@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Invoice } from '../models/invoice.model';
 
 export interface CreateBookingDto {
   userId: string;
@@ -26,6 +27,7 @@ export interface BookingResponseDto {
   bookingStatus: string;
   createdAt: string;
   details: BookingDetailDto[];
+  invoice?: Invoice;
 }
 
 @Injectable({

@@ -57,13 +57,13 @@ VALUES
 
 -- 6. Sinh tự động ghế (Seats) cho Trip1 (Sleeper 44 chỗ)
 -- Để đơn giản, seed 5 ghế mẫu cho mỗi trip
-INSERT INTO [Seats] ([Id], [TripId], [SeatNumber], [RowNumber], [ColumnNumber], [Floor], [Type], [Status])
+INSERT INTO [Seats] ([Id], [TripId], [SeatNumber], [RowNumber], [ColumnNumber], [Floor], [Type], [Status], [LockedByUserId])
 VALUES 
-(NEWID(), @Trip1, 'A01', 1, 1, 1, 1, 0),
-(NEWID(), @Trip1, 'A02', 1, 2, 1, 1, 0),
-(NEWID(), @Trip1, 'A03', 1, 3, 1, 1, 0),
-(NEWID(), @Trip2, 'L01', 1, 1, 1, 1, 0),
-(NEWID(), @Trip2, 'L02', 1, 2, 1, 1, 0);
+(NEWID(), @Trip1, 'A01', 1, 1, 1, 1, 0, NULL),
+(NEWID(), @Trip1, 'A02', 1, 2, 1, 1, 0, NULL),
+(NEWID(), @Trip1, 'A03', 1, 3, 1, 1, 0, NULL),
+(NEWID(), @Trip2, 'L01', 1, 1, 1, 1, 0, NULL),
+(NEWID(), @Trip2, 'L02', 1, 2, 1, 1, 0, NULL);
 
 -- 7. Thêm một số người dùng mẫu
 INSERT INTO [Users] ([Id], [UserName], [Email], [PasswordHash], [FullName], [PhoneNumber], [Role], [CreatedAt], [IsActive])

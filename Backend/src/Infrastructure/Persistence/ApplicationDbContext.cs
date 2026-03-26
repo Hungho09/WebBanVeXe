@@ -183,6 +183,12 @@ namespace Infrastructure.Persistence
                 entity.Property(e => e.TotalAmount).HasPrecision(18, 2);
                 entity.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne(e => e.Trip).WithMany(t => t.Bookings).HasForeignKey(e => e.TripId).OnDelete(DeleteBehavior.Restrict);
+                
+                // Configure 1-1 relationship with Invoice
+                entity.HasOne(e => e.Invoice)
+                    .WithOne(i => i.Booking)
+                    .HasForeignKey<Invoice>(i => i.BookingId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // Configure BookingDetail (must match Booking.BookingDetails to avoid shadow BookingId1)
@@ -216,7 +222,7 @@ namespace Infrastructure.Persistence
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.InvoiceNumber).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.TotalAmount).HasPrecision(18, 2);
-                entity.HasOne(e => e.Booking).WithMany().HasForeignKey(e => e.BookingId).OnDelete(DeleteBehavior.Restrict);
+                // Note: 1-1 relationship configured in Booking entity above
             });
 
             // Configure Notification

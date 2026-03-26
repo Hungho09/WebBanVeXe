@@ -45,6 +45,10 @@
                             </div>
                         </td>
                         <td class="col-actions">
+                            <button class="btn-icon" *ngIf="b.invoice" 
+                                    (click)="viewInvoice(b.invoice.id)" title="Xem hóa đơn">
+                                <i class="fas fa-file-invoice text-info"></i>
+                            </button>
                             <button class="btn-icon" *ngIf="b.bookingStatus === 'CancelRequested'" 
                                     (click)="approveCancel(b.id)" title="Duyệt hủy">
                                 <i class="fas fa-check-circle text-success"></i>
