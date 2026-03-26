@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BookingService, BookingResponseDto } from '../../services/booking.service';
+import { InvoiceService, CreateInvoiceRequest } from '../../services/invoice.service';
 import { ToastService } from '../../services/toast.service';
 
 @Component({
@@ -20,6 +21,7 @@ export class BookingManagement implements OnInit {
 
   constructor(
     private bookingService: BookingService,
+    private invoiceService: InvoiceService,
     private toast: ToastService,
     private router: Router
   ) {}
@@ -101,5 +103,21 @@ export class BookingManagement implements OnInit {
 
   viewInvoice(invoiceId: string) {
     this.router.navigate(['/invoices', invoiceId]);
+  }
+
+  generateInvoice(bookingId: string) {
+    const request: CreateInvoiceRequest = { bookingId };
+    
+    this.invoiceService.createInvoice(request).subscribe({
+      next: (invoice) => {
+        this.toast.showSuccess('Tạo hóa đơn thành công!');
+        this.loadBookings(); // Refresh bookings to show the new invoice
+        // Navigate to invoice detail page
+        this.router.navigate(['/invoices', invoice.id]);
+      },
+      error: (err) => {
+        this.toast.showError(err.error?.message || 'Lỗi khi tạo hóa đơn');
+      }
+    });
   }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.DTOs.Invoice;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -38,8 +39,22 @@ namespace Api.Controllers
             return data == null ? NotFound() : Ok(data);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CreateInvoice([FromBody] CreateInvoiceRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var data = await _invoiceService.CreateForBookingAsync(request.BookingId, cancellationToken);
+                return Ok(data);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpPost("create/{bookingId:guid}")]
-        public async Task<IActionResult> CreateInvoice(Guid bookingId, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateInvoiceByBookingId(Guid bookingId, CancellationToken cancellationToken)
         {
             try
             {
@@ -51,5 +66,10 @@ namespace Api.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+    }
+
+    public class CreateInvoiceRequest
+    {
+        public Guid BookingId { get; set; }
     }
 }

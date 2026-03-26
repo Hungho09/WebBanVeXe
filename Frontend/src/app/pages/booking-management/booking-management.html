@@ -45,6 +45,10 @@
                             </div>
                         </td>
                         <td class="col-actions">
+                            <button class="btn-icon" *ngIf="!b.invoice && b.bookingStatus === 'Paid'" 
+                                    (click)="generateInvoice(b.id)" title="Tạo hóa đơn">
+                                <i class="fas fa-file-invoice-dollar text-warning"></i>
+                            </button>
                             <button class="btn-icon" *ngIf="b.invoice" 
                                     (click)="viewInvoice(b.invoice.id)" title="Xem hóa đơn">
                                 <i class="fas fa-file-invoice text-info"></i>
