@@ -10,9 +10,8 @@
         <tr>
           <th>Mã hóa đơn</th>
           <th>Khách hàng</th>
-          <th>Email</th>
           <th>Tổng tiền</th>
-          <th>Ngày tạo</th>
+          <th>Trạng thái</th>
           <th>Chi tiết</th>
         </tr>
       </thead>
@@ -20,9 +19,8 @@
         <tr *ngFor="let i of invoices">
           <td>{{ i.invoiceNumber | invoiceFormat }}</td>
           <td>{{ i.customerName }}</td>
-          <td>{{ i.customerEmail }}</td>
           <td>{{ i.totalAmount | number }} đ</td>
-          <td>{{ i.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td>{{ i.status }}</td>
           <td><a [routerLink]="['/invoices', i.id]">Xem</a></td>
         </tr>
       </tbody>

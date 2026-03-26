@@ -15,11 +15,19 @@ export class InvoiceService {
     return this.http.get<Invoice[]>(this.apiUrl);
   }
 
-  getById(id: string): Observable<Invoice> {
+  getInvoiceById(id: string): Observable<Invoice> {
     return this.http.get<Invoice>(`${this.apiUrl}/${id}`);
+  }
+
+  getInvoices(): Observable<Invoice[]> {
+    return this.getAll();
   }
 
   getByBookingId(bookingId: string): Observable<Invoice> {
     return this.http.get<Invoice>(`${this.apiUrl}/booking/${bookingId}`);
+  }
+
+  createInvoice(bookingId: string): Observable<Invoice> {
+    return this.http.post<Invoice>(`${this.apiUrl}/create/${bookingId}`, {});
   }
 }

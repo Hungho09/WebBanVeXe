@@ -30,7 +30,7 @@ export class InvoiceDetailComponent implements OnInit {
     }
 
     this.isLoading = true;
-    this.invoiceService.getById(id).subscribe({
+    this.invoiceService.getInvoiceById(id).subscribe({
       next: (item) => {
         this.invoice = item;
         this.isLoading = false;
