@@ -16,71 +16,58 @@ namespace Infrastructure.Persistence.SeedData
         {
             var templates = new List<SeatTemplate>();
 
-            // --- 1. Limousine (9 seats, VIP) ---
-            int lCount = 1;
-            for (int r = 1; r <= 3; r++)
-            {
-                for (int c = 1; c <= 3; c++)
-                {
-                    templates.Add(new SeatTemplate
-                    {
-                        Id = Guid.Parse($"90000000-0000-0000-0000-{lCount:D12}"),
-                        BusTypeId = LimousineTypeId,
-                        SeatNumber = $"L{lCount:D2}",
-                        RowNumber = r,
-                        ColumnNumber = c,
-                        Floor = 1,
-                        Type = SeatType.VIP
-                    });
-                    lCount++;
-                }
-            }
-
-            // --- 2. Sleeper (36 seats, 2 floors) ---
-            int sIdx = 1;
-            for (int f = 1; f <= 2; f++)
-            {
-                char prefix = f == 1 ? 'A' : 'B';
-                int currentFloorSeatIdx = 1;
-                for (int r = 1; r <= 6; r++)
-                {
-                    for (int c = 1; c <= 3; c++)
-                    {
-                        templates.Add(new SeatTemplate
-                        {
-                            Id = Guid.Parse($"{f}0000000-0000-0000-0000-{sIdx:D12}"),
-                            BusTypeId = SleeperTypeId,
-                            SeatNumber = $"{prefix}{currentFloorSeatIdx:D2}",
-                            RowNumber = r,
-                            ColumnNumber = c,
-                            Floor = f,
-                            Type = r == 1 ? SeatType.VIP : SeatType.Normal // First row is VIP
-                        });
-                        currentFloorSeatIdx++;
-                        sIdx++;
+            // --- helpers ---
+            void AddSeats(Guid typeId, int count, int columns, int floors, SeatType seatType, string prefix, string uuidPart) {
+                int totalIdx = 1;
+                int seatsPerFloor = (int)Math.Ceiling((double)count / floors);
+                
+                for (int f = 1; f <= floors; f++) {
+                    int currentFloorCount = 0;
+                    int r = 1;
+                    while (currentFloorCount < seatsPerFloor && totalIdx <= count) {
+                        for (int c = 1; c <= columns; c++) {
+                            if (currentFloorCount >= seatsPerFloor || totalIdx > count) break;
+                            
+                            templates.Add(new SeatTemplate {
+                                Id = Guid.Parse($"{uuidPart}-{totalIdx:D12}"),
+                                BusTypeId = typeId,
+                                SeatNumber = (floors > 1 ? (f == 1 ? "A" : "B") : (prefix)) + $"{currentFloorCount + 1:D2}",
+                                RowNumber = r,
+                                ColumnNumber = c,
+                                Floor = f,
+                                Type = (r == 1 && seatType == SeatType.Normal) ? SeatType.VIP : seatType
+                            });
+                            
+                            currentFloorCount++;
+                            totalIdx++;
+                        }
+                        r++;
                     }
                 }
             }
 
-            // --- 3. Seat (45 seats, 1 floor) ---
-            int seatIdx45 = 1;
-            for (int r = 1; r <= 9; r++)
-            {
-                for (int c = 1; c <= 5; c++)
-                {
-                    templates.Add(new SeatTemplate
-                    {
-                        Id = Guid.Parse($"45000000-0000-0000-0000-{seatIdx45:D12}"),
-                        BusTypeId = SeatTypeId,
-                        SeatNumber = $"S{seatIdx45:D2}",
-                        RowNumber = r,
-                        ColumnNumber = c,
-                        Floor = 1,
-                        Type = r <= 2 ? SeatType.VIP : SeatType.Normal // First 2 rows are VIP
-                    });
-                    seatIdx45++;
-                }
-            }
+            // 1. Xe ghế ngồi thông thường
+            AddSeats(Guid.Parse("11000000-0000-0000-0000-000000000016"), 16, 4, 1, SeatType.Normal, "S", "11160000-0000-0000-0000");
+            AddSeats(Guid.Parse("11000000-0000-0000-0000-000000000029"), 29, 4, 1, SeatType.Normal, "S", "11290000-0000-0000-0000");
+            AddSeats(Guid.Parse("44444444-4444-4444-4444-444444444444"), 45, 5, 1, SeatType.Normal, "S", "45000000-0000-0000-0000");
+
+            // 2. Xe Limousine ghế ngồi
+            AddSeats(Guid.Parse("22222222-2222-2222-2222-222222222222"), 9, 3, 1, SeatType.VIP, "L", "90000000-0000-0000-0000");
+            AddSeats(Guid.Parse("22000000-0000-0000-0000-000000000011"), 11, 3, 1, SeatType.VIP, "L", "22110000-0000-0000-0000");
+            AddSeats(Guid.Parse("22000000-0000-0000-0000-000000000016"), 16, 4, 1, SeatType.VIP, "L", "22160000-0000-0000-0000");
+            AddSeats(Guid.Parse("22000000-0000-0000-0000-000000000019"), 19, 4, 1, SeatType.VIP, "L", "22190000-0000-0000-0000");
+
+            // 3. Xe giường nằm tiêu chuẩn
+            AddSeats(Guid.Parse("33000000-0000-0000-0000-000000000034"), 34, 3, 2, SeatType.Sleeper, "A", "33340000-0000-0000-0000");
+            AddSeats(Guid.Parse("33333333-3333-3333-3333-333333333333"), 44, 3, 2, SeatType.Sleeper, "A", "33440000-0000-0000-0000");
+
+            // 4. Xe giường phòng / Cabin đơn
+            AddSeats(Guid.Parse("55000000-0000-0000-0000-000000000020"), 20, 2, 2, SeatType.CabinSingle, "CS", "55200000-0000-0000-0000");
+            AddSeats(Guid.Parse("55000000-0000-0000-0000-000000000024"), 24, 2, 2, SeatType.CabinSingle, "CS", "55240000-0000-0000-0000");
+
+            // 5. Xe giường phòng / Cabin đôi
+            AddSeats(Guid.Parse("66000000-0000-0000-0000-000000000022"), 22, 2, 2, SeatType.CabinDouble, "CD", "66220000-0000-0000-0000");
+            AddSeats(Guid.Parse("66000000-0000-0000-0000-000000000024"), 24, 2, 2, SeatType.CabinDouble, "CD", "66240000-0000-0000-0000");
 
             modelBuilder.Entity<SeatTemplate>().HasData(templates);
         }

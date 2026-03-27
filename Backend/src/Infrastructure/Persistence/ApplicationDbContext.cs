@@ -66,9 +66,28 @@ namespace Infrastructure.Persistence
 
             // Seed BusTypes
             modelBuilder.Entity<BusType>().HasData(
-                new BusType { Id = Guid.Parse("22222222-2222-2222-2222-222222222222"), Name = "Limousine", SeatCount = 9, Description = "VIP Limousine" },
-                new BusType { Id = Guid.Parse("33333333-3333-3333-3333-333333333333"), Name = "Giường nằm", SeatCount = 44, Description = "Sleeper Bus Standard" },
-                new BusType { Id = Guid.Parse("44444444-4444-4444-4444-444444444444"), Name = "Ghế ngồi", SeatCount = 45, Description = "Standard Seat Bus" }
+                // 1. Xe ghế ngồi thông thường
+                new BusType { Id = Guid.Parse("11000000-0000-0000-0000-000000000016"), Name = "Xe ghế ngồi (16 chỗ)", SeatCount = 16, Description = "Standard Normal Seat" },
+                new BusType { Id = Guid.Parse("11000000-0000-0000-0000-000000000029"), Name = "Xe ghế ngồi (29 chỗ)", SeatCount = 29, Description = "Standard Normal Seat" },
+                new BusType { Id = Guid.Parse("44444444-4444-4444-4444-444444444444"), Name = "Xe ghế ngồi (45 chỗ)", SeatCount = 45, Description = "Standard Normal Seat" },
+
+                // 2. Xe Limousine ghế ngồi
+                new BusType { Id = Guid.Parse("22222222-2222-2222-2222-222222222222"), Name = "Xe Limousine (9 chỗ)", SeatCount = 9, Description = "VIP Limousine Seat" },
+                new BusType { Id = Guid.Parse("22000000-0000-0000-0000-000000000011"), Name = "Xe Limousine (11 chỗ)", SeatCount = 11, Description = "VIP Limousine Seat" },
+                new BusType { Id = Guid.Parse("22000000-0000-0000-0000-000000000016"), Name = "Xe Limousine (16 chỗ)", SeatCount = 16, Description = "VIP Limousine Seat" },
+                new BusType { Id = Guid.Parse("22000000-0000-0000-0000-000000000019"), Name = "Xe Limousine (19 chỗ)", SeatCount = 19, Description = "VIP Limousine Seat" },
+
+                // 3. Xe giường nằm tiêu chuẩn
+                new BusType { Id = Guid.Parse("33000000-0000-0000-0000-000000000034"), Name = "Xe giường nằm (34 giường)", SeatCount = 34, Description = "Standard Sleeper" },
+                new BusType { Id = Guid.Parse("33333333-3333-3333-3333-333333333333"), Name = "Xe giường nằm (44 giường)", SeatCount = 44, Description = "Standard Sleeper" },
+
+                // 4. Xe giường phòng / Cabin đơn
+                new BusType { Id = Guid.Parse("55000000-0000-0000-0000-000000000020"), Name = "Xe giường phòng (20 phòng đơn)", SeatCount = 20, Description = "Cabin Single" },
+                new BusType { Id = Guid.Parse("55000000-0000-0000-0000-000000000024"), Name = "Xe giường phòng (24 phòng đơn)", SeatCount = 24, Description = "Cabin Single" },
+
+                // 5. Xe giường phòng / Cabin đôi
+                new BusType { Id = Guid.Parse("66000000-0000-0000-0000-000000000022"), Name = "Xe giường phòng (22 phòng đôi)", SeatCount = 22, Description = "Cabin Double" },
+                new BusType { Id = Guid.Parse("66000000-0000-0000-0000-000000000024"), Name = "Xe giường phòng (24 phòng đôi)", SeatCount = 24, Description = "Cabin Double" }
             );
             
             modelBuilder.Entity<Bus>().HasData(
