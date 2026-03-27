@@ -57,7 +57,7 @@ namespace Infrastructure.Persistence
                     Email = "admin@vexesystem.com",
                     FullName = "System Administrator",
                     PhoneNumber = "0123456789",
-                    PasswordHash = "$2a$11$0nK18Qc7D8N94B3U3P6S/OGfN9f4v.T2H6zH/r4O/C5v.Q/b4XvG6", // Fixed Hash for "Admin@123" to avoid EF pending model changes
+                    PasswordHash = "$2a$11$.N14FFcQMoCcN3OZvl3DkOMgSok1ocYfR2qyWMxVmlpuqUxxl20la", // Updated Hash for "Admin@123"
                     Role = "Admin",
                     IsActive = true,
                     CreatedAt = new System.DateTime(2026, 1, 1, 0, 0, 0, System.DateTimeKind.Utc)
