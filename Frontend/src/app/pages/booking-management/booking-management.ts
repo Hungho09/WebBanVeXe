@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { BookingService, BookingResponseDto } from '../../services/booking.service';
 import { InvoiceService, CreateInvoiceRequest } from '../../services/invoice.service';
 import { ToastService } from '../../services/toast.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-booking-management',
@@ -23,7 +24,8 @@ export class BookingManagement implements OnInit {
     private bookingService: BookingService,
     private invoiceService: InvoiceService,
     private toast: ToastService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -79,7 +81,12 @@ export class BookingManagement implements OnInit {
 
   approveCancel(id: string) {
     if (confirm('Duyệt yêu cầu hủy vé này? Ghế sẽ được giải phóng.')) {
-      this.bookingService.approveCancel(id).subscribe({
+      const adminUserId = this.authService.getUser().id;
+      if (!adminUserId) {
+        this.toast.showError('Không tìm thấy thông tin admin đăng nhập');
+        return;
+      }
+      this.bookingService.approveCancelBooking(id, adminUserId).subscribe({
         next: () => {
           this.toast.showSuccess('Đã duyệt hủy vé thành công');
           this.loadBookings();
@@ -91,7 +98,12 @@ export class BookingManagement implements OnInit {
 
   cancelBooking(id: string) {
     if (confirm('Bạn có chắc chắn muốn hủy vé này?')) {
-      this.bookingService.cancelBooking(id).subscribe({
+      const userId = this.authService.getUser().id;
+      if (!userId) {
+        this.toast.showError('Không tìm thấy thông tin người dùng');
+        return;
+      }
+      this.bookingService.cancelBooking(id, userId).subscribe({
         next: () => {
           this.toast.showSuccess('Đã hủy vé');
           this.loadBookings();
