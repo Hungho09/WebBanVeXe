@@ -11,6 +11,7 @@
         <a routerLink="/admin/route" routerLinkActive="active" title="Quản lý tuyến đường"><i class="fas fa-map-marked-alt"></i></a>
         <a routerLink="/admin/bus" routerLinkActive="active" title="Quản lý xe khách"><i class="fas fa-bus"></i></a>
         <a routerLink="/admin/trip" routerLinkActive="active" title="Quản lý chuyến đi"><i class="fas fa-calendar-check"></i></a>
+        <a routerLink="/admin/booking-cancel" routerLinkActive="active" title="Duyệt hủy vé" *ngIf="isAdmin"><i class="fas fa-user-check"></i></a>
         <a routerLink="/admin/cms-management" routerLinkActive="active" title="Quản lý CMS Trang Chủ" *ngIf="isAdmin"><i class="fas fa-edit"></i></a>
     </nav>
     <div class="logout">

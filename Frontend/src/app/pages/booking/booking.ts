@@ -53,6 +53,7 @@ export class Booking implements OnInit, OnDestroy {
   timerValue = 0;
   timerDisplay = '10:00';
   private timerInterval: any;
+  private readonly guidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
   pickupSearch = '';
   dropoffSearch = '';
@@ -339,7 +340,7 @@ export class Booking implements OnInit, OnDestroy {
     const isAlreadySelected = this.selectedSeatIds.includes(seat.id);
 
     if (isAlreadySelected) {
-      const uid = this.authService.getUser()?.id;
+      const uid = this.getCurrentUserId();
       if (!uid) {
         this.toastService.showWarning('Vui lòng đăng nhập để thao tác ghế.');
         return;
@@ -353,7 +354,7 @@ export class Booking implements OnInit, OnDestroy {
       });
     } else {
       if (seat.status !== 'Available') return;
-      const uid = this.authService.getUser()?.id;
+      const uid = this.getCurrentUserId();
       if (!uid) {
         this.toastService.showWarning('Vui lòng đăng nhập để chọn ghế.');
         return;
@@ -367,6 +368,12 @@ export class Booking implements OnInit, OnDestroy {
         error: (err) => this.toastService.showError(err.error?.message || 'Failed to lock seat')
       });
     }
+  }
+
+  private getCurrentUserId(): string | null {
+    const id = this.authService.getUser().id;
+    if (!id || !this.guidPattern.test(id)) return null;
+    return id;
   }
 
   startTimer(): void {

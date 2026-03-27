@@ -1,0 +1,78 @@
+<section class="my-bookings-page">
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+
+  <div class="container">
+    <header class="hero">
+      <div>
+        <h1>Ve cua toi</h1>
+        <p>Quan ly ve da dat va gui yeu cau huy nhanh chong.</p>
+      </div>
+      <a routerLink="/homepage" class="link">Ve trang chu</a>
+    </header>
+
+    <section class="summary" *ngIf="!isLoading && bookings.length > 0">
+      <div class="summary-card">
+        <span class="label">Tong so ve</span>
+        <strong>{{ bookings.length }}</strong>
+      </div>
+      <div class="summary-card">
+        <span class="label">Cho duyet huy</span>
+        <strong>{{ cancelRequestedCount() }}</strong>
+      </div>
+      <div class="summary-card">
+        <span class="label">Da huy</span>
+        <strong>{{ cancelledCount() }}</strong>
+      </div>
+    </section>
+
+    <p class="muted" *ngIf="isLoading">Dang tai du lieu...</p>
+
+    <div class="empty" *ngIf="!isLoading && bookings.length === 0">
+      <h3>Ban chua co ve nao</h3>
+      <p>Hay quay lai trang chu de tim chuyen va dat ve moi.</p>
+      <a routerLink="/homepage" class="btn primary">Tim chuyen ngay</a>
+    </div>
+
+    <div class="cards" *ngIf="!isLoading && bookings.length > 0">
+      <article class="card" *ngFor="let b of bookings">
+        <header class="card-header">
+          <strong class="booking-id">Booking: {{ b.id }}</strong>
+          <span class="badge" [ngClass]="statusClass(b.bookingStatus)">{{ statusLabel(b.bookingStatus) }}</span>
+        </header>
+
+        <div class="meta-grid">
+          <div>
+            <span class="label">Ngay tao</span>
+            <span class="value">{{ b.createdAt | date:'medium' }}</span>
+          </div>
+          <div>
+            <span class="label">Tong tien</span>
+            <span class="value">{{ b.totalAmount | number:'1.0-0' }} VND</span>
+          </div>
+          <div>
+            <span class="label">So ghe</span>
+            <span class="value">{{ b.details.length }}</span>
+          </div>
+          <div>
+            <span class="label">Danh sach ghe</span>
+            <span class="value">{{ getSeatSummary(b) }}</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn danger" *ngIf="canRequestCancel(b.bookingStatus)" (click)="requestCancel(b.id)">
+            Yeu cau huy ve
+          </button>
+        </div>
+
+        <p class="hint requested" *ngIf="b.bookingStatus === 'CancelRequested'">
+          Yeu cau da duoc gui, vui long cho admin duyet.
+        </p>
+        <p class="hint cancelled" *ngIf="b.bookingStatus === 'Cancelled'">
+          Ve da huy thanh cong.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>

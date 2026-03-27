@@ -16,7 +16,8 @@ namespace Application.Interfaces
         Task<BookingResponseDto?> GetBookingByIdAsync(Guid id);
         Task<IEnumerable<BookingResponseDto>> GetAllBookingsAsync();
         Task<IEnumerable<BookingResponseDto>> GetUserBookingHistoryAsync(Guid userId);
-        Task<bool> CancelBookingAsync(Guid bookingId);
-        Task<bool> ApproveCancelBookingAsync(Guid bookingId);
+        Task<IEnumerable<BookingResponseDto>> GetCancelRequestsAsync();
+        Task<bool> RequestCancelAsync(Guid bookingId, Guid userId);
+        Task<bool> ApproveCancelAsync(Guid bookingId, Guid adminUserId);
     }
 }

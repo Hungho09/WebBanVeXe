@@ -82,14 +82,24 @@ namespace Api.Controllers
             return Ok(history);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> CancelBooking(Guid id)
+        [HttpGet("cancel-requests")]
+        public async Task<IActionResult> GetCancelRequests()
         {
+            var rows = await _bookingService.GetCancelRequestsAsync();
+            return Ok(rows);
+        }
+
+        [HttpPost("{id}/cancel-request")]
+        public async Task<IActionResult> RequestCancel(Guid id, [FromBody] CancelBookingRequestDto request)
+        {
+            if (request == null || request.UserId == Guid.Empty)
+                return BadRequest(new { message = "Cần UserId để yêu cầu hủy vé." });
+
             try
             {
-                var ok = await _bookingService.CancelBookingAsync(id);
+                var ok = await _bookingService.RequestCancelAsync(id, request.UserId);
                 if (!ok) return NotFound();
-                return NoContent();
+                return Ok(new { message = "Đã gửi yêu cầu hủy vé. Vui lòng chờ quản trị viên duyệt." });
             }
             catch (InvalidOperationException ex)
             {
@@ -98,11 +108,21 @@ namespace Api.Controllers
         }
 
         [HttpPost("{id}/approve-cancel")]
-        public async Task<IActionResult> ApproveCancel(Guid id)
+        public async Task<IActionResult> ApproveCancel(Guid id, [FromBody] ApproveCancelBookingRequestDto request)
         {
-            var ok = await _bookingService.ApproveCancelBookingAsync(id);
-            if (!ok) return BadRequest(new { message = "Không thể duyệt hủy vé này (vé không ở trạng thái yêu cầu hủy hoặc không tồn tại)." });
-            return Ok(new { message = "Đã duyệt hủy vé và giải phóng ghế." });
+            if (request == null || request.AdminUserId == Guid.Empty)
+                return BadRequest(new { message = "Cần AdminUserId để duyệt hủy vé." });
+
+            try
+            {
+                var ok = await _bookingService.ApproveCancelAsync(id, request.AdminUserId);
+                if (!ok) return NotFound();
+                return NoContent();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

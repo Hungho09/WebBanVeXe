@@ -19,6 +19,9 @@ namespace Application.DTOs.Booking
         public Guid UserId { get; set; }
         public string UserName { get; set; } = string.Empty;
         public Guid TripId { get; set; }
+        public string RouteName { get; set; } = string.Empty;
+        public DateTime? DepartureTime { get; set; }
+        public DateTime? ArrivalTime { get; set; }
         public decimal TotalAmount { get; set; }
         public string BookingStatus { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
@@ -38,8 +41,13 @@ namespace Application.DTOs.Booking
         public decimal Price { get; set; } = 0;
     }
 
-    public class LockSeatRequestDto
+    public class CancelBookingRequestDto
     {
         public Guid UserId { get; set; }
+    }
+
+    public class ApproveCancelBookingRequestDto
+    {
+        public Guid AdminUserId { get; set; }
     }
 }

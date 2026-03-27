@@ -1,0 +1,42 @@
+<section class="wrap">
+  <h2>Duyet huy ve</h2>
+  <div class="search">
+    <input [(ngModel)]="bookingId" placeholder="Nhap Booking ID" />
+    <button (click)="searchBooking()">Tim</button>
+    <button class="refresh" (click)="loadCancelRequests()">Tai lai danh sach</button>
+  </div>
+
+  <p *ngIf="loading" class="muted">Dang tai...</p>
+
+  <section class="list" *ngIf="!loading">
+    <h3>Yeu cau dang cho duyet ({{ cancelRequests.length }})</h3>
+    <p class="muted" *ngIf="cancelRequests.length === 0">Chua co yeu cau huy nao.</p>
+    <div class="request-cards" *ngIf="cancelRequests.length > 0">
+      <article class="request" *ngFor="let r of cancelRequests" (click)="pickBooking(r)">
+        <p><strong>{{ r.id }}</strong></p>
+        <p>Chuyen: {{ r.routeName || 'N/A' }}</p>
+        <p *ngIf="r.departureTime">Khoi hanh: {{ r.departureTime | date:'short' }}</p>
+        <p>User: {{ r.userName }}</p>
+        <p>Tong tien: {{ r.totalAmount | number:'1.0-0' }} VND</p>
+      </article>
+    </div>
+  </section>
+
+  <article *ngIf="booking" class="card">
+    <p><strong>Booking:</strong> {{ booking.id }}</p>
+    <p><strong>User:</strong> {{ booking.userName }} ({{ booking.userId }})</p>
+    <p><strong>Chuyen:</strong> {{ booking.routeName || 'N/A' }}</p>
+    <p *ngIf="booking.departureTime"><strong>Khoi hanh:</strong> {{ booking.departureTime | date:'medium' }}</p>
+    <p *ngIf="booking.arrivalTime"><strong>Den noi:</strong> {{ booking.arrivalTime | date:'medium' }}</p>
+    <p><strong>Ghe:</strong> {{ seatText(booking) }}</p>
+    <p><strong>Trang thai:</strong> {{ booking.bookingStatus }}</p>
+    <p><strong>Tong tien:</strong> {{ booking.totalAmount | number:'1.0-0' }} VND</p>
+
+    <button class="approve" *ngIf="booking.bookingStatus === 'CancelRequested'" (click)="approveCancel()">
+      Duyet huy
+    </button>
+    <p class="muted" *ngIf="booking.bookingStatus !== 'CancelRequested'">
+      Booking nay khong o trang thai cho duyet huy.
+    </p>
+  </article>
+</section>

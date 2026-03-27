@@ -23,6 +23,9 @@ export interface BookingResponseDto {
   userId: string;
   userName: string;
   tripId: string;
+  routeName: string;
+  departureTime?: string;
+  arrivalTime?: string;
   totalAmount: number;
   bookingStatus: string;
   createdAt: string;
@@ -58,8 +61,16 @@ export class BookingService {
     return this.http.get<BookingResponseDto[]>(`${this.apiUrl}/user/${userId}`);
   }
 
-  cancelBooking(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  getCancelRequests(): Observable<BookingResponseDto[]> {
+    return this.http.get<BookingResponseDto[]>(`${this.apiUrl}/cancel-requests`);
+  }
+
+  cancelBooking(id: string, userId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/cancel-request`, { userId });
+  }
+
+  approveCancelBooking(id: string, adminUserId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/approve-cancel`, { adminUserId });
   }
 
   lockSeat(seatId: string, userId: string): Observable<any> {

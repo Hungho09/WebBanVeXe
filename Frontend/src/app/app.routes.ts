@@ -13,6 +13,9 @@ import { AdminLayout } from './shared/layout/admin-layout/admin-layout';
 import { AuthGuard } from './guards/auth.guard';
 import { PaymentComponent } from './pages/payment/payment.component';
 import { BookingSearch } from './pages/booking-search/booking-search';
+import { Booking } from './pages/booking/booking';
+import { MyBookingsComponent } from './pages/my-bookings/my-bookings';
+import { AdminCancelManagementComponent } from './pages/admin-cancel-management/admin-cancel-management';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'homepage', pathMatch: 'full' },
@@ -34,9 +37,11 @@ export const routes: Routes = [
       { path: 'bus', component: BusManagement },
       { path: 'route', component: RouteManagement },
       { path: 'trip', component: TripManagement },
+      { path: 'booking-cancel', component: AdminCancelManagementComponent, data: { roles: ['Admin'] } },
       { path: 'cms-management', component: CmsManagement, data: { roles: ['Admin'] } },
     ]
   },
   { path: 'booking/:id', loadComponent: () => import('./pages/booking/booking').then(m => m.Booking) },
+  { path: 'my-bookings', component: MyBookingsComponent },
   { path: '**', redirectTo: 'homepage' }
 ];

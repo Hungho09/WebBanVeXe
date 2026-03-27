@@ -331,7 +331,7 @@ namespace Application.UnitTests
         }
 
         [Fact]
-        public async Task CancelBookingAsync_ReleasesSeats()
+        public async Task RequestCancelAsync_SetsCancelRequested_WhenValid()
         {
             var (userId, tripId, seatA, _) = await SeedTripWithTwoAvailableSeatsAsync();
             var created = await _service.CreateBookingAsync(new CreateBookingDto
@@ -341,13 +341,96 @@ namespace Application.UnitTests
                 SeatIds = new List<Guid> { seatA }
             });
 
-            var ok = await _service.CancelBookingAsync(created.Id);
+            var booking = await _context.Bookings.FindAsync(created.Id);
+            booking!.BookingStatus = BookingStatus.Paid;
+            await _context.SaveChangesAsync();
+
+            var ok = await _service.RequestCancelAsync(created.Id, userId);
+            Assert.True(ok);
+
+            var updated = await _context.Bookings.FindAsync(created.Id);
+            Assert.Equal(BookingStatus.CancelRequested, updated!.BookingStatus);
+        }
+
+        [Fact]
+        public async Task RequestCancelAsync_Allows_WhenPastDeparture()
+        {
+            var (userId, tripId, seatA, _) = await SeedTripWithTwoAvailableSeatsAsync();
+            var trip = await _context.Trips.FindAsync(tripId);
+            trip!.DepartureTime = DateTime.UtcNow.AddMinutes(-5);
+            trip.ArrivalTime = DateTime.UtcNow.AddHours(1);
+
+            var created = await _service.CreateBookingAsync(new CreateBookingDto
+            {
+                UserId = userId,
+                TripId = tripId,
+                SeatIds = new List<Guid> { seatA }
+            });
+
+            var booking = await _context.Bookings.FindAsync(created.Id);
+            booking!.BookingStatus = BookingStatus.Paid;
+            await _context.SaveChangesAsync();
+
+            var ok = await _service.RequestCancelAsync(created.Id, userId);
+            Assert.True(ok);
+
+            var updated = await _context.Bookings.FindAsync(created.Id);
+            Assert.Equal(BookingStatus.CancelRequested, updated!.BookingStatus);
+        }
+
+        [Fact]
+        public async Task ApproveCancelAsync_ReleasesSeats_AndSetsCancelled()
+        {
+            var (userId, tripId, seatA, _) = await SeedTripWithTwoAvailableSeatsAsync();
+            var adminId = Guid.NewGuid();
+            _context.Users.Add(new User
+            {
+                Id = adminId,
+                UserName = "admin-test",
+                Email = "admin@test.local",
+                PasswordHash = "x",
+                FullName = "Admin",
+                PhoneNumber = "0900000009",
+                Role = "Admin"
+            });
+
+            var created = await _service.CreateBookingAsync(new CreateBookingDto
+            {
+                UserId = userId,
+                TripId = tripId,
+                SeatIds = new List<Guid> { seatA }
+            });
+
+            var booking = await _context.Bookings.FindAsync(created.Id);
+            booking!.BookingStatus = BookingStatus.CancelRequested;
+            await _context.SaveChangesAsync();
+
+            var ok = await _service.ApproveCancelAsync(created.Id, adminId);
             Assert.True(ok);
 
             var seat = await _context.Seats.FindAsync(seatA);
             Assert.Equal(SeatStatus.Available, seat!.Status);
+            var updated = await _context.Bookings.FindAsync(created.Id);
+            Assert.Equal(BookingStatus.Cancelled, updated!.BookingStatus);
+        }
+
+        [Fact]
+        public async Task ApproveCancelAsync_Throws_WhenNotAdmin()
+        {
+            var (userId, tripId, seatA, _) = await SeedTripWithTwoAvailableSeatsAsync();
+            var created = await _service.CreateBookingAsync(new CreateBookingDto
+            {
+                UserId = userId,
+                TripId = tripId,
+                SeatIds = new List<Guid> { seatA }
+            });
+
             var booking = await _context.Bookings.FindAsync(created.Id);
-            Assert.Equal(BookingStatus.Cancelled, booking!.BookingStatus);
+            booking!.BookingStatus = BookingStatus.CancelRequested;
+            await _context.SaveChangesAsync();
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                _service.ApproveCancelAsync(created.Id, userId));
         }
     }
 }

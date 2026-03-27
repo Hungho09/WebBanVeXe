@@ -46,6 +46,7 @@
                 <ng-container *ngIf="authService.isLoggedIn()">
                     <div class="account-pill">
                         <span class="welcome">Xin chào, <b>{{ currentUser?.userName || 'Admin Local' }}</b></span>
+                        <button (click)="navigateTo('/my-bookings')" class="btn-my-bookings">Vé của tôi</button>
                         <button (click)="onLogout()" class="btn-logout-mini">Đăng xuất</button>
                     </div>
                 </ng-container>

@@ -199,51 +199,74 @@ namespace Infrastructure.Services
             return bookings.Select(MapToResponseDto);
         }
 
-        public async Task<bool> CancelBookingAsync(Guid bookingId)
+        public async Task<IEnumerable<BookingResponseDto>> GetCancelRequestsAsync()
+        {
+            var bookings = await _context.Bookings
+                .Include(b => b.BookingDetails)
+                    .ThenInclude(d => d.Seat)
+                .Include(b => b.User)
+                .Include(b => b.Trip!)
+                    .ThenInclude(t => t.Route)
+                .Where(b => b.BookingStatus == BookingStatus.CancelRequested)
+                .OrderByDescending(b => b.CreatedAt)
+                .ToListAsync();
+
+            return bookings.Select(MapToResponseDto);
+        }
+
+        public async Task<bool> RequestCancelAsync(Guid bookingId, Guid userId)
         {
             var booking = await _context.Bookings
                 .Include(b => b.Trip)
                 .FirstOrDefaultAsync(b => b.Id == bookingId);
 
             if (booking == null) return false;
-            
-            if (booking.Trip != null && booking.Trip.DepartureTime <= DateTime.UtcNow)
-            {
-                throw new InvalidOperationException("Không thể hủy vé sau giờ khởi hành.");
-            }
+            if (booking.UserId != userId)
+                throw new InvalidOperationException("Bạn không có quyền yêu cầu hủy vé này.");
+
+            if (booking.BookingStatus == BookingStatus.CancelRequested)
+                throw new InvalidOperationException("Vé này đã có yêu cầu hủy trước đó.");
+
+            if (booking.BookingStatus == BookingStatus.Cancelled)
+                throw new InvalidOperationException("Vé này đã được hủy.");
 
             booking.BookingStatus = BookingStatus.CancelRequested;
-            await _context.SaveChangesAsync();
-            return true;
+            await _bookingRepository.UpdateAsync(booking);
+            return await _bookingRepository.SaveChangesAsync();
         }
 
-        public async Task<bool> ApproveCancelBookingAsync(Guid bookingId)
+        public async Task<bool> ApproveCancelAsync(Guid bookingId, Guid adminUserId)
         {
-            var booking = await _context.Bookings
-                .Include(b => b.BookingDetails)
-                    .ThenInclude(bd => bd.Seat)
-                .FirstOrDefaultAsync(b => b.Id == bookingId);
+            var admin = await _context.Users.FindAsync(adminUserId);
+            if (admin == null || !string.Equals(admin.Role, "Admin", StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("Chỉ quản trị viên mới được duyệt hủy.");
 
-            if (booking == null || booking.BookingStatus != BookingStatus.CancelRequested) return false;
+            var booking = await _bookingRepository.GetByIdAsync(bookingId);
+            if (booking == null) return false;
+            if (booking.BookingStatus != BookingStatus.CancelRequested)
+                throw new InvalidOperationException("Vé chưa ở trạng thái chờ duyệt hủy.");
 
             booking.BookingStatus = BookingStatus.Cancelled;
+            await ReleaseSeatsForBookingAsync(booking);
+            await _bookingRepository.UpdateAsync(booking);
+            var ok = await _bookingRepository.SaveChangesAsync();
+            if (ok)
+            {
+                try { await _notificationService.SendCancellationApprovalAsync(bookingId); } catch { }
+            }
+            return ok;
+        }
+
+        private async Task ReleaseSeatsForBookingAsync(Booking booking)
+        {
             foreach (var detail in booking.BookingDetails)
             {
-                if (detail.Seat != null)
-                {
-                    detail.Seat.Status = SeatStatus.Available;
-                    detail.Seat.LockedByUserId = null;
-                    detail.Seat.LockExpirationTime = null;
-                }
+                var seat = detail.Seat ?? await _context.Seats.FindAsync(detail.SeatId);
+                if (seat == null) continue;
+                seat.Status = SeatStatus.Available;
+                seat.LockExpirationTime = null;
+                seat.LockedByUserId = null;
             }
-
-            await _context.SaveChangesAsync();
-
-            try {
-                await _notificationService.SendCancellationApprovalAsync(bookingId);
-            } catch (Exception) { }
-
-            return true;
         }
 
         private async Task<BookingResponseDto> MapToResponseDtoAsync(Booking booking, List<Seat> seats)
@@ -286,6 +309,11 @@ namespace Infrastructure.Services
                 UserId = booking.UserId,
                 UserName = booking.User?.UserName ?? "N/A",
                 TripId = booking.TripId,
+                RouteName = booking.Trip?.Route != null
+                    ? $"{booking.Trip.Route.Origin} - {booking.Trip.Route.Destination}"
+                    : "N/A",
+                DepartureTime = booking.Trip?.DepartureTime,
+                ArrivalTime = booking.Trip?.ArrivalTime,
                 TotalAmount = booking.TotalAmount,
                 BookingStatus = booking.BookingStatus.ToString(),
                 CreatedAt = booking.CreatedAt,

@@ -35,6 +35,9 @@
       <p><strong>Thời gian:</strong> {{ paymentResult.paidAt | date:'medium' }}</p>
     </div>
 
-    <button class="btn btn-secondary" (click)="goBackToHome()">Về trang chủ</button>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button class="btn btn-secondary" (click)="goBackToHome()">Về trang chủ</button>
+      <a class="btn btn-primary" routerLink="/my-bookings">Vé của tôi</a>
+    </div>
   </div>
 </div>

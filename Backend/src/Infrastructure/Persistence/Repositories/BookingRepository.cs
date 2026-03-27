@@ -27,6 +27,8 @@ namespace Infrastructure.Persistence.Repositories
                 .Include(b => b.Trip)
                 .Include(b => b.PickupPoint)
                 .Include(b => b.DropoffPoint)
+                .Include(b => b.Trip!)
+                    .ThenInclude(t => t.Route)
                 .FirstOrDefaultAsync(b => b.Id == id);
         }
 
@@ -38,6 +40,8 @@ namespace Infrastructure.Persistence.Repositories
                 .Include(b => b.Trip)
                 .Include(b => b.PickupPoint)
                 .Include(b => b.DropoffPoint)
+                .Include(b => b.Trip!)
+                    .ThenInclude(t => t.Route)
                 .Where(b => b.UserId == userId)
                 .OrderByDescending(b => b.CreatedAt)
                 .ToListAsync();
