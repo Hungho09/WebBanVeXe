@@ -68,8 +68,8 @@ VALUES
 -- 7. Thêm một số người dùng mẫu
 INSERT INTO [Users] ([Id], [UserName], [Email], [PasswordHash], [FullName], [PhoneNumber], [Role], [CreatedAt], [IsActive])
 VALUES 
-(NEWID(), 'customer1', 'customer1@gmail.com', '$2a$11$0nK18Qc7D8N94B3U3P6S/OGfN9f4v.T2H6zH/r4O/C5v.Q/b4XvG6', N'Nguyễn Văn Khách', '0912345678', 'Customer', GETDATE(), 1),
-(NEWID(), 'staff1', 'staff1@vexesystem.com', '$2a$11$0nK18Qc7D8N94B3U3P6S/OGfN9f4v.T2H6zH/r4O/C5v.Q/b4XvG6', N'Trần Thị Nhân Viên', '0987654321', 'Staff', GETDATE(), 1);
+(NEWID(), 'customer1', 'customer1@gmail.com', '$2a$11$.N14FFcQMoCcN3OZvl3DkOMgSok1ocYfR2qyWMxVmlpuqUxxl20la', N'Nguyễn Văn Khách', '0912345678', 'Customer', GETDATE(), 1),
+(NEWID(), 'staff1', 'staff1@vexesystem.com', '$2a$11$.N14FFcQMoCcN3OZvl3DkOMgSok1ocYfR2qyWMxVmlpuqUxxl20la', N'Trần Thị Nhân Viên', '0987654321', 'Staff', GETDATE(), 1);
 
 PRINT 'Seed Data executed successfully!';
 GO
