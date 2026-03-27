@@ -300,6 +300,14 @@
 
 </div>
 
+<!-- Invoice Export Dialog -->
+<app-invoice-export-dialog 
+  [visible]="showInvoiceDialog"
+  [invoiceInfo]="invoiceInfo"
+  (accept)="onExportInvoice()"
+  (decline)="onGoHome()">
+</app-invoice-export-dialog>
+
 <!-- Loading Screen -->
 <div class="loading-screen" *ngIf="isLoading" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:60vh;">
     <div class="loader" style="width:40px; height:40px; border:4px solid #f3f4f6; border-top:4px solid #2563eb; border-radius:50%; animation:spin 1s linear infinite;"></div>

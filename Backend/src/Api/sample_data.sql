@@ -63,6 +63,37 @@ VALUES
 (@Trip2, @Route2, @BusLimousine, DATEADD(hour, 10, GETUTCDATE()), DATEADD(hour, 17, GETUTCDATE()), 350000, N'Active', GETUTCDATE()),
 (@Trip3, @Route3, @BusSleeper, DATEADD(hour, 18, GETUTCDATE()), DATEADD(hour, 30, GETUTCDATE()), 450000, N'Active', GETUTCDATE());
 
+-- 4.1. Thêm thêm trips cho Sài Gòn - Đà Lạt cho ngày mai và ngày mốt
+-- Ngày mai (tomorrow)
+DECLARE @TripSGDL_Tomorrow1 UNIQUEIDENTIFIER = NEWID();
+DECLARE @TripSGDL_Tomorrow2 UNIQUEIDENTIFIER = NEWID();
+DECLARE @TripSGDL_Tomorrow3 UNIQUEIDENTIFIER = NEWID();
+DECLARE @TripSGDL_Tomorrow4 UNIQUEIDENTIFIER = NEWID();
+DECLARE @TripSGDL_Tomorrow5 UNIQUEIDENTIFIER = NEWID();
+
+-- Ngày mốt (day after tomorrow)
+DECLARE @TripSGDL_DayAfter1 UNIQUEIDENTIFIER = NEWID();
+DECLARE @TripSGDL_DayAfter2 UNIQUEIDENTIFIER = NEWID();
+DECLARE @TripSGDL_DayAfter3 UNIQUEIDENTIFIER = NEWID();
+DECLARE @TripSGDL_DayAfter4 UNIQUEIDENTIFIER = NEWID();
+DECLARE @TripSGDL_DayAfter5 UNIQUEIDENTIFIER = NEWID();
+
+INSERT INTO [Trips] ([Id], [RouteId], [BusId], [DepartureTime], [ArrivalTime], [Price], [Status], [CreatedAt])
+VALUES 
+-- Ngày mai - 5 chuyến Sài Gòn - Đà Lạt
+(@TripSGDL_Tomorrow1, @Route2, @BusLimousine, DATEADD(day, 1, DATEADD(hour, 6, GETUTCDATE())), DATEADD(day, 1, DATEADD(hour, 13, GETUTCDATE())), 350000, N'Active', GETUTCDATE()),
+(@TripSGDL_Tomorrow2, @Route2, @BusLimousine, DATEADD(day, 1, DATEADD(hour, 8, GETUTCDATE())), DATEADD(day, 1, DATEADD(hour, 15, GETUTCDATE())), 350000, N'Active', GETUTCDATE()),
+(@TripSGDL_Tomorrow3, @Route2, @BusSleeper, DATEADD(day, 1, DATEADD(hour, 10, GETUTCDATE())), DATEADD(day, 1, DATEADD(hour, 17, GETUTCDATE())), 380000, N'Active', GETUTCDATE()),
+(@TripSGDL_Tomorrow4, @Route2, @BusLimousine, DATEADD(day, 1, DATEADD(hour, 14, GETUTCDATE())), DATEADD(day, 1, DATEADD(hour, 21, GETUTCDATE())), 350000, N'Active', GETUTCDATE()),
+(@TripSGDL_Tomorrow5, @Route2, @BusSleeper, DATEADD(day, 1, DATEADD(hour, 18, GETUTCDATE())), DATEADD(day, 1, DATEADD(hour, 25, GETUTCDATE())), 380000, N'Active', GETUTCDATE()),
+
+-- Ngày mốt - 5 chuyến Sài Gòn - Đà Lạt
+(@TripSGDL_DayAfter1, @Route2, @BusLimousine, DATEADD(day, 2, DATEADD(hour, 6, GETUTCDATE())), DATEADD(day, 2, DATEADD(hour, 13, GETUTCDATE())), 350000, N'Active', GETUTCDATE()),
+(@TripSGDL_DayAfter2, @Route2, @BusLimousine, DATEADD(day, 2, DATEADD(hour, 8, GETUTCDATE())), DATEADD(day, 2, DATEADD(hour, 15, GETUTCDATE())), 350000, N'Active', GETUTCDATE()),
+(@TripSGDL_DayAfter3, @Route2, @BusSleeper, DATEADD(day, 2, DATEADD(hour, 10, GETUTCDATE())), DATEADD(day, 2, DATEADD(hour, 17, GETUTCDATE())), 380000, N'Active', GETUTCDATE()),
+(@TripSGDL_DayAfter4, @Route2, @BusLimousine, DATEADD(day, 2, DATEADD(hour, 14, GETUTCDATE())), DATEADD(day, 2, DATEADD(hour, 21, GETUTCDATE())), 350000, N'Active', GETUTCDATE()),
+(@TripSGDL_DayAfter5, @Route2, @BusSleeper, DATEADD(day, 2, DATEADD(hour, 18, GETUTCDATE())), DATEADD(day, 2, DATEADD(hour, 25, GETUTCDATE())), 380000, N'Active', GETUTCDATE());
+
 -- 5. Thêm Users mẫu (nếu chưa có)
 DECLARE @Customer1 UNIQUEIDENTIFIER = NEWID();
 DECLARE @Customer2 UNIQUEIDENTIFIER = NEWID();
@@ -119,6 +150,143 @@ VALUES
 (NEWID(), @Trip3, 'C06', 2, 2, 1, 1, 0, NULL),
 (NEWID(), @Trip3, 'C07', 2, 3, 1, 1, 0, NULL),
 (NEWID(), @Trip3, 'C08', 2, 4, 1, 1, 0, NULL);
+
+-- 6.1. Thêm ghế cho các trips Sài Gòn - Đà Lạt mới (10 trips)
+-- Ngày mai - 5 trips (mix Limousine 9 chỗ và Sleeper 44 chỗ)
+-- TripSGDL_Tomorrow1 (Limousine 9 chỗ)
+INSERT INTO [Seats] ([Id], [TripId], [SeatNumber], [RowNumber], [ColumnNumber], [Floor], [Type], [Status], [LockedByUserId])
+VALUES 
+(NEWID(), @TripSGDL_Tomorrow1, 'L01', 1, 1, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow1, 'L02', 1, 2, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow1, 'L03', 1, 3, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow1, 'L04', 2, 1, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow1, 'L05', 2, 2, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow1, 'L06', 2, 3, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow1, 'L07', 3, 1, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow1, 'L08', 3, 2, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow1, 'L09', 3, 3, 1, 2, 0, NULL);
+
+-- TripSGDL_Tomorrow2 (Limousine 9 chỗ)
+INSERT INTO [Seats] ([Id], [TripId], [SeatNumber], [RowNumber], [ColumnNumber], [Floor], [Type], [Status], [LockedByUserId])
+VALUES 
+(NEWID(), @TripSGDL_Tomorrow2, 'L01', 1, 1, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow2, 'L02', 1, 2, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow2, 'L03', 1, 3, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow2, 'L04', 2, 1, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow2, 'L05', 2, 2, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow2, 'L06', 2, 3, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow2, 'L07', 3, 1, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow2, 'L08', 3, 2, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow2, 'L09', 3, 3, 1, 2, 0, NULL);
+
+-- TripSGDL_Tomorrow3 (Sleeper 44 chỗ) - chỉ tạo 10 ghế mẫu
+INSERT INTO [Seats] ([Id], [TripId], [SeatNumber], [RowNumber], [ColumnNumber], [Floor], [Type], [Status], [LockedByUserId])
+VALUES 
+(NEWID(), @TripSGDL_Tomorrow3, 'A01', 1, 1, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow3, 'A02', 1, 2, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow3, 'A03', 1, 3, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow3, 'A04', 1, 4, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow3, 'A05', 1, 5, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow3, 'B01', 2, 1, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow3, 'B02', 2, 2, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow3, 'B03', 2, 3, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow3, 'B04', 2, 4, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow3, 'B05', 2, 5, 1, 1, 0, NULL);
+
+-- TripSGDL_Tomorrow4 (Limousine 9 chỗ)
+INSERT INTO [Seats] ([Id], [TripId], [SeatNumber], [RowNumber], [ColumnNumber], [Floor], [Type], [Status], [LockedByUserId])
+VALUES 
+(NEWID(), @TripSGDL_Tomorrow4, 'L01', 1, 1, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow4, 'L02', 1, 2, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow4, 'L03', 1, 3, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow4, 'L04', 2, 1, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow4, 'L05', 2, 2, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow4, 'L06', 2, 3, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow4, 'L07', 3, 1, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow4, 'L08', 3, 2, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow4, 'L09', 3, 3, 1, 2, 0, NULL);
+
+-- TripSGDL_Tomorrow5 (Sleeper 44 chỗ) - chỉ tạo 10 ghế mẫu
+INSERT INTO [Seats] ([Id], [TripId], [SeatNumber], [RowNumber], [ColumnNumber], [Floor], [Type], [Status], [LockedByUserId])
+VALUES 
+(NEWID(), @TripSGDL_Tomorrow5, 'A01', 1, 1, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow5, 'A02', 1, 2, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow5, 'A03', 1, 3, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow5, 'A04', 1, 4, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow5, 'A05', 1, 5, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow5, 'B01', 2, 1, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow5, 'B02', 2, 2, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow5, 'B03', 2, 3, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow5, 'B04', 2, 4, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_Tomorrow5, 'B05', 2, 5, 1, 1, 0, NULL);
+
+-- Ngày mốt - 5 trips (mix Limousine 9 chỗ và Sleeper 44 chỗ)
+-- TripSGDL_DayAfter1 (Limousine 9 chỗ)
+INSERT INTO [Seats] ([Id], [TripId], [SeatNumber], [RowNumber], [ColumnNumber], [Floor], [Type], [Status], [LockedByUserId])
+VALUES 
+(NEWID(), @TripSGDL_DayAfter1, 'L01', 1, 1, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter1, 'L02', 1, 2, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter1, 'L03', 1, 3, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter1, 'L04', 2, 1, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter1, 'L05', 2, 2, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter1, 'L06', 2, 3, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter1, 'L07', 3, 1, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter1, 'L08', 3, 2, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter1, 'L09', 3, 3, 1, 2, 0, NULL);
+
+-- TripSGDL_DayAfter2 (Limousine 9 chỗ)
+INSERT INTO [Seats] ([Id], [TripId], [SeatNumber], [RowNumber], [ColumnNumber], [Floor], [Type], [Status], [LockedByUserId])
+VALUES 
+(NEWID(), @TripSGDL_DayAfter2, 'L01', 1, 1, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter2, 'L02', 1, 2, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter2, 'L03', 1, 3, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter2, 'L04', 2, 1, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter2, 'L05', 2, 2, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter2, 'L06', 2, 3, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter2, 'L07', 3, 1, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter2, 'L08', 3, 2, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter2, 'L09', 3, 3, 1, 2, 0, NULL);
+
+-- TripSGDL_DayAfter3 (Sleeper 44 chỗ) - chỉ tạo 10 ghế mẫu
+INSERT INTO [Seats] ([Id], [TripId], [SeatNumber], [RowNumber], [ColumnNumber], [Floor], [Type], [Status], [LockedByUserId])
+VALUES 
+(NEWID(), @TripSGDL_DayAfter3, 'A01', 1, 1, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter3, 'A02', 1, 2, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter3, 'A03', 1, 3, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter3, 'A04', 1, 4, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter3, 'A05', 1, 5, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter3, 'B01', 2, 1, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter3, 'B02', 2, 2, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter3, 'B03', 2, 3, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter3, 'B04', 2, 4, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter3, 'B05', 2, 5, 1, 1, 0, NULL);
+
+-- TripSGDL_DayAfter4 (Limousine 9 chỗ)
+INSERT INTO [Seats] ([Id], [TripId], [SeatNumber], [RowNumber], [ColumnNumber], [Floor], [Type], [Status], [LockedByUserId])
+VALUES 
+(NEWID(), @TripSGDL_DayAfter4, 'L01', 1, 1, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter4, 'L02', 1, 2, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter4, 'L03', 1, 3, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter4, 'L04', 2, 1, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter4, 'L05', 2, 2, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter4, 'L06', 2, 3, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter4, 'L07', 3, 1, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter4, 'L08', 3, 2, 1, 2, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter4, 'L09', 3, 3, 1, 2, 0, NULL);
+
+-- TripSGDL_DayAfter5 (Sleeper 44 chỗ) - chỉ tạo 10 ghế mẫu
+INSERT INTO [Seats] ([Id], [TripId], [SeatNumber], [RowNumber], [ColumnNumber], [Floor], [Type], [Status], [LockedByUserId])
+VALUES 
+(NEWID(), @TripSGDL_DayAfter5, 'A01', 1, 1, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter5, 'A02', 1, 2, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter5, 'A03', 1, 3, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter5, 'A04', 1, 4, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter5, 'A05', 1, 5, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter5, 'B01', 2, 1, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter5, 'B02', 2, 2, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter5, 'B03', 2, 3, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter5, 'B04', 2, 4, 1, 1, 0, NULL),
+(NEWID(), @TripSGDL_DayAfter5, 'B05', 2, 5, 1, 1, 0, NULL);
 
 -- 7. Tạo Bookings mẫu với trạng thái khác nhau
 DECLARE @Booking1 UNIQUEIDENTIFIER = NEWID(); -- Paid booking

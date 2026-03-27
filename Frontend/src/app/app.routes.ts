@@ -24,6 +24,8 @@ export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'register', component: Register },
   { path: 'payment', component: PaymentComponent },
+  { path: 'invoice-pdf/:id', loadComponent: () => import('./pages/invoice-pdf-page/invoice-pdf-page.component').then(m => m.InvoicePdfPageComponent) },
+  { path: 'invoices/:id', loadComponent: () => import('./pages/invoice-detail/invoice-detail.component').then(m => m.InvoiceDetailComponent) },
   {
     path: 'admin',
     component: AdminLayout,

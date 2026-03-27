@@ -13,6 +13,17 @@
       <p><strong>Tổng tiền:</strong> {{ invoice.totalAmount | number }} đ</p>
       <p><strong>Ngày tạo:</strong> {{ invoice.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
       <p><strong>Trạng thái:</strong> {{ invoice.status }}</p>
+      
+      <div class="download-buttons" style="margin-top: 20px;">
+        <button class="btn btn-primary" (click)="downloadJson()" 
+                [disabled]="isDownloading">
+          <i class="fas fa-download"></i> Download JSON
+        </button>
+        <button class="btn btn-secondary" (click)="downloadPdf()" 
+                [disabled]="isDownloading" style="margin-left: 10px;">
+          <i class="fas fa-file-pdf"></i> Download PDF
+        </button>
+      </div>
     </div>
 
     <a routerLink="/invoices">Quay lại danh sách</a>

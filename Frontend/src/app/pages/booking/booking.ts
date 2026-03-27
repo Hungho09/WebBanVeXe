@@ -6,6 +6,8 @@ import { TripService } from '../../services/trip.service';
 import { BookingService, CreateBookingDto } from '../../services/booking.service';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
+import { InvoiceService } from '../../services/invoice.service';
+import { InvoiceExportDialogComponent } from '../../components/invoice-export-dialog/invoice-export-dialog.component';
 
 export interface Point {
   id: string;
@@ -34,7 +36,7 @@ export interface Seat {
 @Component({
   selector: 'app-booking',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, InvoiceExportDialogComponent],
   templateUrl: './booking.html',
   styleUrl: './booking.css'
 })
@@ -69,13 +71,18 @@ export class Booking implements OnInit, OnDestroy {
   ];
   selectedPaymentMethod = 'vnpay';
 
+  // Invoice export dialog
+  showInvoiceDialog = false;
+  invoiceInfo: any = null;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private tripService: TripService,
     private bookingService: BookingService,
     public authService: AuthService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private invoiceService: InvoiceService
   ) {}
 
   ngOnInit(): void {
@@ -501,8 +508,22 @@ export class Booking implements OnInit, OnDestroy {
       next: (res) => {
         this.stopTimer();
         this.toastService.showSuccess('Đặt vé thành công!');
-        // Link to invoice detail or dashboard
-        this.router.navigate(['/dashboard']);
+        
+        // Prepare invoice info for dialog
+        this.invoiceInfo = {
+          invoiceNumber: `INV${Date.now().toString().slice(-6)}`,
+          totalAmount: this.totalAmount,
+          customerName: userProfile.fullName || 'Khách hàng',
+          customerEmail: userProfile.email || '',
+          bookingId: res.id // Use res.id instead of res.bookingId
+        };
+        
+        console.log('Booking response:', res);
+        console.log('Invoice info prepared:', this.invoiceInfo);
+        
+        // Show invoice export dialog
+        this.showInvoiceDialog = true;
+        this.isLoading = false;
       },
       error: (err) => {
         const msg = err?.error?.message || err?.message || 'Đặt vé thất bại';
@@ -515,5 +536,33 @@ export class Booking implements OnInit, OnDestroy {
         }
       }
     });
+  }
+
+  // Invoice dialog handlers
+  onExportInvoice(): void {
+    if (!this.invoiceInfo) return;
+    
+    console.log('Creating invoice with data:', this.invoiceInfo);
+    
+    // Create invoice first, then navigate to PDF page
+    this.invoiceService.createInvoiceByBookingId(this.invoiceInfo.bookingId || 'temp').subscribe({
+      next: (invoice) => {
+        console.log('Invoice created successfully:', invoice);
+        this.toastService.showSuccess('Tạo hóa đơn thành công!');
+        this.showInvoiceDialog = false;
+        // Navigate to PDF page instead of downloading
+        this.router.navigate(['/invoice-pdf', invoice.id]);
+      },
+      error: (err) => {
+        console.error('Error creating invoice:', err);
+        const errorMessage = err?.error?.message || err?.message || 'Lỗi khi tạo hóa đơn. Vui lòng thử lại.';
+        this.toastService.showError(errorMessage);
+      }
+    });
+  }
+
+  onGoHome(): void {
+    this.showInvoiceDialog = false;
+    this.router.navigate(['/homepage']);
   }
 }

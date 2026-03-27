@@ -16,6 +16,7 @@ export class InvoiceDetailComponent implements OnInit {
   invoice: Invoice | null = null;
   isLoading = false;
   errorMessage = '';
+  isDownloading = false;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -38,6 +39,40 @@ export class InvoiceDetailComponent implements OnInit {
       error: () => {
         this.errorMessage = 'Không tìm thấy hóa đơn.';
         this.isLoading = false;
+      }
+    });
+  }
+
+  downloadJson(): void {
+    if (!this.invoice) return;
+    
+    this.isDownloading = true;
+    this.invoiceService.exportJson(this.invoice.id).subscribe({
+      next: () => {
+        console.log('JSON downloaded successfully');
+        this.isDownloading = false;
+      },
+      error: (err) => {
+        console.error('Error downloading JSON:', err);
+        this.isDownloading = false;
+        alert('Lỗi khi tải file JSON. Vui lòng thử lại.');
+      }
+    });
+  }
+
+  downloadPdf(): void {
+    if (!this.invoice) return;
+    
+    this.isDownloading = true;
+    this.invoiceService.exportPdf(this.invoice.id).subscribe({
+      next: () => {
+        console.log('PDF downloaded successfully');
+        this.isDownloading = false;
+      },
+      error: (err) => {
+        console.error('Error downloading PDF:', err);
+        this.isDownloading = false;
+        alert('Lỗi khi tải file PDF. Vui lòng thử lại.');
       }
     });
   }
