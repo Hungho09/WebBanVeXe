@@ -1,18 +1,27 @@
 using System;
 using System.Collections.Generic;
+using Domain.Enums;
 
 namespace Application.DTOs.Reporting
 {
+    public class RevenueQueryDto
+    {
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public ReportingMode Mode { get; set; } = ReportingMode.Day;
+    }
+
     public class RevenueReportDto
     {
         public decimal TotalRevenue { get; set; }
         public int TotalPaidBookings { get; set; }
-        public List<RevenueByDayDto> DailyRevenue { get; set; } = new();
+        public List<RevenueDataPointDto> RevenueDetails { get; set; } = new();
     }
 
-    public class RevenueByDayDto
+    public class RevenueDataPointDto
     {
         public DateTime Date { get; set; }
+        public string Label { get; set; } = ""; // E.g., "2024-03", "2024"
         public decimal Revenue { get; set; }
         public int BookingCount { get; set; }
     }
