@@ -16,7 +16,7 @@ namespace Application.UnitTests
     {
         private readonly ApplicationDbContext _context;
         private readonly BookingService _service;
-        private readonly Mock<ITripService> _tripServiceMock = new();
+        private readonly Mock<INotificationService> _notificationServiceMock = new();
 
         public BookingServiceTests()
         {
@@ -27,7 +27,7 @@ namespace Application.UnitTests
             _context = new ApplicationDbContext(options);
             _context.Database.EnsureCreated();
             var repository = new BookingRepository(_context);
-            _service = new BookingService(_context, repository, _tripServiceMock.Object);
+            _service = new BookingService(_context, _notificationServiceMock.Object, repository);
         }
 
         public void Dispose() => _context.Dispose();

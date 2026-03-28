@@ -15,10 +15,36 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     min-height: 100vh;
+    min-height: 100dvh;
+    width: 100%;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
     overflow-x: hidden;
+}
+
+/* Shell ứng dụng: full chiều cao viewport (các trang tự căn giữa nội dung bên trong) */
+app-root {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+    width: 100%;
+}
+
+/* Component route (anh em của router-outlet) giãn phần còn lại — không áp cho toast */
+app-root > *:not(router-outlet):not(app-toast) {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+app-root > app-toast {
+    flex: 0 0 auto;
 }
 
 /* Custom Scrollbar */
