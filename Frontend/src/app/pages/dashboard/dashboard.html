@@ -44,25 +44,23 @@
 
     <!-- Revenue Chart Section -->
     <div class="chart-section" *ngIf="isAdmin">
+        <!-- ... existing chart header ... -->
         <div class="chart-header">
             <div class="header-left">
                 <h3 class="flex items-center"><i class="fas fa-chart-line mr-3 text-indigo-500"></i>Thống kê doanh thu</h3>
                 <p>Theo dõi biến động dòng tiền theo thời gian</p>
             </div>
             <div class="mode-selector">
-                <!-- Filter Controls based on Mode -->
                 <div class="filter-group" *ngIf="revenueMode === 'Day'">
                     <input type="date" [(ngModel)]="filterStartDate" (change)="applyFilter()" class="filter-input">
                     <span class="filter-sep">đến</span>
                     <input type="date" [(ngModel)]="filterEndDate" (change)="applyFilter()" class="filter-input">
                 </div>
-
                 <div class="filter-group" *ngIf="revenueMode === 'Month'">
                     <select [(ngModel)]="filterYear" (change)="applyFilter()" class="filter-select">
                         <option *ngFor="let y of availableYears" [value]="y">Năm {{ y }}</option>
                     </select>
                 </div>
-                
                 <div class="filter-group" *ngIf="revenueMode === 'Year'">
                     <select [(ngModel)]="filterYearStart" (change)="applyFilter()" class="filter-select">
                         <option *ngFor="let y of availableYears" [value]="y">Từ {{ y }}</option>
@@ -72,9 +70,7 @@
                         <option *ngFor="let y of availableYears" [value]="y">Đến {{ y }}</option>
                     </select>
                 </div>
-
                 <div class="divider-v" *ngIf="isAdmin"></div>
-
                 <button [class.active]="revenueMode === 'Day'" (click)="setRevenueMode('Day')">Ngày</button>
                 <button [class.active]="revenueMode === 'Month'" (click)="setRevenueMode('Month')">Tháng</button>
                 <button [class.active]="revenueMode === 'Year'" (click)="setRevenueMode('Year')">Năm</button>
@@ -86,6 +82,37 @@
                 <span>Đang cập nhật biểu đồ...</span>
             </div>
             <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Occupancy Rate Section -->
+    <div class="occupancy-section" *ngIf="isAdmin && occupancyReport">
+        <div class="occupancy-header">
+            <div class="header-left">
+                <h3><i class="fas fa-users mr-3 text-emerald-500"></i>Hiệu suất lấp đầy hành trình</h3>
+                <p>Tỷ lệ trung bình: <span class="font-bold text-emerald-600">{{ occupancyReport.averageOccupancy }}%</span></p>
+            </div>
+            <span class="view-all">Chi tiết <i class="fas fa-arrow-right ml-2"></i></span>
+        </div>
+        
+        <div class="occupancy-list">
+            <div class="occupancy-item" *ngFor="let trip of occupancyReport.trips.slice(0, 3)">
+                <div class="item-info">
+                    <div class="route-info">
+                        <span class="bus-badge">{{ trip.busPlate }}</span>
+                        <span class="route-name text-slate-700 font-medium">{{ trip.routeName }}</span>
+                    </div>
+                    <span class="departure">{{ trip.departureTime | date:'dd/MM HH:mm' }}</span>
+                </div>
+                <div class="progress-wrapper">
+                    <div class="progress-track">
+                        <div class="progress-fill" [style.width.%]="trip.occupancyPercentage" 
+                             [ngClass]="trip.occupancyPercentage > 80 ? 'bg-emerald-500' : (trip.occupancyPercentage > 40 ? 'bg-sky-500' : 'bg-slate-400')">
+                        </div>
+                    </div>
+                    <span class="progress-label">{{ trip.bookedSeats }}/{{ trip.totalSeats }} ghế ({{ trip.occupancyPercentage }}%)</span>
+                </div>
+            </div>
         </div>
     </div>
 

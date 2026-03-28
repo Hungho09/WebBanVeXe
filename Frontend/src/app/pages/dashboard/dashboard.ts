@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { DashboardService, DashboardStats, RevenueDataPoint } from '../../services/dashboard.service';
+import { DashboardService, DashboardStats, RevenueDataPoint, OccupancyReport } from '../../services/dashboard.service';
 import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
@@ -19,6 +19,9 @@ export class Dashboard implements OnInit, OnDestroy {
   isAdmin = false;
   stats: DashboardStats | null = null;
   loading = true;
+
+  // Occupancy properties
+  occupancyReport: OccupancyReport | null = null;
 
   // Revenue Chart properties
   revenueMode: 'Day' | 'Month' | 'Year' = 'Month';
@@ -49,6 +52,7 @@ export class Dashboard implements OnInit, OnDestroy {
     if (this.isAdmin) {
       this.loadDashboardData();
       this.loadRevenueReport();
+      this.loadOccupancyReport();
     }
   }
 
@@ -62,6 +66,17 @@ export class Dashboard implements OnInit, OnDestroy {
       error: (err) => {
         console.error('Error loading dashboard stats:', err);
         this.loading = false;
+      }
+    });
+  }
+
+  loadOccupancyReport() {
+    this.dashboardService.getOccupancyReport().subscribe({
+      next: (res) => {
+        this.occupancyReport = res;
+      },
+      error: (err) => {
+        console.error('Error loading occupancy report:', err);
       }
     });
   }
