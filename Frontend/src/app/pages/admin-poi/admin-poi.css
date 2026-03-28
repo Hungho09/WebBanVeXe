@@ -188,15 +188,104 @@
 input:checked + .slider { background-color: #2196F3; }
 input:checked + .slider:before { transform: translateX(20px); }
 
+/* Table Structure Fix */
+.table th:nth-child(1) { width: 30%; }
+.table th:nth-child(2) { width: 40%; }
+.table th:nth-child(3) { width: 15%; text-align: center; }
+.table th:nth-child(4) { width: 15%; text-align: right; }
+
+.table td:nth-child(3) { text-align: center; }
+.table td:nth-child(4) { text-align: right; }
+
+.map-link {
+  color: #1976d2;
+  text-decoration: none;
+  font-weight: 500;
+}
+.map-link:hover { text-decoration: underline; }
+
+/* Custom Action Buttons Fix */
 .action-buttons {
   display: flex;
-  gap: 8px;
+  justify-content: flex-end;
+  gap: 12px;
 }
 .btn-icon {
   background: none;
   border: none;
   cursor: pointer;
   color: #666;
+  font-size: 0.95rem;
 }
 .btn-icon:hover { color: #333; }
-.btn-icon.delete:hover { color: red; }
+.btn-icon.delete:hover { color: #d32f2f; }
+.btn-text { background: none; border: none; font-size: 0.9em; font-weight: bold; color: #1976d2; cursor: pointer; padding: 0; margin-top: 8px; }
+.btn-text:hover { text-decoration: underline; }
+
+/* Search Suggestion Dropdown */
+.search-box {
+  position: relative;
+}
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 10;
+  margin-top: 4px;
+}
+.suggestion-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f1f1;
+}
+.suggestion-item:last-child { border-bottom: none; }
+.suggestion-item:hover { background-color: #f8f9fa; color: #1976d2; }
+
+/* Modal specific sizing for multi-point */
+.modal-content {
+  width: 650px;
+  max-height: 90vh;
+}
+.modal-body {
+  overflow-y: auto;
+}
+.points-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.point-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  background: #fafafa;
+}
+.point-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed #ccc;
+}
+.point-header h4 { margin: 0; font-size: 1.1rem; color: #333; }
+.address-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.addr-delete {
+  margin-top: 6px;
+}
+.add-point-btn {
+  width: 100%;
+  font-weight: bold;
+}

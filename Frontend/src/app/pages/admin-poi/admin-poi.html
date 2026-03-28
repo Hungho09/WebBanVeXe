@@ -2,7 +2,14 @@
   <div class="header-section">
     <h2>Quản lý Điểm Đón/Trả (POI)</h2>
     <div class="actions">
-      <input type="text" [(ngModel)]="searchTerm" placeholder="Tìm kiếm địa điểm..." (keyup.enter)="fetchLocations()">
+      <div class="search-box">
+        <input type="text" [(ngModel)]="searchTerm" placeholder="Tìm kiếm địa điểm..." (keyup)="onSearchTyping()" (focus)="showSuggestions = true" (blur)="hideSuggestions()" (keyup.enter)="fetchLocations()">
+        <div class="suggestions-dropdown" *ngIf="showSuggestions && filteredSuggestions.length > 0">
+          <div class="suggestion-item" *ngFor="let s of filteredSuggestions" (mousedown)="selectSuggestion(s)">
+            <i class="fas fa-search text-muted"></i> {{ s.name }} <span class="text-muted" style="font-size: 0.85em;">- {{ s.provinceName }}</span>
+          </div>
+        </div>
+      </div>
       <button class="btn btn-primary" (click)="openCreateModal()">+ Thêm Điểm Mới</button>
     </div>
   </div>
@@ -57,28 +64,74 @@
     </div>
     <div class="modal-body">
       <form #poiForm="ngForm">
-        <div class="form-group">
-          <label>Tỉnh/Thành phố (*)</label>
-          <select class="form-control" name="provinceName" [(ngModel)]="currentLocation.provinceName" required>
-            <option [ngValue]="undefined" disabled>-- Chọn Tỉnh/Thành phố (Tự tải từ Tuyến Đường) --</option>
-            <option *ngFor="let p of provinces" [value]="p">{{ p }}</option>
-          </select>
-        </div>
         
-        <div class="form-group">
-          <label>Tên địa điểm (*)</label>
-          <input type="text" class="form-control" name="name" [(ngModel)]="currentLocation.name" required>
-        </div>
+        <!-- EDIT MODE -->
+        <ng-container *ngIf="isEditing">
+          <div class="form-group">
+            <label>Tỉnh/Thành phố (*)</label>
+            <select class="form-control" name="provinceNameEdit" [(ngModel)]="currentLocation.provinceName" required>
+              <option [ngValue]="undefined" disabled>-- Chọn Tỉnh/Thành phố (Tự tải từ Tuyến Đường) --</option>
+              <option *ngFor="let p of provinces" [value]="p">{{ p }}</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Tên địa điểm (*)</label>
+            <input type="text" class="form-control" name="nameEdit" [(ngModel)]="currentLocation.name" required>
+          </div>
 
-        <div class="form-group">
-          <label>Địa chỉ cụ thể (*)</label>
-          <input type="text" class="form-control" name="address" [(ngModel)]="currentLocation.address" required>
-        </div>
+          <div class="form-group">
+            <label>Địa chỉ cụ thể (*)</label>
+            <input type="text" class="form-control" name="addressEdit" [(ngModel)]="currentLocation.address" required>
+          </div>
 
-        <div class="form-group">
-          <label>Link Google Maps</label>
-          <input type="text" class="form-control" name="mapLink" [(ngModel)]="currentLocation.mapLink" placeholder="Ví dụ: https://maps.google.com/...">
-        </div>
+          <div class="form-group">
+            <label>Link Google Maps</label>
+            <input type="text" class="form-control" name="mapLinkEdit" [(ngModel)]="currentLocation.mapLink" placeholder="Ví dụ: https://maps.google.com/...">
+          </div>
+        </ng-container>
+
+        <!-- CREATE MODE (Multiple Points / Addresses) -->
+        <ng-container *ngIf="!isEditing">
+          <div class="form-group">
+            <label>Tỉnh/Thành phố (*)</label>
+            <select class="form-control" name="provinceNameAdd" [(ngModel)]="createData.provinceName" required>
+              <option [ngValue]="undefined" disabled>-- Chọn Tỉnh/Thành phố --</option>
+              <option *ngFor="let p of provinces" [value]="p">{{ p }}</option>
+            </select>
+          </div>
+
+          <div class="points-container">
+            <div class="point-card" *ngFor="let pt of createData.points; let i = index">
+              <div class="point-header">
+                <h4><i class="fas fa-map-marker-alt" style="color:#e74c3c;"></i> Điểm Đón/Trả số {{ i + 1 }}</h4>
+                <button class="btn-icon delete" type="button" *ngIf="createData.points.length > 1" (click)="removePoint(i)"><i class="fas fa-trash"></i> Bỏ Điểm Khỏi Tỉnh</button>
+              </div>
+
+              <div class="form-group">
+                <label>Tên địa điểm chung (*)</label>
+                <input type="text" class="form-control" name="ptName_{{i}}" [(ngModel)]="pt.name" required placeholder="Ví dụ: Dọc Quốc Lộ 1A, Bến xe trung tâm...">
+              </div>
+
+              <div class="form-group">
+                 <label>Các Địa chỉ cụ thể (Thêm được nhiều địa chỉ)</label>
+                 <div class="address-item" *ngFor="let a of pt.addresses; let j = index; trackBy: trackByIndex">
+                    <input type="text" class="form-control" name="ptAddr_{{i}}_{{j}}" [(ngModel)]="pt.addresses[j]" required placeholder="Ghi địa chỉ chính xác...">
+                    <button type="button" class="btn-icon delete addr-delete" *ngIf="pt.addresses.length > 1" (click)="removeAddress(i, j)"><i class="fas fa-times"></i></button>
+                 </div>
+                 <button type="button" class="btn-text" (click)="addAddress(i)"><i class="fas fa-plus"></i> Thêm nhánh địa chỉ khác cho điểm "{{pt.name || 'này'}}"</button>
+              </div>
+
+              <div class="form-group">
+                <label>Link Google Maps (Tham khảo chung)</label>
+                <input type="text" class="form-control" name="ptMap_{{i}}" [(ngModel)]="pt.mapLink" placeholder="Ví dụ: https://maps.google.com/...">
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-secondary add-point-btn" (click)="addPoint()"><i class="fas fa-plus-circle"></i> THÊM TÊN ĐIỂM KHÁC VÀO "{{createData.provinceName || 'TỈNH/THÀNH PHỐ NÀY'}}"</button>
+        </ng-container>
+
       </form>
     </div>
     <div class="modal-footer">

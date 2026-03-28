@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services
 {
@@ -14,12 +15,14 @@ namespace Infrastructure.Services
         private readonly ITripRepository _tripRepository;
         private readonly ISeatService _seatService;
         private readonly IBusRepository _busRepository;
+        private readonly IApplicationDbContext _context;
 
-        public TripService(ITripRepository tripRepository, ISeatService seatService, IBusRepository busRepository)
+        public TripService(ITripRepository tripRepository, ISeatService seatService, IBusRepository busRepository, IApplicationDbContext context)
         {
             _tripRepository = tripRepository;
             _seatService = seatService;
             _busRepository = busRepository;
+            _context = context;
         }
 
         public async Task<TripDto?> GetTripByIdAsync(Guid id)
@@ -242,21 +245,36 @@ namespace Infrastructure.Services
             var trip = await _tripRepository.GetByIdAsync(tripId);
             if (trip == null || trip.Route == null) return Enumerable.Empty<TripPointDto>();
 
-            return trip.Route.RouteStops
-                .OrderBy(rs => rs.OrderIndex)
-                .Select(rs => new TripPointDto
+            var origin = trip.Route.Origin;
+            var destination = trip.Route.Destination;
+
+            // Lấy tất cả các điểm POI thuộc tỉnh của điểm xuất phát và điểm kết thúc
+            var locations = await _context.Locations
+                .Where(l => l.ProvinceName != null && (l.ProvinceName == origin || l.ProvinceName == destination))
+                .ToListAsync();
+
+            var result = new List<TripPointDto>();
+
+            foreach (var loc in locations)
+            {
+                bool isOrigin = loc.ProvinceName == origin;
+                bool isDestination = loc.ProvinceName == destination;
+                
+                result.Add(new TripPointDto
                 {
-                    Id = rs.LocationId,
-                    Name = rs.Location.Name,
-                    Address = rs.Location.Address,
-                    ExpectedTime = trip.DepartureTime.AddMinutes(rs.OffsetMinutes),
-                    DistanceFromOrigin = rs.DistanceFromOriginKm,
-                    Badge = rs.Location.Badge,
-                    IsPickup = rs.Location.IsPickup,
-                    IsDropoff = rs.Location.IsDropoff,
-                    Latitude = rs.Location.Latitude,
-                    Longitude = rs.Location.Longitude
+                    Id = loc.Id,
+                    Name = loc.Name,
+                    Address = loc.Address,
+                    ExpectedTime = isOrigin ? trip.DepartureTime : trip.ArrivalTime,
+                    DistanceFromOrigin = isOrigin ? 0 : trip.Route.DistanceKm,
+                    IsPickup = isOrigin,
+                    IsDropoff = isDestination,
+                    Badge = null
                 });
+            }
+
+            // Nếu không có POI nào khớp, trả về rỗng thay vì ném lỗi để FE xử lý
+            return result.OrderBy(r => !r.IsPickup).ThenBy(r => r.Name);
         }
 
         public async Task<IEnumerable<TripDto>> SearchTripsAsync(string? origin, string? destination, DateTime? date)

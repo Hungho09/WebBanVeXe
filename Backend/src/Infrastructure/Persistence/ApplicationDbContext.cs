@@ -159,6 +159,7 @@ namespace Infrastructure.Persistence
             modelBuilder.Entity<RouteStop>(entity =>
             {
                 entity.HasKey(e => e.Id);
+                entity.Property(e => e.LocationId).HasColumnName("StopPointId"); // Map to existing database column
                 entity.HasOne(e => e.Route)
                     .WithMany(r => r.RouteStops)
                     .HasForeignKey(e => e.RouteId)
