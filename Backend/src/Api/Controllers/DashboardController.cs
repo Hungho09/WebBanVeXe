@@ -1,6 +1,6 @@
 using Application.Interfaces;
+using Application.DTOs.Reporting;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Threading.Tasks;
 
 namespace Api.Controllers
@@ -24,12 +24,9 @@ namespace Api.Controllers
         }
 
         [HttpGet("revenue")]
-        public async Task<IActionResult> GetRevenue(DateTime? start, DateTime? end)
+        public async Task<IActionResult> GetRevenue([FromQuery] RevenueQueryDto query)
         {
-            var startDate = start ?? DateTime.UtcNow.AddMonths(-1);
-            var endDate = end ?? DateTime.UtcNow;
-            
-            var report = await _reportingService.GetRevenueReportAsync(startDate, endDate);
+            var report = await _reportingService.GetRevenueReportAsync(query);
             return Ok(report);
         }
     }
