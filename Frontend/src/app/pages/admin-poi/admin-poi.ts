@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LocationService, LocationModel, Province } from '../../services/location.service';
+import { LocationService, LocationModel } from '../../services/location.service';
+import { RouteService } from '../../services/route.service';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -13,22 +14,22 @@ import { RouterModule } from '@angular/router';
 })
 export class AdminPoiComponent implements OnInit {
   locations: LocationModel[] = [];
-  provinces: Province[] = [];
+  provinces: string[] = []; // Strings from Route Origins/Destinations
   searchTerm: string = '';
 
   // Modal state
   showModal = false;
   isEditing = false;
   currentLocation: Partial<LocationModel> = {
-    name: '', address: '', isPickup: true, isDropoff: true, isActive: true, isDefault: false
+    name: '', address: '', provinceName: ''
   };
 
   loading = false;
   
   // Grouping
-  groupedLocations: { provinceId?: string, provinceName: string, locations: LocationModel[] }[] = [];
+  groupedLocations: { provinceName: string, locations: LocationModel[] }[] = [];
 
-  constructor(private locationService: LocationService) {}
+  constructor(private locationService: LocationService, private routeService: RouteService) {}
 
   ngOnInit() {
     this.loadData();
@@ -36,8 +37,10 @@ export class AdminPoiComponent implements OnInit {
 
   loadData() {
     this.loading = true;
-    this.locationService.getProvinces().subscribe(pt => {
-      this.provinces = pt;
+    this.routeService.getLocations().subscribe(locData => {
+      // Merge origins and destinations, get distinct values
+      const set = new Set([...locData.origins, ...locData.destinations]);
+      this.provinces = Array.from(set).sort();
       this.fetchLocations();
     });
   }
@@ -51,31 +54,31 @@ export class AdminPoiComponent implements OnInit {
   }
 
   groupLocations() {
-    const groups = new Map<string, { provinceId?: string, provinceName: string, locations: LocationModel[] }>();
+    const groups = new Map<string, { provinceName: string, locations: LocationModel[] }>();
     
-    // Khởi tạo groups cho tất cả các tỉnh (tùy chọn, để hiển thị cả tỉnh chưa có POI)
+    // Khởi tạo groups cho tất cả các tỉnh có trong tuyến đường
     this.provinces.forEach(p => {
-      groups.set(p.id, { provinceId: p.id, provinceName: p.name, locations: [] });
+      groups.set(p, { provinceName: p, locations: [] });
     });
 
-    // Thêm Tỉnh rỗng cho các POI chưa có tỉnh
+    // Thêm bucket cho các POI chưa có tỉnh
     groups.set('unassigned', { provinceName: 'Chưa phân bổ', locations: [] });
 
     this.locations.forEach(loc => {
-      const pId = loc.provinceId || 'unassigned';
+      const pId = loc.provinceName || 'unassigned';
       if (!groups.has(pId)) {
-         groups.set(pId, { provinceId: loc.provinceId, provinceName: loc.province?.name || 'Không xác định', locations: []});
+         groups.set(pId, { provinceName: loc.provinceName || 'Không xác định', locations: []});
       }
       groups.get(pId)?.locations.push(loc);
     });
 
-    // Chỉ lấy các group có data để view gọn gàng
+    // Cập nhật mảng hiển thị (grouping objects)
     this.groupedLocations = Array.from(groups.values()).filter(g => g.locations.length > 0);
   }
 
   openCreateModal() {
     this.isEditing = false;
-    this.currentLocation = { name: '', address: '', isPickup: true, isDropoff: true, isActive: true, isDefault: false };
+    this.currentLocation = { name: '', address: '', provinceName: undefined }; // undefined so that "Chọn tỉnh thành" is shown
     this.showModal = true;
   }
 
@@ -86,8 +89,8 @@ export class AdminPoiComponent implements OnInit {
   }
 
   saveLocation() {
-    if (!this.currentLocation.name || !this.currentLocation.address || !this.currentLocation.provinceId) {
-      alert("Vui lòng nhập đủ thông tin (Tên, Địa chỉ, Tỉnh thành)");
+    if (!this.currentLocation.name || !this.currentLocation.address || !this.currentLocation.provinceName) {
+      alert("⚠️ Vui lòng điền đầy đủ các thông tin: Tỉnh/Thành phố, Tên địa điểm, Địa chỉ!");
       return;
     }
 
@@ -117,9 +120,5 @@ export class AdminPoiComponent implements OnInit {
          error: err => alert("Không thể xóa")
        });
     }
-  }
-
-  toggleDefault(id: string) {
-    this.locationService.toggleDefault(id).subscribe(() => this.fetchLocations());
   }
 }

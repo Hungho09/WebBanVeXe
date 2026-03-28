@@ -26,7 +26,6 @@ namespace Infrastructure.Persistence
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<BusType> BusTypes { get; set; }
         public DbSet<Location> Locations { get; set; }
-        public DbSet<Province> Provinces { get; set; }
         public DbSet<RouteStop> RouteStops { get; set; }
         public DbSet<SeatTemplate> SeatTemplates { get; set; }
         public DbSet<CmsConfig> CmsConfigs { get; set; }
@@ -144,14 +143,6 @@ namespace Infrastructure.Persistence
                 entity.Property(e => e.SeatCount).IsRequired();
             });
 
-            // Configure Province
-            modelBuilder.Entity<Province>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.Slug).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.Region).HasMaxLength(50);
-            });
 
             // Configure Location
             modelBuilder.Entity<Location>(entity =>
@@ -161,11 +152,7 @@ namespace Infrastructure.Persistence
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
                 entity.Property(e => e.Address).IsRequired().HasMaxLength(500);
                 entity.Property(e => e.MapLink).HasMaxLength(1000);
-                
-                entity.HasOne(e => e.Province)
-                    .WithMany(p => p.Locations)
-                    .HasForeignKey(e => e.ProvinceId)
-                    .OnDelete(DeleteBehavior.SetNull);
+                entity.Property(e => e.ProvinceName).HasMaxLength(100);
             });
 
             // Configure RouteStop

@@ -11,17 +11,9 @@ namespace Application.DTOs.Location
         [Required(ErrorMessage = "Địa chỉ không được để trống")]
         public string Address { get; set; } = string.Empty;
         
-        public double? Latitude { get; set; }
-        public double? Longitude { get; set; }
-        public bool IsPickup { get; set; }
-        public bool IsDropoff { get; set; }
-        public string? Badge { get; set; }
-        
         [Required(ErrorMessage = "Vui lòng chọn Tỉnh/Thành phố")]
-        public Guid ProvinceId { get; set; }
+        public string ProvinceName { get; set; } = string.Empty;
         
         public string? MapLink { get; set; }
-        public bool IsDefault { get; set; }
-        public bool IsActive { get; set; } = true;
     }
 }

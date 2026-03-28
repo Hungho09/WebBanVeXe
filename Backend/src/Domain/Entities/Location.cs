@@ -16,8 +16,7 @@ namespace Domain.Entities
         public bool IsDropoff { get; set; }
         public string? Badge { get; set; } // "Gần bạn", "Phổ biến", etc.
 
-        public Guid? ProvinceId { get; set; }
-        public Province? Province { get; set; }
+        public string? ProvinceName { get; set; }
         
         public string? MapLink { get; set; }
         public bool IsDefault { get; set; }

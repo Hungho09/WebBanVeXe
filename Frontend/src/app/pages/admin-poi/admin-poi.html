@@ -19,9 +19,7 @@
             <tr>
               <th>Tên điểm</th>
               <th>Địa chỉ</th>
-              <th>Loại điểm</th>
-              <th>Trạng thái</th>
-              <th>Mặc định</th>
+              <th>Liên kết Maps</th>
               <th>Hành động</th>
             </tr>
           </thead>
@@ -29,23 +27,11 @@
             <tr *ngFor="let loc of group.locations">
               <td>
                 <div class="loc-name">{{ loc.name }}</div>
-                <div class="loc-badge" *ngIf="loc.badge">{{ loc.badge }}</div>
               </td>
               <td>{{ loc.address }}</td>
               <td>
-                <span class="type-badge" *ngIf="loc.isPickup">Điểm Đón</span>
-                <span class="type-badge dropoff" *ngIf="loc.isDropoff">Điểm Trả</span>
-              </td>
-              <td>
-                <span class="status-badge" [class.active]="loc.isActive">
-                  {{ loc.isActive ? 'Hoạt động' : 'Tạm ẩn' }}
-                </span>
-              </td>
-              <td>
-                <label class="switch">
-                  <input type="checkbox" [checked]="loc.isDefault" (change)="toggleDefault(loc.id)">
-                  <span class="slider round"></span>
-                </label>
+                <a *ngIf="loc.mapLink" [href]="loc.mapLink" target="_blank" class="map-link"><i class="fas fa-map-marker-alt"></i> Xem Bản đồ</a>
+                <span *ngIf="!loc.mapLink" class="text-muted">Chưa cập nhật</span>
               </td>
               <td class="action-buttons">
                 <button class="btn-icon edit" (click)="openEditModal(loc)"><i class="fas fa-edit"></i> Sửa</button>
@@ -53,7 +39,7 @@
               </td>
             </tr>
             <tr *ngIf="group.locations.length === 0">
-              <td colspan="6" class="text-center">Chưa có điểm đón trả nào ở khu vực này</td>
+              <td colspan="4" class="text-center">Chưa có điểm đón trả nào ở khu vực này</td>
             </tr>
           </tbody>
         </table>
@@ -73,9 +59,9 @@
       <form #poiForm="ngForm">
         <div class="form-group">
           <label>Tỉnh/Thành phố (*)</label>
-          <select class="form-control" name="provinceId" [(ngModel)]="currentLocation.provinceId" required>
-            <option [ngValue]="undefined" disabled>-- Chọn Tỉnh/Thành phố --</option>
-            <option *ngFor="let p of provinces" [value]="p.id">{{ p.name }}</option>
+          <select class="form-control" name="provinceName" [(ngModel)]="currentLocation.provinceName" required>
+            <option [ngValue]="undefined" disabled>-- Chọn Tỉnh/Thành phố (Tự tải từ Tuyến Đường) --</option>
+            <option *ngFor="let p of provinces" [value]="p">{{ p }}</option>
           </select>
         </div>
         
@@ -90,37 +76,14 @@
         </div>
 
         <div class="form-group">
-          <label>Link Google Maps (Thêm URL)</label>
-          <input type="text" class="form-control" name="mapLink" [(ngModel)]="currentLocation.mapLink">
-        </div>
-
-        <div class="form-row">
-          <div class="form-group checkbox-group">
-            <label><input type="checkbox" name="isPickup" [(ngModel)]="currentLocation.isPickup"> Cho phép Đón</label>
-          </div>
-          <div class="form-group checkbox-group">
-            <label><input type="checkbox" name="isDropoff" [(ngModel)]="currentLocation.isDropoff"> Cho phép Trả</label>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group checkbox-group">
-            <label><input type="checkbox" name="isActive" [(ngModel)]="currentLocation.isActive"> Kích hoạt (Hiển thị cho khách)</label>
-          </div>
-          <div class="form-group checkbox-group">
-            <label><input type="checkbox" name="isDefault" [(ngModel)]="currentLocation.isDefault"> Điểm mặc định</label>
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label>Nhãn (vd: Bến xe trung tâm, Trạm trung chuyển)</label>
-          <input type="text" class="form-control" name="badge" [(ngModel)]="currentLocation.badge">
+          <label>Link Google Maps</label>
+          <input type="text" class="form-control" name="mapLink" [(ngModel)]="currentLocation.mapLink" placeholder="Ví dụ: https://maps.google.com/...">
         </div>
       </form>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" (click)="showModal = false">Hủy</button>
-      <button class="btn btn-primary" (click)="saveLocation()" [disabled]="!poiForm.valid">Lưu thông tin</button>
+      <button class="btn btn-primary" (click)="saveLocation()">Lưu thông tin</button>
     </div>
   </div>
 </div>

@@ -24,13 +24,6 @@ namespace Api.Controllers
             return Ok(locations);
         }
         
-        [HttpGet("provinces")]
-        public async Task<IActionResult> GetProvinces()
-        {
-            var provinces = await _locationService.GetAllProvincesAsync();
-            return Ok(provinces);
-        }
-
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -64,12 +57,5 @@ namespace Api.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id:guid}/toggle-default")]
-        public async Task<IActionResult> ToggleDefault(Guid id)
-        {
-            var success = await _locationService.ToggleLocationDefaultStatusAsync(id);
-            if (!success) return NotFound("Location not found");
-            return NoContent();
-        }
     }
 }
