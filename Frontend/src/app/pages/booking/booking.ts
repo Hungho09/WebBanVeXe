@@ -65,9 +65,24 @@ export class Booking implements OnInit, OnDestroy {
 
   // Payment methods
   paymentMethods = [
-    { id: 'vnpay', name: 'Thanh toán trực tuyến (VNPay)', icon: 'fas fa-wallet' },
-    { id: 'momo', name: 'Ví MoMo', icon: 'fas fa-mobile-alt' },
-    { id: 'cash', name: 'Thanh toán khi lên xe', icon: 'fas fa-money-bill-wave' }
+    { 
+      id: 'vnpay', 
+      name: 'Thanh toán trực tuyến (VNPay)', 
+      icon: 'fas fa-wallet',
+      description: 'An toàn, nhanh chóng, hỗ trợ nhiều ngân hàng'
+    },
+    { 
+      id: 'momo', 
+      name: 'Ví MoMo', 
+      icon: 'fas fa-mobile-alt',
+      description: 'Thanh toán bằng ví điện tử MoMo'
+    },
+    { 
+      id: 'cash', 
+      name: 'Thanh toán khi lên xe', 
+      icon: 'fas fa-money-bill-wave',
+      description: 'Trả tiền mặt trực tiếp cho tài xế'
+    }
   ];
   selectedPaymentMethod = 'vnpay';
 
@@ -513,8 +528,8 @@ export class Booking implements OnInit, OnDestroy {
         this.invoiceInfo = {
           invoiceNumber: `INV${Date.now().toString().slice(-6)}`,
           totalAmount: this.totalAmount,
-          customerName: userProfile.fullName || 'Khách hàng',
-          customerEmail: userProfile.email || '',
+          customerName: userProfile.userName || 'Khách hàng',
+          customerEmail: userProfile.Email || '',
           bookingId: res.id // Use res.id instead of res.bookingId
         };
         

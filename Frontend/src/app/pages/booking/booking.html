@@ -210,9 +210,21 @@
                              *ngFor="let pm of paymentMethods"
                              [class.active]="selectedPaymentMethod === pm.id"
                              (click)="selectedPaymentMethod = pm.id">
-                            <i [class]="pm.icon"></i>
-                            <span>{{ pm.name }}</span>
-                            <i class="fas fa-check-circle" *ngIf="selectedPaymentMethod === pm.id" style="margin-left:auto; color:#2563eb;"></i>
+                            <label class="payment-label">
+                                <input type="radio" 
+                                       name="paymentMethod" 
+                                       [value]="pm.id" 
+                                       [checked]="selectedPaymentMethod === pm.id"
+                                       (change)="selectedPaymentMethod = pm.id"
+                                       class="payment-radio">
+                                <div class="payment-content">
+                                    <i [class]="pm.icon"></i>
+                                    <div class="payment-text">
+                                        <span>{{ pm.name }}</span>
+                                        <small class="payment-description">{{ pm.description }}</small>
+                                    </div>
+                                </div>
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -316,4 +328,119 @@
 
 <style>
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* Payment Methods Styles */
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pm-item {
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.pm-item:hover {
+  border-color: #2563eb;
+  background: #f8fafc;
+}
+
+.pm-item.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.payment-label {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  cursor: pointer;
+  margin: 0;
+}
+
+.payment-radio {
+  display: none;
+}
+
+.payment-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.payment-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.payment-content i {
+  font-size: 20px;
+  color: #6b7280;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.pm-item.active .payment-content i {
+  color: #2563eb;
+}
+
+.payment-text span {
+  font-weight: 500;
+  color: #374151;
+  font-size: 15px;
+}
+
+.payment-description {
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.pm-item.active .payment-text span {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.pm-item.active .payment-description {
+  color: #1e40af;
+}
+
+/* Add custom radio button indicator */
+.pm-item::before {
+  content: '';
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #d1d5db;
+  border-radius: 50%;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.pm-item.active::before {
+  border-color: #2563eb;
+  background: #2563eb;
+}
+
+.pm-item.active::after {
+  content: '✓';
+  position: absolute;
+  top: 19px;
+  right: 19px;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
 </style>
