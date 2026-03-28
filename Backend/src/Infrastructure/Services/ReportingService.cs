@@ -19,19 +19,41 @@ namespace Infrastructure.Services
             _context = context;
         }
 
-        public async Task<RevenueReportDto> GetRevenueReportAsync(DateTime startDate, DateTime endDate)
+        public async Task<RevenueReportDto> GetRevenueReportAsync(RevenueQueryDto query)
         {
+            DateTime startDate;
+            DateTime endDate = query.EndDate ?? DateTime.UtcNow;
+
+            if (query.StartDate.HasValue)
+            {
+                startDate = query.StartDate.Value;
+            }
+            else
+            {
+                // Default ranges based on mode
+                startDate = query.Mode switch
+                {
+                    ReportingMode.Month => new DateTime(endDate.Year, 1, 1), // Current year's months
+                    ReportingMode.Year => endDate.AddYears(-5), // Last 5 years
+                    _ => endDate.AddMonths(-1) // Last 30 days
+                };
+            }
+
+            // Ensure we include the full start day
+            startDate = startDate.Date;
+
             var paidBookings = await _context.Bookings
                 .Where(b => b.BookingStatus == BookingStatus.Paid && b.CreatedAt >= startDate && b.CreatedAt <= endDate)
                 .ToListAsync();
 
             var totalRevenue = paidBookings.Sum(b => b.TotalAmount);
             
-            var dailyRevenue = paidBookings
-                .GroupBy(b => b.CreatedAt.Date)
-                .Select(g => new RevenueByDayDto
+            var revenueDetails = paidBookings
+                .GroupBy(b => GetGroupKey(b.CreatedAt, query.Mode))
+                .Select(g => new RevenueDataPointDto
                 {
                     Date = g.Key,
+                    Label = GetLabel(g.Key, query.Mode),
                     Revenue = g.Sum(b => b.TotalAmount),
                     BookingCount = g.Count()
                 })
@@ -42,21 +64,49 @@ namespace Infrastructure.Services
             {
                 TotalRevenue = totalRevenue,
                 TotalPaidBookings = paidBookings.Count,
-                DailyRevenue = dailyRevenue
+                RevenueDetails = revenueDetails
+            };
+        }
+
+        private DateTime GetGroupKey(DateTime date, ReportingMode mode)
+        {
+            return mode switch
+            {
+                ReportingMode.Month => new DateTime(date.Year, date.Month, 1),
+                ReportingMode.Year => new DateTime(date.Year, 1, 1),
+                _ => date.Date
+            };
+        }
+
+        private string GetLabel(DateTime date, ReportingMode mode)
+        {
+            return mode switch
+            {
+                ReportingMode.Month => date.ToString("yyyy-MM"),
+                ReportingMode.Year => date.ToString("yyyy"),
+                _ => date.ToString("yyyy-MM-dd")
             };
         }
 
         public async Task<DashboardStatsDto> GetDashboardStatsAsync()
         {
-            var totalBookings = await _context.Bookings.CountAsync();
-            var totalRevenue = await _context.Bookings
-                .Where(b => b.BookingStatus == BookingStatus.Paid)
-                .SumAsync(b => b.TotalAmount);
+            var now = DateTime.UtcNow;
+            // Calculate start of current week (Monday)
+            int diff = (7 + (now.DayOfWeek - DayOfWeek.Monday)) % 7;
+            var startOfWeek = now.AddDays(-1 * diff).Date;
+
+            var allPaidBookings = _context.Bookings.Where(b => b.BookingStatus == BookingStatus.Paid);
+            
+            // Statistics for THIS WEEK only as per UI title
+            var thisWeekBookings = allPaidBookings.Where(b => b.CreatedAt >= startOfWeek);
+            
+            var totalBookings = await thisWeekBookings.CountAsync();
+            var totalRevenue = await thisWeekBookings.SumAsync(b => b.TotalAmount);
             
             var totalUsers = await _context.Users.CountAsync();
             var activeTrips = await _context.Trips.CountAsync(t => t.Status == TripStatus.Active);
             
-            // Story 4.3: Most popular route calculation
+            // Story 4.3: Most popular route calculation (All time)
             var popularRoute = await _context.Bookings
                 .GroupBy(b => b.Trip!.RouteId)
                 .Select(g => new { RouteId = g.Key, Count = g.Count() })
