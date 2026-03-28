@@ -29,5 +29,12 @@ namespace Api.Controllers
             var report = await _reportingService.GetRevenueReportAsync(query);
             return Ok(report);
         }
+
+        [HttpGet("occupancy")]
+        public async Task<IActionResult> GetOccupancy([FromQuery] OccupancyQueryDto query)
+        {
+            var report = await _reportingService.GetOccupancyReportAsync(query);
+            return Ok(report);
+        }
     }
 }

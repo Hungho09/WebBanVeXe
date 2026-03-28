@@ -34,6 +34,22 @@ export interface RevenueReport {
   revenueDetails: RevenueDataPoint[];
 }
 
+export interface TripOccupancy {
+  tripId: string;
+  routeName: string;
+  departureTime: string;
+  busPlate: string;
+  totalSeats: number;
+  bookedSeats: number;
+  occupancyPercentage: number;
+}
+
+export interface OccupancyReport {
+  trips: TripOccupancy[];
+  averageOccupancy: number;
+  totalTrips: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -51,5 +67,13 @@ export class DashboardService {
     if (start) url += `&startDate=${start}`;
     if (end) url += `&endDate=${end}`;
     return this.http.get<RevenueReport>(url);
+  }
+
+  getOccupancyReport(start?: string, end?: string, routeId?: string): Observable<OccupancyReport> {
+    let url = `${this.apiUrl}/occupancy?`;
+    if (start) url += `startDate=${start}&`;
+    if (end) url += `endDate=${end}&`;
+    if (routeId) url += `routeId=${routeId}`;
+    return this.http.get<OccupancyReport>(url);
   }
 }
