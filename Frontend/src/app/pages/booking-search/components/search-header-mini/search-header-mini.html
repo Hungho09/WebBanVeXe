@@ -1,14 +1,32 @@
 <div class="mini-search-bar">
-    <div class="input-group">
+    <div class="input-group relative">
         <i class="fas fa-map-marker-alt"></i>
-        <input type="text" [(ngModel)]="origin" placeholder="Nơi xuất phát">
+        <input type="text" [(ngModel)]="origin" placeholder="Nơi xuất phát"
+               (focus)="showOriginDropdown = true" (blur)="onBlurOrigin()">
+        
+        <div class="dropdown-list" *ngIf="showOriginDropdown">
+            <div class="dropdown-item" *ngFor="let p of filteredOrigins"
+                 (mousedown)="selectOrigin(p)">{{ p }}</div>
+            <div class="dropdown-item no-result" *ngIf="filteredOrigins.length === 0">
+                Không tìm thấy địa điểm
+            </div>
+        </div>
     </div>
     <div class="swap">
         <i class="fas fa-exchange-alt"></i>
     </div>
-    <div class="input-group">
+    <div class="input-group relative">
         <i class="fas fa-map-pin"></i>
-        <input type="text" [(ngModel)]="destination" placeholder="Nơi đến">
+        <input type="text" [(ngModel)]="destination" placeholder="Nơi đến"
+               (focus)="showDestinationDropdown = true" (blur)="onBlurDestination()">
+        
+        <div class="dropdown-list" *ngIf="showDestinationDropdown">
+            <div class="dropdown-item" *ngFor="let p of filteredDestinations"
+                 (mousedown)="selectDestination(p)">{{ p }}</div>
+            <div class="dropdown-item no-result" *ngIf="filteredDestinations.length === 0">
+                Không tìm thấy địa điểm
+            </div>
+        </div>
     </div>
     <div class="input-group split">
         <i class="far fa-calendar"></i>

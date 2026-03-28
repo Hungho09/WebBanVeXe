@@ -21,14 +21,17 @@ export interface DashboardStats {
   recentBookings: RecentBooking[];
 }
 
+export interface RevenueDataPoint {
+  date: string;
+  label: string;
+  revenue: number;
+  bookingCount: number;
+}
+
 export interface RevenueReport {
   totalRevenue: number;
   totalPaidBookings: number;
-  dailyRevenue: Array<{
-    date: string;
-    revenue: number;
-    bookingCount: number;
-  }>;
+  revenueDetails: RevenueDataPoint[];
 }
 
 @Injectable({
@@ -43,11 +46,10 @@ export class DashboardService {
     return this.http.get<DashboardStats>(`${this.apiUrl}/stats`);
   }
 
-  getRevenueReport(start?: string, end?: string): Observable<RevenueReport> {
-    let url = `${this.apiUrl}/revenue`;
-    if (start && end) {
-      url += `?start=${start}&end=${end}`;
-    }
+  getRevenueReport(mode: string = 'Day', start?: string, end?: string): Observable<RevenueReport> {
+    let url = `${this.apiUrl}/revenue?mode=${mode}`;
+    if (start) url += `&startDate=${start}`;
+    if (end) url += `&endDate=${end}`;
     return this.http.get<RevenueReport>(url);
   }
 }
