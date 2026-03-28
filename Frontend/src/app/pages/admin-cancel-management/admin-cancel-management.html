@@ -1,42 +1,130 @@
-<section class="wrap">
-  <h2>Duyet huy ve</h2>
-  <div class="search">
-    <input [(ngModel)]="bookingId" placeholder="Nhap Booking ID" />
-    <button (click)="searchBooking()">Tim</button>
-    <button class="refresh" (click)="loadCancelRequests()">Tai lai danh sach</button>
-  </div>
+<div class="admin-cancel-page">
+  <header class="page-head">
+    <div class="page-head__text">
+      <h1 class="hero__title" style="margin-bottom: 12px;">Xử lý yêu cầu hủy vé</h1>
+      <p class="hero__eyebrow">Quản lý đặt vé</p>
+    </div>
+    <button type="button" class="btn btn-refresh" (click)="loadCancelRequests()" [disabled]="loading">
+      ⟳ Làm mới danh sách
+    </button>
+  </header>
 
-  <p *ngIf="loading" class="muted">Dang tai...</p>
-
-  <section class="list" *ngIf="!loading">
-    <h3>Yeu cau dang cho duyet ({{ cancelRequests.length }})</h3>
-    <p class="muted" *ngIf="cancelRequests.length === 0">Chua co yeu cau huy nao.</p>
-    <div class="request-cards" *ngIf="cancelRequests.length > 0">
-      <article class="request" *ngFor="let r of cancelRequests" (click)="pickBooking(r)">
-        <p><strong>{{ r.id }}</strong></p>
-        <p>Chuyen: {{ r.routeName || 'N/A' }}</p>
-        <p *ngIf="r.departureTime">Khoi hanh: {{ r.departureTime | date:'short' }}</p>
-        <p>User: {{ r.userName }}</p>
-        <p>Tong tien: {{ r.totalAmount | number:'1.0-0' }} VND</p>
-      </article>
+  <section class="panel panel--search">
+    <h2 class="panel__title">Tra cứu thủ công</h2>
+    <div class="search-row">
+      <input
+        type="text"
+        [(ngModel)]="bookingId"
+        placeholder="Dán hoặc nhập Booking ID (GUID)"
+        class="search-input"
+      />
+      <button type="button" class="btn btn-primary" (click)="searchBooking()" [disabled]="loading || !bookingId.trim()">
+        Tìm booking
+      </button>
     </div>
   </section>
 
-  <article *ngIf="booking" class="card">
-    <p><strong>Booking:</strong> {{ booking.id }}</p>
-    <p><strong>User:</strong> {{ booking.userName }} ({{ booking.userId }})</p>
-    <p><strong>Chuyen:</strong> {{ booking.routeName || 'N/A' }}</p>
-    <p *ngIf="booking.departureTime"><strong>Khoi hanh:</strong> {{ booking.departureTime | date:'medium' }}</p>
-    <p *ngIf="booking.arrivalTime"><strong>Den noi:</strong> {{ booking.arrivalTime | date:'medium' }}</p>
-    <p><strong>Ghe:</strong> {{ seatText(booking) }}</p>
-    <p><strong>Trang thai:</strong> {{ booking.bookingStatus }}</p>
-    <p><strong>Tong tien:</strong> {{ booking.totalAmount | number:'1.0-0' }} VND</p>
+  <p class="state-loading" *ngIf="loading">Đang tải dữ liệu…</p>
 
-    <button class="approve" *ngIf="booking.bookingStatus === 'CancelRequested'" (click)="approveCancel()">
-      Duyet huy
-    </button>
-    <p class="muted" *ngIf="booking.bookingStatus !== 'CancelRequested'">
-      Booking nay khong o trang thai cho duyet huy.
-    </p>
-  </article>
-</section>
+  <div class="layout-split" *ngIf="!loading">
+    <section class="panel panel--list">
+      <div class="panel__head">
+        <h2 class="panel__title">Yêu cầu chờ duyệt</h2>
+        <span class="badge-count">{{ cancelRequests.length }}</span>
+      </div>
+
+      <div class="empty-inline" *ngIf="cancelRequests.length === 0">
+        <p>Chưa có yêu cầu hủy nào đang chờ.</p>
+        <p class="empty-inline__hint">Khi khách gửi hủy từ trang «Vé của tôi», mục sẽ hiện tại đây.</p>
+      </div>
+
+      <div class="request-grid" *ngIf="cancelRequests.length > 0">
+        <button
+          type="button"
+          class="request-card"
+          *ngFor="let r of cancelRequests; trackBy: trackByBookingId"
+          [class.request-card--active]="booking?.id === r.id"
+          (click)="pickBooking(r)"
+        >
+          <span class="request-card__route">{{ r.routeName || 'Chuyến xe' }}</span>
+          <span class="request-card__id">{{ r.id }}</span>
+          <div class="request-card__meta">
+            <span *ngIf="r.departureTime">Khởi hành · {{ r.departureTime | date: 'dd/MM/yyyy HH:mm' }}</span>
+            <span>Khách · {{ r.userName }}</span>
+            <span class="request-card__price">{{ r.totalAmount | number: '1.0-0' }} ₫</span>
+          </div>
+        </button>
+      </div>
+    </section>
+
+    <section class="panel panel--detail">
+      <h2 class="panel__title">Chi tiết &amp; duyệt</h2>
+
+      <div class="detail-empty" *ngIf="!booking">
+        <p>Chọn một dòng trong danh sách bên trái, hoặc tìm booking bằng mã ở trên.</p>
+      </div>
+
+      <article class="detail-card" *ngIf="booking">
+        <header class="detail-card__head">
+          <div>
+            <p class="detail-card__label">Mã booking</p>
+            <p class="detail-card__id">{{ booking.id }}</p>
+          </div>
+          <span class="status-tag" [class.status-tag--wait]="booking.bookingStatus === 'CancelRequested'">
+            {{ booking.bookingStatus === 'CancelRequested' ? 'Chờ duyệt hủy' : booking.bookingStatus }}
+          </span>
+        </header>
+
+        <dl class="detail-grid">
+          <div class="detail-item">
+            <dt>Khách</dt>
+            <dd>{{ booking.userName }}</dd>
+          </div>
+          <div class="detail-item detail-item--wide">
+            <dt>User ID</dt>
+            <dd class="mono">{{ booking.userId }}</dd>
+          </div>
+          <div class="detail-item detail-item--wide">
+            <dt>Tuyến</dt>
+            <dd>{{ booking.routeName || '—' }}</dd>
+          </div>
+          <div class="detail-item" *ngIf="booking.departureTime">
+            <dt>Khởi hành</dt>
+            <dd>{{ booking.departureTime | date: 'dd/MM/yyyy HH:mm' }}</dd>
+          </div>
+          <div class="detail-item" *ngIf="booking.arrivalTime">
+            <dt>Đến nơi</dt>
+            <dd>{{ booking.arrivalTime | date: 'dd/MM/yyyy HH:mm' }}</dd>
+          </div>
+          <div class="detail-item">
+            <dt>Tổng tiền</dt>
+            <dd class="detail-price">{{ booking.totalAmount | number: '1.0-0' }} ₫</dd>
+          </div>
+          <div class="detail-item detail-item--full">
+            <dt>Ghế</dt>
+            <dd>
+              <div class="seat-chips">
+                <span class="chip" *ngFor="let d of booking.details">{{ d.seatNumber }}</span>
+                <span class="chip chip--empty" *ngIf="!booking.details?.length">—</span>
+              </div>
+            </dd>
+          </div>
+        </dl>
+
+        <footer class="detail-card__foot">
+          <button
+            type="button"
+            class="btn btn-approve"
+            *ngIf="booking.bookingStatus === 'CancelRequested'"
+            (click)="approveCancel()"
+          >
+            ✓ Xác nhận hủy vé &amp; giải phóng ghế
+          </button>
+          <p class="detail-note" *ngIf="booking.bookingStatus !== 'CancelRequested'">
+            Booking này không ở trạng thái «Chờ duyệt hủy» — không thể bấm duyệt từ đây.
+          </p>
+        </footer>
+      </article>
+    </section>
+  </div>
+</div>

@@ -80,7 +80,7 @@ export class AdminCancelManagementComponent implements OnInit {
     this.bookingId = b.id;
   }
 
-  seatText(b: BookingResponseDto): string {
-    return b.details?.length ? b.details.map((d) => d.seatNumber).join(', ') : 'N/A';
+  trackByBookingId(_index: number, b: BookingResponseDto): string {
+    return b.id;
   }
 }
