@@ -7,8 +7,8 @@ namespace Domain.Entities
         public Guid Id { get; set; }
         public Guid RouteId { get; set; }
         public Route Route { get; set; } = null!;
-        public Guid StopPointId { get; set; }
-        public StopPoint StopPoint { get; set; } = null!;
+        public Guid LocationId { get; set; }
+        public Location Location { get; set; } = null!;
         
         // Offset from trip departure time
         public int OffsetMinutes { get; set; }

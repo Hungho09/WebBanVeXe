@@ -25,7 +25,8 @@ namespace Infrastructure.Persistence
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<BusType> BusTypes { get; set; }
-        public DbSet<StopPoint> StopPoints { get; set; }
+        public DbSet<Location> Locations { get; set; }
+        public DbSet<Province> Provinces { get; set; }
         public DbSet<RouteStop> RouteStops { get; set; }
         public DbSet<SeatTemplate> SeatTemplates { get; set; }
         public DbSet<CmsConfig> CmsConfigs { get; set; }
@@ -143,12 +144,28 @@ namespace Infrastructure.Persistence
                 entity.Property(e => e.SeatCount).IsRequired();
             });
 
-            // Configure StopPoint
-            modelBuilder.Entity<StopPoint>(entity =>
+            // Configure Province
+            modelBuilder.Entity<Province>(entity =>
             {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Slug).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Region).HasMaxLength(50);
+            });
+
+            // Configure Location
+            modelBuilder.Entity<Location>(entity =>
+            {
+                entity.ToTable("StopPoints"); // Map back to existing table
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
                 entity.Property(e => e.Address).IsRequired().HasMaxLength(500);
+                entity.Property(e => e.MapLink).HasMaxLength(1000);
+                
+                entity.HasOne(e => e.Province)
+                    .WithMany(p => p.Locations)
+                    .HasForeignKey(e => e.ProvinceId)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
 
             // Configure RouteStop
@@ -159,9 +176,9 @@ namespace Infrastructure.Persistence
                     .WithMany(r => r.RouteStops)
                     .HasForeignKey(e => e.RouteId)
                     .OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(e => e.StopPoint)
+                entity.HasOne(e => e.Location)
                     .WithMany(sp => sp.RouteStops)
-                    .HasForeignKey(e => e.StopPointId)
+                    .HasForeignKey(e => e.LocationId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
 

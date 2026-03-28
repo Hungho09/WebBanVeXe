@@ -1,0 +1,126 @@
+<div class="admin-poi-container">
+  <div class="header-section">
+    <h2>Quản lý Điểm Đón/Trả (POI)</h2>
+    <div class="actions">
+      <input type="text" [(ngModel)]="searchTerm" placeholder="Tìm kiếm địa điểm..." (keyup.enter)="fetchLocations()">
+      <button class="btn btn-primary" (click)="openCreateModal()">+ Thêm Điểm Mới</button>
+    </div>
+  </div>
+
+  <div class="loading" *ngIf="loading">Đang tải dữ liệu...</div>
+
+  <div class="poi-list" *ngIf="!loading">
+    <div class="province-group" *ngFor="let group of groupedLocations">
+      <h3 class="province-title">{{ group.provinceName }} <span class="badge count">{{group.locations.length}} điểm</span></h3>
+      
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Tên điểm</th>
+              <th>Địa chỉ</th>
+              <th>Loại điểm</th>
+              <th>Trạng thái</th>
+              <th>Mặc định</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let loc of group.locations">
+              <td>
+                <div class="loc-name">{{ loc.name }}</div>
+                <div class="loc-badge" *ngIf="loc.badge">{{ loc.badge }}</div>
+              </td>
+              <td>{{ loc.address }}</td>
+              <td>
+                <span class="type-badge" *ngIf="loc.isPickup">Điểm Đón</span>
+                <span class="type-badge dropoff" *ngIf="loc.isDropoff">Điểm Trả</span>
+              </td>
+              <td>
+                <span class="status-badge" [class.active]="loc.isActive">
+                  {{ loc.isActive ? 'Hoạt động' : 'Tạm ẩn' }}
+                </span>
+              </td>
+              <td>
+                <label class="switch">
+                  <input type="checkbox" [checked]="loc.isDefault" (change)="toggleDefault(loc.id)">
+                  <span class="slider round"></span>
+                </label>
+              </td>
+              <td class="action-buttons">
+                <button class="btn-icon edit" (click)="openEditModal(loc)"><i class="fas fa-edit"></i> Sửa</button>
+                <button class="btn-icon delete" (click)="deleteLocation(loc.id)"><i class="fas fa-trash"></i> Xóa</button>
+              </td>
+            </tr>
+            <tr *ngIf="group.locations.length === 0">
+              <td colspan="6" class="text-center">Chưa có điểm đón trả nào ở khu vực này</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Form Create/Edit -->
+<div class="modal" [class.active]="showModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>{{ isEditing ? 'Chỉnh sửa' : 'Thêm mới' }} Điểm Đón/Trả</h3>
+      <button class="close-btn" (click)="showModal = false">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form #poiForm="ngForm">
+        <div class="form-group">
+          <label>Tỉnh/Thành phố (*)</label>
+          <select class="form-control" name="provinceId" [(ngModel)]="currentLocation.provinceId" required>
+            <option [ngValue]="undefined" disabled>-- Chọn Tỉnh/Thành phố --</option>
+            <option *ngFor="let p of provinces" [value]="p.id">{{ p.name }}</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Tên địa điểm (*)</label>
+          <input type="text" class="form-control" name="name" [(ngModel)]="currentLocation.name" required>
+        </div>
+
+        <div class="form-group">
+          <label>Địa chỉ cụ thể (*)</label>
+          <input type="text" class="form-control" name="address" [(ngModel)]="currentLocation.address" required>
+        </div>
+
+        <div class="form-group">
+          <label>Link Google Maps (Thêm URL)</label>
+          <input type="text" class="form-control" name="mapLink" [(ngModel)]="currentLocation.mapLink">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group checkbox-group">
+            <label><input type="checkbox" name="isPickup" [(ngModel)]="currentLocation.isPickup"> Cho phép Đón</label>
+          </div>
+          <div class="form-group checkbox-group">
+            <label><input type="checkbox" name="isDropoff" [(ngModel)]="currentLocation.isDropoff"> Cho phép Trả</label>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group checkbox-group">
+            <label><input type="checkbox" name="isActive" [(ngModel)]="currentLocation.isActive"> Kích hoạt (Hiển thị cho khách)</label>
+          </div>
+          <div class="form-group checkbox-group">
+            <label><input type="checkbox" name="isDefault" [(ngModel)]="currentLocation.isDefault"> Điểm mặc định</label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Nhãn (vd: Bến xe trung tâm, Trạm trung chuyển)</label>
+          <input type="text" class="form-control" name="badge" [(ngModel)]="currentLocation.badge">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="showModal = false">Hủy</button>
+      <button class="btn btn-primary" (click)="saveLocation()" [disabled]="!poiForm.valid">Lưu thông tin</button>
+    </div>
+  </div>
+</div>

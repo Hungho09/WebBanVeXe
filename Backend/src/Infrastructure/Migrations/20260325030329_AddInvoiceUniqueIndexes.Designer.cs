@@ -379,14 +379,14 @@ namespace Infrastructure.Migrations
                     b.Property<Guid>("RouteId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("StopPointId")
+                    b.Property<Guid>("LocationId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RouteId");
 
-                    b.HasIndex("StopPointId");
+                    b.HasIndex("LocationId");
 
                     b.ToTable("RouteStops");
                 });
@@ -1368,7 +1368,7 @@ namespace Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Domain.Entities.StopPoint", b =>
+            modelBuilder.Entity("Domain.Entities.Location", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1401,7 +1401,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("StopPoints");
+                    b.ToTable("Locations");
                 });
 
             modelBuilder.Entity("Domain.Entities.Trip", b =>
@@ -1598,15 +1598,15 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.StopPoint", "StopPoint")
+                    b.HasOne("Domain.Entities.Location", "Location")
                         .WithMany("RouteStops")
-                        .HasForeignKey("StopPointId")
+                        .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Route");
 
-                    b.Navigation("StopPoint");
+                    b.Navigation("Location");
                 });
 
             modelBuilder.Entity("Domain.Entities.Seat", b =>
@@ -1672,7 +1672,7 @@ namespace Infrastructure.Migrations
                     b.Navigation("Trips");
                 });
 
-            modelBuilder.Entity("Domain.Entities.StopPoint", b =>
+            modelBuilder.Entity("Domain.Entities.Location", b =>
                 {
                     b.Navigation("RouteStops");
                 });

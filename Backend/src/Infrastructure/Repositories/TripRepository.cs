@@ -23,7 +23,7 @@ namespace Infrastructure.Repositories
             return await _context.Trips
                 .Include(t => t.Route)
                     .ThenInclude(r => r!.RouteStops)
-                        .ThenInclude(rs => rs.StopPoint)
+                        .ThenInclude(rs => rs.Location)
                 .Include(t => t.Bus)
                     .ThenInclude(b => b!.BusType)
                 .Include(t => t.Seats)

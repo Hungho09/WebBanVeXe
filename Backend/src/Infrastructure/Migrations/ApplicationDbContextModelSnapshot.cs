@@ -336,6 +336,57 @@ namespace Infrastructure.Migrations
                     b.ToTable("Invoices");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Location", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Badge")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDropoff")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPickup")
+                        .HasColumnType("bit");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("MapLink")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid?>("ProvinceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProvinceId");
+
+                    b.ToTable("StopPoints", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Entities.Notification", b =>
                 {
                     b.Property<Guid>("Id")
@@ -403,6 +454,32 @@ namespace Infrastructure.Migrations
                     b.ToTable("Payments");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Province", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Region")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Provinces");
+                });
+
             modelBuilder.Entity("Domain.Entities.Route", b =>
                 {
                     b.Property<Guid>("Id")
@@ -451,6 +528,9 @@ namespace Infrastructure.Migrations
                     b.Property<double>("DistanceFromOriginKm")
                         .HasColumnType("float");
 
+                    b.Property<Guid>("LocationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("OffsetMinutes")
                         .HasColumnType("int");
 
@@ -460,14 +540,11 @@ namespace Infrastructure.Migrations
                     b.Property<Guid>("RouteId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("StopPointId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("RouteId");
+                    b.HasIndex("LocationId");
 
-                    b.HasIndex("StopPointId");
+                    b.HasIndex("RouteId");
 
                     b.ToTable("RouteStops");
                 });
@@ -3684,42 +3761,6 @@ namespace Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Domain.Entities.StopPoint", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Badge")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDropoff")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsPickup")
-                        .HasColumnType("bit");
-
-                    b.Property<double?>("Latitude")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("Longitude")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("StopPoints");
-                });
-
             modelBuilder.Entity("Domain.Entities.Trip", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3826,11 +3867,11 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Booking", b =>
                 {
-                    b.HasOne("Domain.Entities.StopPoint", "DropoffPoint")
+                    b.HasOne("Domain.Entities.Location", "DropoffPoint")
                         .WithMany()
                         .HasForeignKey("DropoffPointId");
 
-                    b.HasOne("Domain.Entities.StopPoint", "PickupPoint")
+                    b.HasOne("Domain.Entities.Location", "PickupPoint")
                         .WithMany()
                         .HasForeignKey("PickupPointId");
 
@@ -3896,6 +3937,16 @@ namespace Infrastructure.Migrations
                     b.Navigation("Booking");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Location", b =>
+                {
+                    b.HasOne("Domain.Entities.Province", "Province")
+                        .WithMany("Locations")
+                        .HasForeignKey("ProvinceId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Province");
+                });
+
             modelBuilder.Entity("Domain.Entities.Notification", b =>
                 {
                     b.HasOne("Domain.Entities.User", "User")
@@ -3920,21 +3971,21 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.RouteStop", b =>
                 {
+                    b.HasOne("Domain.Entities.Location", "Location")
+                        .WithMany("RouteStops")
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Entities.Route", "Route")
                         .WithMany("RouteStops")
                         .HasForeignKey("RouteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.StopPoint", "StopPoint")
-                        .WithMany("RouteStops")
-                        .HasForeignKey("StopPointId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Location");
 
                     b.Navigation("Route");
-
-                    b.Navigation("StopPoint");
                 });
 
             modelBuilder.Entity("Domain.Entities.Seat", b =>
@@ -3995,16 +4046,21 @@ namespace Infrastructure.Migrations
                     b.Navigation("Buses");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Location", b =>
+                {
+                    b.Navigation("RouteStops");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Province", b =>
+                {
+                    b.Navigation("Locations");
+                });
+
             modelBuilder.Entity("Domain.Entities.Route", b =>
                 {
                     b.Navigation("RouteStops");
 
                     b.Navigation("Trips");
-                });
-
-            modelBuilder.Entity("Domain.Entities.StopPoint", b =>
-                {
-                    b.Navigation("RouteStops");
                 });
 
             modelBuilder.Entity("Domain.Entities.Trip", b =>

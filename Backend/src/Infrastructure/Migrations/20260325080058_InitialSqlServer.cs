@@ -61,7 +61,7 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StopPoints",
+                name: "Locations",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -75,7 +75,7 @@ namespace Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StopPoints", x => x.Id);
+                    table.PrimaryKey("PK_Locations", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -149,7 +149,7 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RouteId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    StopPointId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     OffsetMinutes = table.Column<int>(type: "int", nullable: false),
                     DistanceFromOriginKm = table.Column<double>(type: "float", nullable: false),
                     OrderIndex = table.Column<int>(type: "int", nullable: false)
@@ -164,9 +164,9 @@ namespace Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_RouteStops_StopPoints_StopPointId",
-                        column: x => x.StopPointId,
-                        principalTable: "StopPoints",
+                        name: "FK_RouteStops_Locations_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -241,14 +241,14 @@ namespace Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Bookings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Bookings_StopPoints_DropoffPointId",
+                        name: "FK_Bookings_Locations_DropoffPointId",
                         column: x => x.DropoffPointId,
-                        principalTable: "StopPoints",
+                        principalTable: "Locations",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Bookings_StopPoints_PickupPointId",
+                        name: "FK_Bookings_Locations_PickupPointId",
                         column: x => x.PickupPointId,
-                        principalTable: "StopPoints",
+                        principalTable: "Locations",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Bookings_Trips_TripId",
@@ -551,9 +551,9 @@ namespace Infrastructure.Migrations
                 column: "RouteId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteStops_StopPointId",
+                name: "IX_RouteStops_LocationId",
                 table: "RouteStops",
-                column: "StopPointId");
+                column: "LocationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Seats_TripId",
@@ -613,7 +613,7 @@ namespace Infrastructure.Migrations
                 name: "Bookings");
 
             migrationBuilder.DropTable(
-                name: "StopPoints");
+                name: "Locations");
 
             migrationBuilder.DropTable(
                 name: "Trips");

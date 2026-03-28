@@ -246,16 +246,16 @@ namespace Infrastructure.Services
                 .OrderBy(rs => rs.OrderIndex)
                 .Select(rs => new TripPointDto
                 {
-                    Id = rs.StopPointId,
-                    Name = rs.StopPoint.Name,
-                    Address = rs.StopPoint.Address,
+                    Id = rs.LocationId,
+                    Name = rs.Location.Name,
+                    Address = rs.Location.Address,
                     ExpectedTime = trip.DepartureTime.AddMinutes(rs.OffsetMinutes),
                     DistanceFromOrigin = rs.DistanceFromOriginKm,
-                    Badge = rs.StopPoint.Badge,
-                    IsPickup = rs.StopPoint.IsPickup,
-                    IsDropoff = rs.StopPoint.IsDropoff,
-                    Latitude = rs.StopPoint.Latitude,
-                    Longitude = rs.StopPoint.Longitude
+                    Badge = rs.Location.Badge,
+                    IsPickup = rs.Location.IsPickup,
+                    IsDropoff = rs.Location.IsDropoff,
+                    Latitude = rs.Location.Latitude,
+                    Longitude = rs.Location.Longitude
                 });
         }
 

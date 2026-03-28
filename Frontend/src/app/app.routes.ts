@@ -7,6 +7,7 @@ import { RouteManagement } from './pages/route-management/route-management';
 import { BusManagement } from './pages/bus-management/bus-management';
 import { TripManagement } from './pages/trip-management/trip-management';
 import { UserManagement } from './pages/user-management/user-management';
+import { AdminPoiComponent } from './pages/admin-poi/admin-poi';
 import { CmsManagement } from './pages/cms-management/cms-management';
 import { BookingManagement } from './pages/booking-management/booking-management';
 import { AdminLayout } from './shared/layout/admin-layout/admin-layout';
@@ -36,6 +37,7 @@ export const routes: Routes = [
       { path: 'dashboard', component: Dashboard },
       { path: 'booking-management', component: BookingManagement },
       { path: 'user-management', component: UserManagement, data: { roles: ['Admin'] } },
+      { path: 'poi', component: AdminPoiComponent, data: { roles: ['Admin', 'Employee'] } },
       { path: 'bus', component: BusManagement },
       { path: 'route', component: RouteManagement },
       { path: 'trip', component: TripManagement },

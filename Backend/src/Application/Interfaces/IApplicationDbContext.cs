@@ -19,7 +19,8 @@ namespace Application.Interfaces
         DbSet<Invoice> Invoices { get; set; }
         DbSet<Notification> Notifications { get; set; }
         DbSet<BusType> BusTypes { get; set; }
-        DbSet<StopPoint> StopPoints { get; set; }
+        DbSet<Location> Locations { get; set; }
+        DbSet<Province> Provinces { get; set; }
         DbSet<RouteStop> RouteStops { get; set; }
         DbSet<SeatTemplate> SeatTemplates { get; set; }
         DbSet<CmsConfig> CmsConfigs { get; set; }

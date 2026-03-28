@@ -64,6 +64,7 @@ namespace Infrastructure
 
             // Extra Services
             services.AddScoped<Application.Interfaces.IBusTypeService, Application.Services.BusTypeService>();
+            services.AddScoped<Application.Interfaces.ILocationService, Infrastructure.Services.LocationService>();
 
             // Background Services
             services.AddHostedService<Infrastructure.Services.SeatLockBackgroundService>();

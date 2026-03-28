@@ -271,8 +271,8 @@ namespace Infrastructure.Services
 
         private async Task<BookingResponseDto> MapToResponseDtoAsync(Booking booking, List<Seat> seats)
         {
-            var pickupPoint = booking.PickupPointId.HasValue ? await _context.StopPoints.FindAsync(booking.PickupPointId) : null;
-            var dropoffPoint = booking.DropoffPointId.HasValue ? await _context.StopPoints.FindAsync(booking.DropoffPointId) : null;
+            var pickupPoint = booking.PickupPointId.HasValue ? await _context.Locations.FindAsync(booking.PickupPointId) : null;
+            var dropoffPoint = booking.DropoffPointId.HasValue ? await _context.Locations.FindAsync(booking.DropoffPointId) : null;
 
             return new BookingResponseDto
             {
