@@ -58,6 +58,8 @@
 /* === Spacing: Padding === */
 .p-10  { padding: 2.5rem; }
 .px-8  { padding-left: 2rem; padding-right: 2rem; }
+.pb-8  { padding-bottom: 2rem; }
+.pt-0  { padding-top: 0; }
 
 /* === Typography: Font weight === */
 .font-medium    { font-weight: 500; }
