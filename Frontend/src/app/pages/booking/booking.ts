@@ -274,6 +274,65 @@ export class Booking implements OnInit, OnDestroy {
     }
   }
 
+  // ── Vehicle type detection ──
+  get vehicleCategory(): 'seat' | 'limousine' | 'sleeper' | 'cabin-single' | 'cabin-double' {
+    const name = (this.trip?.busTypeName || '').toLowerCase();
+    if (name.includes('limousine')) return 'limousine';
+    if ((name.includes('giường phòng') || name.includes('cabin')) && name.includes('đôi')) return 'cabin-double';
+    if (name.includes('giường phòng') || name.includes('cabin single')) return 'cabin-single';
+    if (name.includes('giường nằm') || name.includes('sleeper')) return 'sleeper';
+    return 'seat';
+  }
+
+  get seatLabel(): string {
+    switch (this.vehicleCategory) {
+      case 'sleeper': return 'Chọn giường nằm';
+      case 'cabin-single': return 'Chọn phòng đơn';
+      case 'cabin-double': return 'Chọn phòng đôi';
+      case 'limousine': return 'Chọn ghế VIP';
+      default: return 'Chọn chỗ ngồi';
+    }
+  }
+
+  get seatIcon(): string {
+    switch (this.vehicleCategory) {
+      case 'sleeper': return 'fas fa-bed';
+      case 'cabin-single': return 'fas fa-door-open';
+      case 'cabin-double': return 'fas fa-door-open';
+      case 'limousine': return 'fas fa-crown';
+      default: return 'fas fa-chair';
+    }
+  }
+
+  get seatUnit(): string {
+    switch (this.vehicleCategory) {
+      case 'sleeper': return 'giường';
+      case 'cabin-single': return 'phòng';
+      case 'cabin-double': return 'phòng';
+      default: return 'ghế';
+    }
+  }
+
+  get seatHint(): string {
+    switch (this.vehicleCategory) {
+      case 'sleeper': return 'Nhấn vào giường trống để chọn. Tối đa 5 giường/lượt.';
+      case 'cabin-single': return 'Nhấn vào phòng trống để chọn. Tối đa 5 phòng/lượt.';
+      case 'cabin-double': return 'Nhấn vào phòng trống để chọn. Tối đa 5 phòng/lượt.';
+      case 'limousine': return 'Nhấn vào ghế VIP trống để chọn. Tối đa 5 ghế/lượt.';
+      default: return 'Nhấn vào ghế trống để chọn. Tối đa 5 ghế/lượt.';
+    }
+  }
+
+  floorLabel(floor: number): string {
+    if (this.floors.length <= 1) return '';
+    switch (this.vehicleCategory) {
+      case 'sleeper': return floor === 1 ? 'Tầng dưới' : 'Tầng trên';
+      case 'cabin-single':
+      case 'cabin-double': return floor === 1 ? 'Tầng 1' : 'Tầng 2';
+      default: return `Tầng ${floor}`;
+    }
+  }
+
   get floors(): number[] {
     const floorSet = new Set(this.seats.map(s => s.floor || 1));
     return Array.from(floorSet).sort((a, b) => a - b);
@@ -529,7 +588,7 @@ export class Booking implements OnInit, OnDestroy {
           invoiceNumber: `INV${Date.now().toString().slice(-6)}`,
           totalAmount: this.totalAmount,
           customerName: userProfile.userName || 'Khách hàng',
-          customerEmail: userProfile.Email || '',
+          customerEmail: userProfile.email || '',
           bookingId: res.id // Use res.id instead of res.bookingId
         };
         

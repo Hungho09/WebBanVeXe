@@ -3,8 +3,8 @@
     <!-- 1. Stepper Navigation -->
     <div class="stepper-bar">
         <div class="step" [class.active]="activeStep === 'seat'" [class.completed]="activeStep !== 'seat'">
-            <div class="step-icon"><i class="fas fa-chair"></i></div>
-            <span>Chọn ghế</span>
+            <div class="step-icon"><i [class]="seatIcon"></i></div>
+            <span>{{ seatLabel }}</span>
         </div>
         <div class="connector"></div>
         <div class="step" [class.active]="activeStep === 'point'" [class.completed]="activeStep === 'info'">
@@ -27,8 +27,13 @@
             <!-- STEP 1: Seat Selection -->
             <div class="card animate-fade" *ngIf="activeStep === 'seat'">
                 <div class="card-header">
-                    <h3>Chọn chỗ ngồi</h3>
-                    <p class="text-muted" style="font-size: 0.8rem;">Nhấn vào ghế trống để chọn. Tối đa 5 ghế/lượt.</p>
+                    <div class="card-header-row">
+                        <h3><i [class]="seatIcon" style="margin-right: 0.5rem;"></i>{{ seatLabel }}</h3>
+                        <span class="vehicle-badge" *ngIf="trip?.busTypeName">
+                            <i class="fas fa-bus"></i> {{ trip.busTypeName }}
+                        </span>
+                    </div>
+                    <p class="text-muted" style="font-size: 0.8rem;">{{ seatHint }}</p>
                 </div>
 
                 <div class="timer-banner" *ngIf="selectedSeatIds.length > 0">
@@ -36,19 +41,22 @@
                     Chỗ đã chọn được giữ trong <strong>{{ timerDisplay }}</strong> giây
                 </div>
 
-                <div class="bus-layout">
+                <div class="bus-layout" [ngClass]="vehicleCategory">
                     <!-- Legend -->
-                    <div class="seat-legend" style="display: flex; gap: 1rem; font-size: 0.8rem; margin-bottom: 1rem;">
+                    <div class="seat-legend" style="display: flex; gap: 1rem; font-size: 0.8rem; margin-bottom: 1rem; flex-wrap: wrap;">
                         <div class="legend-item" style="display: flex; align-items: center; gap: 4px;"><div class="box" style="width:12px; height:12px; background:#f3f4f6; border:1px solid #ccc;"></div><span>Đã bán</span></div>
                         <div class="legend-item" style="display: flex; align-items: center; gap: 4px;"><div class="box" style="width:12px; height:12px; background:#fff; border:1px solid #ccc;"></div><span>Trống</span></div>
                         <div class="legend-item" style="display: flex; align-items: center; gap: 4px;"><div class="box" style="width:12px; height:12px; background:#2563eb;"></div><span>Đang chọn</span></div>
-                        <div class="legend-item" style="display: flex; align-items: center; gap: 4px;"><div class="box" style="width:12px; height:12px; border:2px solid #f59e0b;"></div><span>VIP</span></div>
+                        <div class="legend-item" *ngIf="vehicleCategory === 'seat'" style="display: flex; align-items: center; gap: 4px;"><div class="box" style="width:12px; height:12px; border:2px solid #f59e0b;"></div><span>VIP</span></div>
+                        <div class="legend-item" *ngIf="vehicleCategory === 'limousine'" style="display: flex; align-items: center; gap: 4px;"><div class="box" style="width:12px; height:12px; background:#fffdf7; border:2px solid #d4a017;"></div><span>VIP Limousine</span></div>
+                        <div class="legend-item" *ngIf="vehicleCategory === 'sleeper'" style="display: flex; align-items: center; gap: 4px;"><div class="box" style="width:16px; height:10px; border-radius:5px; background:#fff; border:1px solid #6366f1;"></div><span>Giường</span></div>
+                        <div class="legend-item" *ngIf="vehicleCategory === 'cabin-single' || vehicleCategory === 'cabin-double'" style="display: flex; align-items: center; gap: 4px;"><div class="box" style="width:14px; height:14px; border-radius:4px; background:#fff; border:1px solid #8b5cf6;"></div><span>Phòng</span></div>
                     </div>
 
                     <div class="bus-floors mt-4">
                         <div class="floor-wrapper" *ngFor="let floor of floors">
-                            <span class="floor-title">Tầng {{ floor }}</span>
-                            <div class="bus-body">
+                            <span class="floor-title" *ngIf="floorLabel(floor)">{{ floorLabel(floor) }}</span>
+                            <div class="bus-body" [ngClass]="vehicleCategory">
                                 <i class="fas fa-dharmachakra steering-wheel" *ngIf="floor === 1"></i>
                                 <div class="seat-grid-custom" [style.grid-template-columns]="'repeat(' + maxColumns + ', 1fr)'">
                                     <div class="seat-wrapper" 
@@ -60,7 +68,11 @@
                                              [class.booked]="s.status === 'Booked' || (s.status === 'Locked' && !isSelected(s.id))"
                                              [class.selected]="isSelected(s.id)"
                                              [class.vip]="s.type === 'VIP'"
+                                             [class.sleeper-type]="s.type === 'Sleeper'"
+                                             [class.cabin-type]="s.type === 'CabinSingle' || s.type === 'CabinDouble'"
+                                             [class.cabin-double-type]="s.type === 'CabinDouble'"
                                              (click)="toggleSeat(s)">
+                                            <span class="seat-icon-inner" *ngIf="vehicleCategory === 'limousine' && s.status === 'Available'"><i class="fas fa-crown" style="font-size:8px; color:#d4a017; position:absolute; top:4px; right:4px;"></i></span>
                                             {{ s.seatNumber }}
                                         </div>
                                     </div>
@@ -261,13 +273,22 @@
 
                     <hr class="my-3" style="border:0; border-top:1px solid #f3f4f6;">
 
+                    <!-- Vehicle Type Info -->
+                    <div class="vehicle-type-info" *ngIf="trip?.busTypeName" style="display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; background:#f0f9ff; border-radius:12px; margin-bottom:1rem; border:1px solid #e0f2fe;">
+                        <i [class]="seatIcon" style="color:#0284c7; font-size:1.1rem;"></i>
+                        <div style="flex:1;">
+                            <div style="font-weight:700; font-size:0.85rem; color:#0c4a6e;">{{ trip.busTypeName }}</div>
+                            <div style="font-size:0.75rem; color:#0369a1;">{{ trip.busPlate }}</div>
+                        </div>
+                    </div>
+
                     <div class="selection-details">
                         <div class="detail-row" style="display:flex; justify-content:space-between; margin-bottom:0.5rem; font-size:0.9rem;">
                             <span>Số lượng vé:</span>
                             <span class="val" style="font-weight:700;">{{ selectedSeatIds.length }} vé</span>
                         </div>
                         <div class="detail-row" *ngIf="selectedSeatIds.length > 0" style="display:flex; justify-content:space-between; margin-bottom:0.5rem; font-size:0.9rem;">
-                            <span>Số ghế:</span>
+                            <span>Số {{ seatUnit }}:</span>
                             <span class="val" style="color:#2563eb; font-weight:700;">{{ selectedSeatNumbers }}</span>
                         </div>
                         
