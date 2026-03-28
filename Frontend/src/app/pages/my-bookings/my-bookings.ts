@@ -19,6 +19,7 @@ export class MyBookingsComponent implements OnInit {
   private readonly router = inject(Router);
 
   bookings: BookingResponseDto[] = [];
+  readonly loadingSkeletons = [0, 1, 2];
   isLoading = false;
   userId: string | null = null;
 
@@ -92,5 +93,15 @@ export class MyBookingsComponent implements OnInit {
 
   cancelledCount(): number {
     return this.bookings.filter((b) => b.bookingStatus === 'Cancelled').length;
+  }
+
+  activeTripsCount(): number {
+    return this.bookings.filter(
+      (b) => b.bookingStatus === 'Paid' || b.bookingStatus === 'Pending'
+    ).length;
+  }
+
+  trackByBookingId(_index: number, b: BookingResponseDto): string {
+    return b.id;
   }
 }
