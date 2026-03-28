@@ -156,5 +156,54 @@ namespace Infrastructure.Services
                 RecentBookings = recentBookings
             };
         }
+
+        public async Task<OccupancyReportDto> GetOccupancyReportAsync(OccupancyQueryDto query)
+        {
+            var endDate = query.EndDate ?? DateTime.UtcNow;
+            var startDate = query.StartDate ?? endDate.AddMonths(-1);
+
+            var tripsQuery = _context.Trips
+                .Include(t => t.Bus)
+                .Include(t => t.Route)
+                .Include(t => t.Seats)
+                .Where(t => t.DepartureTime >= startDate && t.DepartureTime <= endDate);
+
+            if (query.RouteId.HasValue)
+            {
+                tripsQuery = tripsQuery.Where(t => t.RouteId == query.RouteId);
+            }
+
+            var trips = await tripsQuery
+                .OrderByDescending(t => t.DepartureTime)
+                .ToListAsync();
+
+            var tripOccupancies = trips.Select(t => {
+                // BVX-138: Total seats from bus
+                // BVX-139: Count booked seats
+                int totalSeats = t.Bus?.SeatCount ?? 0;
+                int bookedSeats = t.Seats.Count(s => s.Status == SeatStatus.Booked);
+                
+                // BVX-140: Calculate occupancy percentage
+                double percentage = totalSeats > 0 ? (double)bookedSeats / totalSeats * 100 : 0;
+
+                return new TripOccupancyDto
+                {
+                    TripId = t.Id,
+                    RouteName = $"{t.Route?.Origin} - {t.Route?.Destination}",
+                    DepartureTime = t.DepartureTime,
+                    BusPlate = t.Bus?.PlateNumber ?? "N/A",
+                    TotalSeats = totalSeats,
+                    BookedSeats = bookedSeats,
+                    OccupancyPercentage = Math.Round(percentage, 2)
+                };
+            }).ToList();
+
+            return new OccupancyReportDto
+            {
+                Trips = tripOccupancies,
+                TotalTrips = tripOccupancies.Count,
+                AverageOccupancy = tripOccupancies.Any() ? Math.Round(tripOccupancies.Average(t => t.OccupancyPercentage), 2) : 0
+            };
+        }
     }
 }

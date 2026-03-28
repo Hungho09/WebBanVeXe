@@ -46,4 +46,28 @@ namespace Application.DTOs.Reporting
         public string BusPlate { get; set; } = "";
         public string Status { get; set; } = "";
     }
+    public class OccupancyQueryDto
+    {
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public Guid? RouteId { get; set; }
+    }
+
+    public class TripOccupancyDto
+    {
+        public Guid TripId { get; set; }
+        public string RouteName { get; set; } = string.Empty;
+        public DateTime DepartureTime { get; set; }
+        public string BusPlate { get; set; } = string.Empty;
+        public int TotalSeats { get; set; }
+        public int BookedSeats { get; set; }
+        public double OccupancyPercentage { get; set; }
+    }
+
+    public class OccupancyReportDto
+    {
+        public List<TripOccupancyDto> Trips { get; set; } = new();
+        public double AverageOccupancy { get; set; }
+        public int TotalTrips { get; set; }
+    }
 }

@@ -8,5 +8,6 @@ namespace Application.Interfaces
     {
         Task<RevenueReportDto> GetRevenueReportAsync(RevenueQueryDto query);
         Task<DashboardStatsDto> GetDashboardStatsAsync();
+        Task<OccupancyReportDto> GetOccupancyReportAsync(OccupancyQueryDto query);
     }
 }
