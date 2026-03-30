@@ -153,7 +153,7 @@ export class Dashboard implements OnInit, OnDestroy {
           legend: { display: false },
           tooltip: {
              callbacks: {
-               label: (context) => {
+               label: (context: any) => {
                  const value = context.parsed.y ?? 0;
                  return ' Doanh thu: ' + new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
                }
@@ -165,7 +165,7 @@ export class Dashboard implements OnInit, OnDestroy {
             beginAtZero: true,
             grid: { display: true, color: 'rgba(0,0,0,0.05)' },
             ticks: {
-              callback: (value) => {
+              callback: (value: any) => {
                 if (Number(value) >= 1000000) return (Number(value) / 1000000) + 'M';
                 if (Number(value) >= 1000) return (Number(value) / 1000) + 'K';
                 return value;

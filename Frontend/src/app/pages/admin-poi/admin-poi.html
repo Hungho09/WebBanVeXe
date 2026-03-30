@@ -41,8 +41,8 @@
                 <span *ngIf="!loc.mapLink" class="text-muted">Chưa cập nhật</span>
               </td>
               <td class="action-buttons">
-                <button class="btn-icon edit" (click)="openEditModal(loc)"><i class="fas fa-edit"></i> Sửa</button>
-                <button class="btn-icon delete" (click)="deleteLocation(loc.id)"><i class="fas fa-trash"></i> Xóa</button>
+                <button class="btn-icon edit" (click)="openEditModal(loc)" title="Sửa"><i class="fas fa-edit"></i></button>
+                <button class="btn-icon delete" (click)="deleteLocation(loc.id)" title="Xóa"><i class="fas fa-trash"></i></button>
               </td>
             </tr>
             <tr *ngIf="group.locations.length === 0">
