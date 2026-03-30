@@ -2,7 +2,8 @@ using Npgsql;
 using System;
 
 Console.WriteLine("--- Testing PostgreSQL Connection ---");
-var connString = "Host=localhost;Port=5432;Database=VeXeDb;Username=postgres;Password=quang1501";
+//var connString = "Host=localhost;Port=5432;Database=VeXeDb;Username=postgres;Password=quang1501";
+var connString = "Host=localhost,1433;Database=WebBanVeXeDB;User Id=sa;Password=123456Abc!;TrustServerCertificate=True;";
 try {
     using var conn = new NpgsqlConnection(connString);
     conn.Open();
