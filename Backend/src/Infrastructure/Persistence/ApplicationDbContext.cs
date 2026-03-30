@@ -189,7 +189,7 @@ namespace Infrastructure.Persistence
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.SeatNumber).IsRequired().HasMaxLength(10);
                 entity.Property(e => e.RowVersion).IsRowVersion();
-                entity.HasOne(e => e.Trip).WithMany(t => t.Seats).HasForeignKey(e => e.TripId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.Trip).WithMany(t => t.Seats).HasForeignKey(e => e.TripId).OnDelete(DeleteBehavior.Cascade);
             });
 
             // Configure SeatTemplate
@@ -223,7 +223,7 @@ namespace Infrastructure.Persistence
                 entity.HasOne(e => e.Booking)
                     .WithMany(b => b.BookingDetails)
                     .HasForeignKey(e => e.BookingId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Cascade);
                 entity.HasOne(e => e.Seat)
                     .WithMany()
                     .HasForeignKey(e => e.SeatId)

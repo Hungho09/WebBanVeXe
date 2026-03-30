@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Route, RouteService } from '../../services/route.service';
+import { LocationService, LocationModel } from '../../services/location.service';
 
 @Component({
   selector: 'app-route-management',
@@ -28,11 +29,13 @@ export class RouteManagement implements OnInit {
   routePoints: any[] = [];
   
   // Quick add point form
+  // POI selection logic (Git-new-standard)
+  allLocations: LocationModel[] = [];
+  selectedLocationId: string = '';
+  
   newPoint = {
-    name: '',
-    address: '',
-    offsetMinutes: 0,
-    type: 'pickup' as 'pickup' | 'dropoff' | 'both'
+    type: 'pickup' as 'pickup' | 'dropoff' | 'both',
+    offsetMinutes: 0
   };
 
   provinces = [
@@ -49,6 +52,7 @@ export class RouteManagement implements OnInit {
   constructor(
     private fb: FormBuilder, 
     private routeService: RouteService,
+    private locationService: LocationService, // Đã nạp từ Git mới
     private router: Router
   ) {
     this.routeForm = this.fb.group({
@@ -62,6 +66,14 @@ export class RouteManagement implements OnInit {
 
   ngOnInit() {
     this.loadRoutes();
+    this.fetchPoisFromGit();
+  }
+
+  fetchPoisFromGit() {
+    this.locationService.getLocations().subscribe({
+      next: (locs) => this.allLocations = locs,
+      error: (err) => console.error('Lỗi nạp POI', err)
+    });
   }
 
   loadRoutes() {
@@ -153,12 +165,14 @@ export class RouteManagement implements OnInit {
   }
 
   addPoint() {
-    if (!this.newPoint.name || !this.newPoint.address) return;
+    const poi = this.allLocations.find(l => l.id === this.selectedLocationId);
+    if (!poi) return;
     
     const point = {
         id: crypto.randomUUID(),
-        name: this.newPoint.name,
-        address: this.newPoint.address,
+        locationId: poi.id, 
+        name: poi.name,
+        address: poi.address,
         offsetMinutes: this.newPoint.offsetMinutes,
         isPickup: this.newPoint.type === 'pickup' || this.newPoint.type === 'both',
         isDropoff: this.newPoint.type === 'dropoff' || this.newPoint.type === 'both'
@@ -167,8 +181,9 @@ export class RouteManagement implements OnInit {
     this.routePoints.push(point);
     this.updatePointsField();
     
-    // Reset form
-    this.newPoint = { name: '', address: '', offsetMinutes: 0, type: 'pickup' };
+    // Reset selection logic
+    this.selectedLocationId = '';
+    this.newPoint.offsetMinutes = 0;
   }
 
   removePoint(id: string) {

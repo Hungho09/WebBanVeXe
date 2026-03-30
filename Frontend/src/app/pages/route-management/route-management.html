@@ -88,26 +88,39 @@
 
         <div class="form-group">
           <label>Khoảng cách (km)</label>
-          <input type="number" formControlName="distanceKm">
+          <input type="number" formControlName="distanceKm" placeholder="Ví dụ: 300">
         </div>
 
         <div class="form-group points-editor-section">
           <label class="section-title">Quản lý các điểm đón/trả dọc lộ trình</label>
 
-          <!-- Quick Add Form -->
+          <!-- Quick Add Form (Git-POI Standard) -->
           <div class="quick-add-point-card">
             <div class="qa-grid">
-              <input type="text" [(ngModel)]="newPoint.name" [ngModelOptions]="{standalone: true}"
-                placeholder="Tên trạm (ví dụ: Bến xe Miền Đông)">
-              <input type="text" [(ngModel)]="newPoint.address" [ngModelOptions]="{standalone: true}"
-                placeholder="Địa chỉ chi tiết">
+              <div class="qa-field">
+                <label>Chọn trạm/địa điểm (dữ liệu POI)</label>
+                <select [(ngModel)]="selectedLocationId" [ngModelOptions]="{standalone: true}">
+                  <option value="">-- Chọn địa điểm từ danh sách --</option>
+                  <option *ngFor="let loc of allLocations" [value]="loc.id">
+                    {{ loc.name }} ({{ loc.provinceName }})
+                  </option>
+                </select>
+              </div>
+
+              <div class="qa-field">
+                <label>Thời gian đến (phút sau khởi hành)</label>
+                <input type="number" [(ngModel)]="newPoint.offsetMinutes" [ngModelOptions]="{standalone: true}"
+                  placeholder="Ví dụ: 45">
+              </div>
+
               <div class="qa-footer">
                 <select [(ngModel)]="newPoint.type" [ngModelOptions]="{standalone: true}">
                   <option value="pickup">Chỉ đón</option>
                   <option value="dropoff">Chỉ trả</option>
+                  <option value="both">Cả hai</option>
                 </select>
-                <button type="button" class="btn-add-point" (click)="addPoint()">
-                  <i class="fas fa-plus"></i> Thêm điểm
+                <button type="button" class="btn-add-point" (click)="addPoint()" [disabled]="!selectedLocationId">
+                  <i class="fas fa-plus"></i> Thêm vào tuyến
                 </button>
               </div>
             </div>

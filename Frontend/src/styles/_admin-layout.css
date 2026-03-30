@@ -25,6 +25,12 @@
     z-index: 10;
     flex-shrink: 0;
     height: 100vh;
+    overflow-y: auto;
+    scrollbar-width: none; /* Hide scrollbar for cleaner look */
+}
+
+.sidebar::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome/Safari */
 }
 
 /* Logo box in sidebar */

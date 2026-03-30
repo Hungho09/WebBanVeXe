@@ -79,9 +79,17 @@ namespace Api.Controllers
         // [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var success = await _routeService.DeleteRouteAsync(id);
-            if (!success) return NotFound($"Route with ID {id} not found.");
-            return NoContent();
+            try
+            {
+                var success = await _routeService.DeleteRouteAsync(id);
+                if (!success) return NotFound($"Route with ID {id} not found.");
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                // Most common error here is FK violation
+                return BadRequest($"Không thể xóa tuyến đường này vì nó đang được sử dụng bởi các chuyến đi khác. (Error: {ex.Message})");
+            }
         }
     }
 }

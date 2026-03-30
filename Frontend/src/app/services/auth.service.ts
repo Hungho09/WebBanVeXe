@@ -8,7 +8,7 @@ import { from, Observable } from 'rxjs';
 export class AuthService {
   private apiUrl = '/api/auth'; // Using proxy configured earlier
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   register(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, data);
@@ -55,5 +55,8 @@ export class AuthService {
     localStorage.removeItem('user_email');
     localStorage.removeItem('user_phone');
     localStorage.removeItem('user_role');
+    localStorage.removeItem('user_full_name');
+    localStorage.removeItem('user_email');
+    localStorage.removeItem('user_phone');
   }
 }

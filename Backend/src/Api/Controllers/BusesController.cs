@@ -69,9 +69,17 @@ namespace Api.Controllers
         // [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var success = await _busService.DeleteBusAsync(id);
-            if (!success) return NotFound($"Bus with ID {id} not found.");
-            return NoContent();
+            try
+            {
+                var success = await _busService.DeleteBusAsync(id);
+                if (!success) return NotFound($"Bus with ID {id} not found.");
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                // Most common error here is FK violation
+                return BadRequest($"Không thể xóa xe này vì nó đang được gán cho các chuyến đi. (Error: {ex.Message})");
+            }
         }
     }
 }

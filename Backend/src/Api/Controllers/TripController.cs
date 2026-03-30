@@ -70,7 +70,7 @@ namespace Api.Controllers
             }
 
             Console.WriteLine($"Updating Trip: id={id}, routeId={dto?.RouteId}, busId={dto?.BusId}, depTime={dto?.DepartureTime}, arrTime={dto?.ArrivalTime}, status={dto?.Status}");
-            
+
             if (dto == null)
             {
                 Console.WriteLine("Update DTO is null");
@@ -96,9 +96,16 @@ namespace Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var success = await _tripService.DeleteTripAsync(id);
-            if (!success) return NotFound();
-            return NoContent();
+            try
+            {
+                var success = await _tripService.DeleteTripAsync(id);
+                if (!success) return NotFound();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Không thể xóa chuyến đi này. Có thể nó đang chứa vé đã đặt hoặc danh sách ghế. (Error: {ex.Message})");
+            }
         }
 
         [HttpGet("{id}/seats")]
