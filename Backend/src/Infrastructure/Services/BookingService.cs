@@ -257,6 +257,26 @@ namespace Infrastructure.Services
             return ok;
         }
 
+        public async Task<bool> ConfirmPaymentAsync(Guid bookingId, Guid adminUserId)
+        {
+            var admin = await _context.Users.FindAsync(adminUserId);
+            if (admin == null || !string.Equals(admin.Role, "Admin", StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("Chỉ quản trị viên mới được xác nhận thanh toán.");
+
+            var booking = await _context.Bookings.FindAsync(bookingId);
+            if (booking == null) return false;
+
+            if (booking.BookingStatus == BookingStatus.Paid)
+                throw new InvalidOperationException("Vé này đã được thanh toán.");
+
+            if (booking.BookingStatus == BookingStatus.Cancelled)
+                throw new InvalidOperationException("Vé này đã bị hủy, không thể xác nhận thanh toán.");
+
+            booking.BookingStatus = BookingStatus.Paid;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         private async Task ReleaseSeatsForBookingAsync(Booking booking)
         {
             foreach (var detail in booking.BookingDetails)

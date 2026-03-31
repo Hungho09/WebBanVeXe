@@ -1,0 +1,70 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-left">
+      <div class="logo pointer-cursor" (click)="navigateTo('/')">
+        <img src="/assets/bus.png" alt="Logo" class="auth-logo-img" style="height: 45px;">
+        <span style="font-family: Arial; font-weight: 800; font-size: 1.4rem; color: var(--primary-color); margin-left: 10px;">Codenhalam</span>
+      </div>
+
+      <h2 style="font-size: 2.5em;">Tạo tài khoản mới</h2>
+      <p class="subtitle">Đăng ký ngay để nhận ưu đãi và quản lý chuyến đi của bạn.</p>
+
+      <form (submit)="onRegister($event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Họ và tên</label>
+            <input type="text" name="fullName" [(ngModel)]="registerData.fullName" placeholder="Nguyễn Văn A" required>
+          </div>
+          <div class="form-group">
+            <label>Số điện thoại</label>
+            <input type="tel" name="phoneNumber" [(ngModel)]="registerData.phoneNumber" placeholder="0987xxx" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tên đăng nhập</label>
+            <input type="text" name="userName" [(ngModel)]="registerData.userName" placeholder="user123" required>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" [(ngModel)]="registerData.email" placeholder="email@example.com" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Mật khẩu</label>
+            <input type="password" name="password" [(ngModel)]="registerData.password" placeholder="••••••••" required>
+          </div>
+          <div class="form-group">
+            <label>Loại tài khoản (Phân quyền)</label>
+            <select name="role" [(ngModel)]="registerData.role">
+              <option value="Customer">Khách hàng (Customer)</option>
+              <option value="Employee">Nhân viên (Employee)</option>
+              <option value="Admin">Quản trị viên (Admin)</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-register-submit" [disabled]="isLoading">
+          {{ isLoading ? 'Đang đăng ký...' : 'Đăng ký tài khoản' }}
+        </button>
+
+        <p class="auth-footer">
+          Bạn đã có tài khoản? <a (click)="navigateTo('/login')" class="pointer-cursor">Đăng nhập</a>
+        </p>
+      </form>
+    </div>
+
+    <div class="auth-right-reg">
+      <div class="illustration-box">
+         <img src="/assets/background/register.png" alt="Register Illustration" class="auth-illustration">
+      </div>
+      <div class="overlay-text">
+        <h3>Chào mừng bạn mới!</h3>
+        <p>Gia nhập cộng đồng Vexere để trải nghiệm sớm các tiện ích đặt vé thông minh.</p>
+      </div>
+    </div>
+  </div>
+</div>

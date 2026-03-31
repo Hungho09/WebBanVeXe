@@ -106,6 +106,19 @@
 .pointer-cursor { cursor: pointer; }
 .cursor-pointer { cursor: pointer; }
 
+/* === Layout === */
+.container {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    width: 100%;
+}
+
+.container-fluid {
+    width: 100%;
+    padding: 0 1.5rem;
+}
+
 /* === Overflow === */
 .overflow-hidden { overflow: hidden; }
 .overflow-x-auto { overflow-x: auto; }

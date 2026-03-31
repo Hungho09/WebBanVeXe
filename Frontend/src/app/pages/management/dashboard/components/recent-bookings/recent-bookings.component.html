@@ -1,0 +1,44 @@
+<div class="table-section">
+    <div class="table-header">
+        <h3>Các đơn đặt vé gần đây</h3>
+        <span class="dropdown-small">Xem tất cả <i class="fas fa-chevron-down"></i></span>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Khách hàng</th>
+                    <th>Hành trình</th>
+                    <th>Ngày đi</th>
+                    <th>Số hiệu xe</th>
+                    <th>Trạng thái</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let b of stats?.recentBookings; let i = index" [class.active-row]="i === 1">
+                    <td>
+                        <div class="user-info">
+                            <img [src]="b.customerAvatar || 'https://i.pravatar.cc/150?u=' + b.id" alt="avatar">
+                            {{ b.customerName }}
+                        </div>
+                    </td>
+                    <td>{{ b.routeName }}</td>
+                    <td>{{ b.departureTime | date:'dd/MM/yyyy HH:mm' }}</td>
+                    <td>{{ b.busPlate }}</td>
+                    <td>
+                        <span class="badge" [ngClass]="b.status.toLowerCase()">{{ b.status }}</span>
+                    </td>
+                    <td><i class="fas fa-ellipsis-h cursor-pointer"></i></td>
+                </tr>
+                <tr *ngIf="stats?.recentBookings?.length === 0">
+                    <td colspan="6" style="text-align: center; padding: 40px; color: #94a3b8;">
+                        <i class="fas fa-inbox fa-3x mb-15"></i>
+                        <p>Chưa có dữ liệu đặt vé nào.</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

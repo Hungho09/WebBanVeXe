@@ -1,0 +1,33 @@
+<div class="stats-section">
+    <div class="stats-header">
+        <h3>Báo cáo tuần này</h3>
+        <span class="dropdown-small">Tuần qua <i class="fas fa-chevron-down"></i></span>
+    </div>
+
+    <div class="cards-grid" *ngIf="!loading && stats">
+        <div class="stat-card active-card">
+            <div class="icon-wrapper bg-blue"><i class="fas fa-money-bill-wave"></i></div>
+            <span class="stat-label">Tổng doanh thu</span>
+            <span class="stat-value text-white">{{ stats.totalRevenue | currency:'VND':'symbol':'1.0-0' }}</span>
+        </div>
+
+        <div class="stat-card">
+            <div class="icon-wrapper bg-teal"><i class="fas fa-ticket-alt"></i></div>
+            <span class="stat-label">Vé đã đặt (Paid)</span>
+            <span class="stat-value">{{ stats.totalBookings }}</span>
+        </div>
+
+        <div class="stat-card">
+            <div class="icon-wrapper bg-orange"><i class="fas fa-map-marked-alt"></i></div>
+            <span class="stat-label">Tuyến phổ biến nhất</span>
+            <span class="stat-value small-text">{{ stats.mostPopularRoute }}</span>
+        </div>
+
+        <div class="stat-card">
+            <div class="icon-wrapper bg-purple"><i class="fas fa-bus"></i></div>
+            <span class="stat-label">Chuyến đi đang chạy</span>
+            <span class="stat-value">{{ stats.activeTrips }}</span>
+        </div>
+    </div>
+    <div *ngIf="loading" class="loading-spinner-small">Đang tải dữ liệu...</div>
+</div>

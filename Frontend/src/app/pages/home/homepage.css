@@ -1,0 +1,115 @@
+/* ============================================================
+   homepage.css — Homepage wrapper chỉ (không chứa section styles)
+   Mỗi section đã có CSS riêng trong sections/
+   ============================================================ */
+
+.homepage-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100vw;
+    background-color: var(--bg-color);
+    overflow-x: hidden;
+}
+
+/* Main content background gradient */
+.main-content {
+    flex: 1;
+    background: linear-gradient(0deg, #F19E8E, #ffffff, #6278ae);
+}
+
+.trip-search-results {
+    padding: 1.5rem 20px 2rem;
+}
+
+.trip-search-results__head h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.35rem;
+    color: #1a2744;
+}
+
+.trip-search-results__error {
+    color: #b42318;
+    margin: 0 0 0.5rem;
+}
+
+.trip-search-results__note {
+    color: #5c4a3a;
+    font-size: 0.95rem;
+    margin: 0 0 1rem;
+}
+
+.trip-search-results__empty {
+    color: #444;
+    margin: 0;
+}
+
+.trip-search-results__loading {
+    padding: 1rem 0;
+    color: #555;
+}
+
+.trip-search-results__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.trip-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(26, 39, 68, 0.08);
+    border: 1px solid rgba(26, 39, 68, 0.06);
+}
+
+.trip-card__main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.trip-card__route {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #1a2744;
+}
+
+.trip-card__time,
+.trip-card__plate {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.trip-card__side {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.trip-card__price {
+    font-weight: 700;
+    color: #c2410c;
+}
+
+.trip-card__cta {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: #1a2744;
+    color: #fff !important;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.trip-card__cta:hover {
+    opacity: 0.92;
+}

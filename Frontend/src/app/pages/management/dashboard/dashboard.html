@@ -1,0 +1,32 @@
+<div class="dashboard-content">
+    <app-dashboard-hero [userName]="userName"></app-dashboard-hero>
+
+    <app-dashboard-stats 
+        [stats]="stats" 
+        [loading]="loading">
+    </app-dashboard-stats>
+
+    <app-dashboard-revenue-chart 
+        *ngIf="isAdmin"
+        [revenueData]="revenueData"
+        [loadingChart]="loadingChart"
+        [revenueMode]="revenueMode"
+        [availableYears]="availableYears"
+        [filterStartDate]="filterStartDate"
+        [filterEndDate]="filterEndDate"
+        [filterYear]="filterYear"
+        [filterYearStart]="filterYearStart"
+        [filterYearEnd]="filterYearEnd"
+        (modeChanged)="onModeChanged($event)"
+        (filterChanged)="onFilterChanged($event)">
+    </app-dashboard-revenue-chart>
+
+    <app-dashboard-occupancy 
+        *ngIf="isAdmin && occupancyReport"
+        [occupancyReport]="occupancyReport">
+    </app-dashboard-occupancy>
+
+    <app-dashboard-recent-bookings 
+        [stats]="stats">
+    </app-dashboard-recent-bookings>
+</div>

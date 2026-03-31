@@ -73,6 +73,10 @@ export class BookingService {
     return this.http.post(`${this.apiUrl}/${id}/approve-cancel`, { adminUserId });
   }
 
+  confirmPayment(id: string, adminUserId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/confirm-payment`, { adminUserId });
+  }
+
   lockSeat(seatId: string, userId: string): Observable<any> {
     return this.http.post(`api/bookings/lock-seat/${seatId}`, { userId });
   }

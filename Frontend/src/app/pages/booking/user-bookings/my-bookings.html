@@ -1,0 +1,157 @@
+<div class="page-shell">
+  <div class="page-bg"></div>
+  <div class="page-bg page-bg--accent"></div>
+
+  <!-- HEADER -->
+  <header class="hero">
+    <div class="hero__inner">
+      <div class="hero__text">
+        <h1 class="hero__title" style="margin-bottom: 12px;">Vé của bạn</h1>
+        <p class="hero__eyebrow">Quản lý & theo dõi hành trình đã đặt</p>
+      </div>
+      <div class="hero__actions">
+        <a routerLink="/homepage" class="btn btn-secondary">Trang chủ</a>
+        <button class="btn btn-primary" (click)="loadBookings()" [disabled]="isLoading">
+          Cập nhật
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="main__inner">
+
+      <!-- LOADING -->
+      <div class="skeleton" *ngIf="isLoading">
+        <div class="skeleton__cards">
+          <div class="skeleton__card" *ngFor="let _ of [1,2,3,4]"></div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <section class="stats" *ngIf="!isLoading && bookings.length > 0">
+        <div class="stat">
+          <span class="stat__label">Tổng số vé</span>
+          <strong class="stat__value">{{ bookings.length }}</strong>
+        </div>
+        <div class="stat stat--ok">
+          <span class="stat__label">Đang hoạt động</span>
+          <strong class="stat__value">{{ activeTripsCount() }}</strong>
+        </div>
+        <div class="stat stat--warn">
+          <span class="stat__label">Đang chờ hủy</span>
+          <strong class="stat__value">{{ cancelRequestedCount() }}</strong>
+        </div>
+        <div class="stat stat--muted">
+          <span class="stat__label">Đã hủy</span>
+          <strong class="stat__value">{{ cancelledCount() }}</strong>
+        </div>
+      </section>
+
+      <!-- EMPTY -->
+      <section class="empty" *ngIf="!isLoading && bookings.length === 0">
+        <div class="empty__icon"></div>
+        <h2 class="empty__title">Bạn chưa có chuyến đi nào</h2>
+        <p class="empty__text">
+          Hãy bắt đầu đặt vé để khám phá những hành trình mới
+        </p>
+        <a routerLink="/homepage" class="btn btn-primary btn-lg"> Tìm chuyến ngay</a>
+      </section>
+
+      <!-- TICKET GRID -->
+      <div class="ticket-grid" *ngIf="!isLoading && bookings.length > 0">
+        <article class="ticket" *ngFor="let b of bookings; trackBy: trackByBookingId"
+          [class.ticket--requested]="b.bookingStatus === 'CancelRequested'"
+          [class.ticket--cancelled]="b.bookingStatus === 'Cancelled'">
+          <div class="ticket__rail"></div>
+
+          <div class="ticket__body">
+
+            <!-- HEADER -->
+            <header class="ticket__head">
+              <div>
+                <h2 class="ticket__route"> {{ b.routeName || 'Chuyến xe' }}</h2>
+                <p class="ticket__id">Mã vé: #{{ b.id }}</p>
+              </div>
+              <span class="pill" [ngClass]="statusClass(b.bookingStatus)">
+                {{ statusLabel(b.bookingStatus) }}
+              </span>
+            </header>
+
+            <!-- SCHEDULE -->
+            <div class="ticket__schedule">
+              <div class="sch" *ngIf="b.departureTime">
+                <span class="sch__l"> Khởi hành</span>
+                <time class="sch__v">
+                  {{ b.departureTime | date: 'EEE, dd/MM/yyyy · HH:mm' }}
+                </time>
+              </div>
+
+              <div class="sch" *ngIf="b.arrivalTime">
+                <span class="sch__l"> Dự kiến đến</span>
+                <time class="sch__v">
+                  {{ b.arrivalTime | date: 'EEE, dd/MM/yyyy · HH:mm' }}
+                </time>
+              </div>
+
+              <div class="sch" *ngIf="!b.departureTime && !b.arrivalTime">
+                <span class="sch__l">Lịch trình</span>
+                <span class="sch__v sch__v--muted">Đang cập nhật</span>
+              </div>
+            </div>
+
+            <!-- META -->
+            <div class="ticket__meta">
+              <div class="meta">
+                <span class="meta__l"> Đặt lúc</span>
+                <span class="meta__v">
+                  {{ b.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+                </span>
+              </div>
+
+              <div class="meta">
+                <span class="meta__l"> Tổng thanh toán</span>
+                <span class="meta__v meta__v--price">
+                  {{ b.totalAmount | number: '1.0-0' }} ₫
+                </span>
+              </div>
+
+              <div class="meta meta--full">
+                <span class="meta__l"> Ghế ({{ b.details.length }})</span>
+                <div class="chips">
+                  <span class="chip" *ngFor="let d of b.details">
+                    {{ d.seatNumber }}
+                  </span>
+                  <span class="chip chip--empty" *ngIf="!b.details?.length">—</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- FOOTER -->
+            <footer class="ticket__foot">
+              <button class="btn btn-danger" *ngIf="canRequestCancel(b.bookingStatus)" (click)="requestCancel(b.id)">
+                Yêu cầu hủy
+              </button>
+
+              <p class="ticket__hint ticket__hint--wait" *ngIf="b.bookingStatus === 'CancelRequested'">
+                Đang xử lý yêu cầu hủy — vui lòng chờ xác nhận
+              </p>
+
+              <p class="ticket__hint ticket__hint--off" *ngIf="b.bookingStatus === 'Cancelled'">
+                Vé đã hủy
+              </p>
+            </footer>
+
+          </div>
+        </article>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="foot">
+    <span>📞 Cần hỗ trợ? Liên hệ nhà xe theo thông tin trên vé điện tử.</span>
+  </footer>
+</div>

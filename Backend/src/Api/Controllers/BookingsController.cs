@@ -124,5 +124,23 @@ namespace Api.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpPost("{id}/confirm-payment")]
+        public async Task<IActionResult> ConfirmPayment(Guid id, [FromBody] ApproveCancelBookingRequestDto request)
+        {
+            if (request == null || request.AdminUserId == Guid.Empty)
+                return BadRequest(new { message = "Cần AdminUserId để xác nhận thanh toán." });
+
+            try
+            {
+                var ok = await _bookingService.ConfirmPaymentAsync(id, request.AdminUserId);
+                if (!ok) return NotFound();
+                return Ok(new { message = "Đã xác nhận thanh toán thành công. Đơn hàng đã được ghi nhận vào doanh thu." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

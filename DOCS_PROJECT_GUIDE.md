@@ -26,21 +26,18 @@ Dự án này là một web application hỗ trợ đặt vé xe khách trực t
 Để triển khai database vào SQL Server theo yêu cầu của thầy/cô, bạn thực hiện theo các bước:
 
 1.  **Mở SQL Server Management Studio (SSMS)** và kết nối tới server của bạn (thường là `(localdb)\mssqllocaldb` hoặc `.\SQLEXPRESS`).
-2.  **Mở và chạy file Schema**:
-    - Tìm file: `backend/src/api/schema.sql` trong mã nguồn.
-    - Copy toàn bộ nội dung và thực thi (Execute) tại SSMS để tạo cấu trúc bảng.
-3.  **Mở và chạy file Dữ liệu mẫu (Seed Data)**:
-    - Tìm file: `backend/src/api/seed_data.sql`.
-    - Thực thi để nạp dữ liệu về Chuyến xe, Tuyến đường, và Tài khoản Admin.
+2.  **Mở và chạy file Cấu hình toàn bộ**:
+    - Tìm file: `Backend/src/Api/Scripts/Initialize_All_Database.sql` trong mã nguồn.
+    - Copy toàn bộ nội dung và thực thi (Execute) tại SSMS. Script này sẽ tự động tạo Database, tạo bảng và nạp đầy đủ dữ liệu mẫu (Admin, Chuyến xe, Tuyến đường, v.v.).
 
-**Lưu ý**: Đảm bảo chuỗi kết nối (Connection String) trong file `backend/src/api/appsettings.json` trỏ chính xác vào server của bạn.
+**Lưu ý**: Đảm bảo chuỗi kết nối (Connection String) trong file `Backend/src/Api/appsettings.json` trỏ chính xác vào server của bạn.
 
 ---
 
 ## 🚀 4. Hướng dẫn Chạy Hệ thống
 
 ### Bước 1: Khởi chạy Backend
-Mở Terminal tại thư mục gốc của dự án (`Codenhalam-WebBanVeXe/backend/src/api`) và chạy:
+Mở Terminal tại thư mục gốc của dự án (`Codenhalam-WebBanVeXe/Backend/src/Api`) và chạy:
 ```bash
 dotnet restore
 dotnet run

@@ -4,7 +4,7 @@
 
 .footer {
     background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-                url('/assets/bvx15.png');
+                url('/assets/background/bvx15.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

@@ -20,6 +20,7 @@ namespace Application.DTOs.Route
         public string? Points { get; set; }
         public string Destination { get; set; } = string.Empty;
         public int DistanceKm { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 
     public class UpdateRouteDto

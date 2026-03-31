@@ -1,0 +1,52 @@
+/* Hero Welcome Card */
+.hero-card {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-indigo) 100%);
+    border-radius: var(--radius-xl);
+    padding: 2rem 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-hover);
+    position: relative;
+    overflow: hidden;
+    color: white;
+}
+
+/* Subtle circle decoration */
+.hero-card::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 180px;
+    height: 180px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+.hero-left h1 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+.hero-left h1 span {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.hero-left p {
+    opacity: 0.9;
+    font-size: 1rem;
+}
+
+.hero-image {
+    width: 220px;
+    height: 160px;
+    background: url('../../../../../../assets/busicon.png') no-repeat center right;
+    background-size: contain;
+    position: absolute;
+    right: 50px;
+    bottom: 0;
+    flex-shrink: 0;
+}

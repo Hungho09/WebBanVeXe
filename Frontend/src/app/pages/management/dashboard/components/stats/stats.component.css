@@ -1,0 +1,123 @@
+/* Stats Section Header */
+.stats-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.stats-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a1a24;
+}
+
+.dropdown-small {
+    color: var(--text-light);
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+/* Stat Cards Strip */
+.cards-grid {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    min-width: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-bounce);
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    flex: 1;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.active-card {
+    background: var(--primary-color);
+    border-color: transparent;
+}
+
+/* Stat Icon */
+.icon-wrapper {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    margin-bottom: 0.875rem;
+    color: white;
+}
+
+.bg-blue {
+    background: var(--primary-color);
+}
+
+.bg-orange {
+    background: #ffe6d3;
+    color: #f97316 !important;
+}
+
+.bg-teal {
+    background: #d1f4ec;
+    color: var(--success) !important;
+}
+
+.bg-purple {
+    background: #ebdffc;
+    color: #a461e8 !important;
+}
+
+.active-card .icon-wrapper {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.active-card .stat-label {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1a1a24;
+}
+
+.stat-value.small-text {
+    font-size: 0.9rem;
+}
+
+.active-card .stat-value {
+    color: white;
+}
+
+.loading-spinner-small {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}

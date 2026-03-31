@@ -19,5 +19,6 @@ namespace Application.Interfaces
         Task<IEnumerable<BookingResponseDto>> GetCancelRequestsAsync();
         Task<bool> RequestCancelAsync(Guid bookingId, Guid userId);
         Task<bool> ApproveCancelAsync(Guid bookingId, Guid adminUserId);
+        Task<bool> ConfirmPaymentAsync(Guid bookingId, Guid adminUserId);
     }
 }

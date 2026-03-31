@@ -1,0 +1,40 @@
+<div class="chart-section">
+    <div class="chart-header">
+        <div class="header-left">
+            <h3 class="flex items-center"><i class="fas fa-chart-line mr-3 text-indigo-500"></i>Thống kê doanh thu</h3>
+            <p>Theo dõi biến động dòng tiền theo thời gian</p>
+        </div>
+        <div class="mode-selector">
+            <div class="filter-group" *ngIf="revenueMode === 'Day'">
+                <input type="date" [(ngModel)]="filterStartDate" (change)="applyFilter()" class="filter-input">
+                <span class="filter-sep">đến</span>
+                <input type="date" [(ngModel)]="filterEndDate" (change)="applyFilter()" class="filter-input">
+            </div>
+            <div class="filter-group" *ngIf="revenueMode === 'Month'">
+                <select [(ngModel)]="filterYear" (change)="applyFilter()" class="filter-select">
+                    <option *ngFor="let y of availableYears" [value]="y">Năm {{ y }}</option>
+                </select>
+            </div>
+            <div class="filter-group" *ngIf="revenueMode === 'Year'">
+                <select [(ngModel)]="filterYearStart" (change)="applyFilter()" class="filter-select">
+                    <option *ngFor="let y of availableYears" [value]="y">Từ {{ y }}</option>
+                </select>
+                <span class="filter-sep">đến</span>
+                <select [(ngModel)]="filterYearEnd" (change)="applyFilter()" class="filter-select">
+                    <option *ngFor="let y of availableYears" [value]="y">Đến {{ y }}</option>
+                </select>
+            </div>
+            <div class="divider-v"></div>
+            <button [class.active]="revenueMode === 'Day'" (click)="setRevenueMode('Day')">Ngày</button>
+            <button [class.active]="revenueMode === 'Month'" (click)="setRevenueMode('Month')">Tháng</button>
+            <button [class.active]="revenueMode === 'Year'" (click)="setRevenueMode('Year')">Năm</button>
+        </div>
+    </div>
+    <div class="chart-container-wrapper">
+        <div *ngIf="loadingChart" class="chart-loader">
+            <div class="spinner-small"></div>
+            <span>Đang cập nhật biểu đồ...</span>
+        </div>
+        <canvas id="revenueChart"></canvas>
+    </div>
+</div>

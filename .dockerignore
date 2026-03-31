@@ -1,8 +1,0 @@
-**/.git
-**/bin
-**/obj
-**/node_modules
-Frontend/node_modules
-**/*.db
-**/*.db-shm
-**/*.db-wal

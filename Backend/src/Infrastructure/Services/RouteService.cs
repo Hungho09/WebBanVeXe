@@ -40,8 +40,7 @@ namespace Infrastructure.Services
             if (string.IsNullOrWhiteSpace(createRouteDto.Destination))
                 throw new ArgumentException("Destination is required.");
 
-            if (createRouteDto.DistanceKm <= 0)
-                throw new ArgumentException("Distance must be greater than 0.");
+            // Removed distance validation to allow flexible route creation (can be updated later)
 
             var exists = await _routeRepository.ExistsAsync(createRouteDto.Origin, createRouteDto.Destination);
             if (exists)
@@ -54,7 +53,7 @@ namespace Infrastructure.Services
                 Points = createRouteDto.Points,
                 Destination = createRouteDto.Destination,
                 DistanceKm = createRouteDto.DistanceKm,
-                IsActive = true,
+                IsActive = createRouteDto.IsActive,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -72,8 +71,7 @@ namespace Infrastructure.Services
             if (string.IsNullOrWhiteSpace(updateRouteDto.Destination))
                 throw new ArgumentException("Destination is required.");
 
-            if (updateRouteDto.DistanceKm <= 0)
-                throw new ArgumentException("Distance must be greater than 0.");
+            // DistanceKm can be 0 initially
 
             var route = await _routeRepository.GetByIdAsync(id);
             if (route == null) return false;
