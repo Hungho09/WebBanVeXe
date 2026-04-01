@@ -580,24 +580,32 @@ export class Booking implements OnInit, OnDestroy {
     this.isLoading = true;
     this.bookingService.createBooking(bookingDto).subscribe({
       next: (res) => {
-        this.stopTimer();
-        this.toastService.showSuccess('Đặt vé thành công!');
-        
-        // Prepare invoice info for dialog
-        this.invoiceInfo = {
-          invoiceNumber: `INV${Date.now().toString().slice(-6)}`,
-          totalAmount: this.totalAmount,
-          customerName: userProfile.userName || 'Khách hàng',
-          customerEmail: userProfile.email || '',
-          bookingId: res.id // Use res.id instead of res.bookingId
-        };
-        
-        
-        
-        
-        // Show invoice export dialog
-        this.showInvoiceDialog = true;
-        this.isLoading = false;
+        // Step 2: Auto-simulate payment for demo purposes to transition status to Paid
+        this.bookingService.processPayment(res.id, this.selectedPaymentMethod).subscribe({
+          next: (payRes) => {
+            this.stopTimer();
+            this.toastService.showSuccess('Thanh toán thành công!');
+            
+            // Prepare invoice info for dialog
+            this.invoiceInfo = {
+              invoiceNumber: payRes.transactionCode || `INV${Date.now().toString().slice(-6)}`,
+              totalAmount: this.totalAmount,
+              customerName: userProfile.userName || 'Khách hàng',
+              customerEmail: userProfile.email || '',
+              bookingId: res.id
+            };
+            
+            // Show invoice export dialog
+            this.showInvoiceDialog = true;
+            this.isLoading = false;
+          },
+          error: (payErr) => {
+            console.error('Payment auto-simulate failed:', payErr);
+            this.toastService.showWarning('Đặt vé thành công nhưng chưa thể hoàn tất thanh toán tự động.');
+            this.isLoading = false;
+            this.router.navigate(['/my-bookings']);
+          }
+        });
       },
       error: (err) => {
         const msg = err?.error?.message || err?.message || 'Đặt vé thất bại';

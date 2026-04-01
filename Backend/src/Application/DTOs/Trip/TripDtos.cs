@@ -19,6 +19,8 @@ namespace Application.DTOs.Trip
         public int AvailableSeats { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public List<RouteStopDto> RouteStops { get; set; } = new();
+        
     }
 
     public class CreateTripDto
@@ -41,4 +43,22 @@ namespace Application.DTOs.Trip
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public TripStatus Status { get; set; }
     }
+
+    public class RouteStopDto
+    {
+        public Guid Id { get; set; }
+        public int OrderIndex { get; set; }
+        public int OffsetMinutes { get; set; }
+        public double DistanceFromOriginKm { get; set; }
+        public Guid StopPointId { get; set; }
+        public string? StopPointName { get; set; }
+        public string? StopPointAddress { get; set; }
+        public string? Badge { get; set; }
+        public bool IsPickup { get; set; }
+        public bool IsDropoff { get; set; }
+        public bool IsDefault { get; set; }
+        public DateTime ExpectedTime { get; set; }
+    }
+
+   
 }

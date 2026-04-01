@@ -68,9 +68,9 @@ export class MyBookingsComponent implements OnInit {
   }
 
   statusLabel(status: string): string {
-    if (status === 'Pending') return 'Da thanh toan';
-    if (status === 'Paid') return 'Da thanh toan';
-    if (status === 'CancelRequested') return 'Cho duyet huy';
+    if (status === 'Pending') return 'Chờ thanh toán';
+    if (status === 'Paid') return 'Đã thanh toán';
+    if (status === 'CancelRequested') return 'Chờ duyệt hủy';
     if (status === 'Cancelled') return 'Da huy';
     return status;
   }

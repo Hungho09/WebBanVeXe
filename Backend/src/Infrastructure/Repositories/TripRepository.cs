@@ -17,18 +17,17 @@ namespace Infrastructure.Repositories
         {
             _context = context;
         }
-
-        public async Task<Trip?> GetByIdAsync(Guid id)
-        {
-            return await _context.Trips
-                .Include(t => t.Route)
-                    .ThenInclude(r => r!.RouteStops)
-                        .ThenInclude(rs => rs.Location)
-                .Include(t => t.Bus)
-                    .ThenInclude(b => b!.BusType)
-                .Include(t => t.Seats)
-                .FirstOrDefaultAsync(t => t.Id == id);
-        }
+    public async Task<Trip?> GetByIdAsync(Guid id)
+    {
+    return await _context.Trips
+        .Include(t => t.Route)
+            .ThenInclude(r => r!.RouteStops)
+                .ThenInclude(rs => rs.Location)  // ← đổi lại thành Location
+        .Include(t => t.Bus)
+            .ThenInclude(b => b!.BusType)
+        .Include(t => t.Seats)
+        .FirstOrDefaultAsync(t => t.Id == id);
+    }
 
         public async Task<IEnumerable<Trip>> GetAllAsync()
         {

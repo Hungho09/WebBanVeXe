@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services
 {
@@ -15,21 +14,19 @@ namespace Infrastructure.Services
         private readonly ITripRepository _tripRepository;
         private readonly ISeatService _seatService;
         private readonly IBusRepository _busRepository;
-        private readonly IApplicationDbContext _context;
 
-        public TripService(ITripRepository tripRepository, ISeatService seatService, IBusRepository busRepository, IApplicationDbContext context)
+        // ✅ Bỏ IApplicationDbContext vì không còn dùng _context.Locations nữa
+        public TripService(ITripRepository tripRepository, ISeatService seatService, IBusRepository busRepository)
         {
             _tripRepository = tripRepository;
             _seatService = seatService;
             _busRepository = busRepository;
-            _context = context;
         }
 
         public async Task<TripDto?> GetTripByIdAsync(Guid id)
         {
             var trip = await _tripRepository.GetByIdAsync(id);
             if (trip == null) return null;
-
             return MapToDto(trip);
         }
 
@@ -41,30 +38,24 @@ namespace Infrastructure.Services
 
         public async Task<TripDto> CreateTripAsync(CreateTripDto dto)
         {
-            // BVX-66: Validate Trip time logic
             if (dto.ArrivalTime <= dto.DepartureTime)
-            {
                 throw new ArgumentException("Arrival time must be after departure time.");
-            }
 
-            // Check for bus availability (from BusStatus enum)
             var bus = await _busRepository.GetByIdAsync(dto.BusId);
             if (bus == null)
-            {
                 throw new ArgumentException("Bus not found.");
-            }
 
             if (bus.Status != Domain.Enums.BusStatus.Available)
             {
-                var statusMsg = bus.Status == Domain.Enums.BusStatus.Active ? "đang hoạt động" : "ngưng hoạt động";
-                throw new InvalidOperationException($"Không thể tạo chuyến mới cho xe này vì xe {statusMsg}.");
+                var statusMsg = bus.Status == Domain.Enums.BusStatus.Active
+                    ? "đang hoạt động" : "ngưng hoạt động";
+                throw new InvalidOperationException(
+                    $"Không thể tạo chuyến mới cho xe này vì xe {statusMsg}.");
             }
 
-            // Check for bus availability (no overlapping trips)
             if (await _tripRepository.HasConflictAsync(dto.BusId, dto.DepartureTime, dto.ArrivalTime))
-            {
-                throw new InvalidOperationException("Xe này đã được xếp lịch cho một chuyến đi khác trong khoảng thời gian này.");
-            }
+                throw new InvalidOperationException(
+                    "Xe này đã được xếp lịch cho một chuyến đi khác trong khoảng thời gian này.");
 
             var trip = new Trip
             {
@@ -79,22 +70,15 @@ namespace Infrastructure.Services
             };
 
             await _tripRepository.AddAsync(trip);
-            
-            // Story: Update bus status to Active when trip is created
+
             bus.Status = Domain.Enums.BusStatus.Active;
             await _busRepository.UpdateAsync(bus);
-
             await _tripRepository.SaveChangesAsync();
 
-            // Refresh to get navigation properties (like Bus) for seat generation
             var createdTripWithBus = await _tripRepository.GetByIdAsync(trip.Id);
             if (createdTripWithBus?.Bus != null)
-            {
-                // Story 2.4: Auto generate seats based on bus type
                 await _seatService.GenerateSeatsForTripAsync(trip.Id, createdTripWithBus.Bus.BusTypeId);
-            }
 
-            // Refresh to get navigation properties for the DTO
             var createdTrip = await _tripRepository.GetByIdAsync(trip.Id);
             return MapToDto(createdTrip!);
         }
@@ -105,14 +89,11 @@ namespace Infrastructure.Services
             if (trip == null) return false;
 
             if (dto.ArrivalTime <= dto.DepartureTime)
-            {
                 throw new ArgumentException("Arrival time must be after departure time.");
-            }
 
             if (await _tripRepository.HasConflictAsync(dto.BusId, dto.DepartureTime, dto.ArrivalTime, id))
-            {
-                throw new InvalidOperationException("This bus is already assigned to another trip during this interval.");
-            }
+                throw new InvalidOperationException(
+                    "This bus is already assigned to another trip during this interval.");
 
             trip.RouteId = dto.RouteId;
             trip.BusId = dto.BusId;
@@ -142,12 +123,16 @@ namespace Infrastructure.Services
             var trip = await _tripRepository.GetByIdAsync(tripId);
             if (trip == null) return Enumerable.Empty<SeatDto>();
 
+            var now = DateTime.UtcNow;
+
             return trip.Seats.Select(s => new SeatDto
             {
                 Id = s.Id,
                 TripId = s.TripId,
                 SeatNumber = s.SeatNumber,
-                Status = s.Status.ToString(),
+                Status = (s.Status == Domain.Enums.SeatStatus.Locked && s.LockExpirationTime.HasValue && s.LockExpirationTime <= now) 
+                         ? Domain.Enums.SeatStatus.Available.ToString() 
+                         : s.Status.ToString(),
                 RowNumber = s.RowNumber,
                 ColumnNumber = s.ColumnNumber,
                 Floor = s.Floor,
@@ -172,10 +157,10 @@ namespace Infrastructure.Services
             if (seat.Status == Domain.Enums.SeatStatus.Booked)
                 return false;
 
-            // If already locked by someone else and not expired, return false
-            if (seat.Status == Domain.Enums.SeatStatus.Locked && seat.LockExpirationTime > now && seat.LockedByUserId != userId)
+            if (seat.Status == Domain.Enums.SeatStatus.Locked
+                && seat.LockExpirationTime > now
+                && seat.LockedByUserId != userId)
                 return false;
-
 
             if (seat.Status == Domain.Enums.SeatStatus.Available)
             {
@@ -196,7 +181,6 @@ namespace Infrastructure.Services
                     await _tripRepository.SaveChangesAsync();
                     return true;
                 }
-
                 return false;
             }
 
@@ -211,8 +195,9 @@ namespace Infrastructure.Services
             if (trip == null) return false;
 
             var seat = trip.Seats.FirstOrDefault(s => s.Id == seatId);
-            // Only unlock if it's locked and either owned by this user or just locked in general (Admin)
-            if (seat == null || seat.Status != Domain.Enums.SeatStatus.Locked || (seat.LockedByUserId != null && seat.LockedByUserId != userId))
+            if (seat == null
+                || seat.Status != Domain.Enums.SeatStatus.Locked
+                || (seat.LockedByUserId != null && seat.LockedByUserId != userId))
                 return false;
 
             var now = DateTime.UtcNow;
@@ -227,76 +212,77 @@ namespace Infrastructure.Services
                 return true;
             }
 
-            if (seat.LockedByUserId != userId)
-                return false;
+            if (seat.LockedByUserId != userId) return false;
 
             seat.Status = Domain.Enums.SeatStatus.Available;
             seat.LockedByUserId = null;
             seat.LockExpirationTime = null;
-            seat.LockedByUserId = null;
-
             _tripRepository.Update(trip);
             await _tripRepository.SaveChangesAsync();
             return true;
         }
 
+        // ✅ SỬA: Lấy từ RouteStops → Location thay vì _context.Locations cũ
         public async Task<IEnumerable<TripPointDto>> GetTripPointsAsync(Guid tripId)
         {
             var trip = await _tripRepository.GetByIdAsync(tripId);
-            if (trip == null || trip.Route == null) return Enumerable.Empty<TripPointDto>();
+            if (trip == null || trip.Route == null)
+                return Enumerable.Empty<TripPointDto>();
 
-            var origin = trip.Route.Origin;
-            var destination = trip.Route.Destination;
-
-            // Lấy tất cả các điểm POI thuộc tỉnh của điểm xuất phát và điểm kết thúc
-            var locations = await _context.Locations
-                .Where(l => l.ProvinceName != null && (l.ProvinceName == origin || l.ProvinceName == destination))
-                .ToListAsync();
+            if (trip.Route.RouteStops == null || !trip.Route.RouteStops.Any())
+                return Enumerable.Empty<TripPointDto>();
 
             var result = new List<TripPointDto>();
 
-            foreach (var loc in locations)
+            foreach (var rs in trip.Route.RouteStops.OrderBy(rs => rs.OrderIndex))
             {
-                bool isOrigin = loc.ProvinceName == origin;
-                bool isDestination = loc.ProvinceName == destination;
-                
+                var loc = rs.Location; // ✅ dùng tên cũ Location
+                if (loc == null) continue;
+
                 result.Add(new TripPointDto
                 {
                     Id = loc.Id,
                     Name = loc.Name,
                     Address = loc.Address,
-                    ExpectedTime = isOrigin ? trip.DepartureTime : trip.ArrivalTime,
-                    DistanceFromOrigin = isOrigin ? 0 : trip.Route.DistanceKm,
-                    IsPickup = isOrigin,
-                    IsDropoff = isDestination,
-                    Badge = null
+                    ExpectedTime = trip.DepartureTime.AddMinutes(rs.OffsetMinutes),
+                    DistanceFromOrigin = rs.DistanceFromOriginKm,
+                    IsPickup = loc.IsPickup,
+                    IsDropoff = loc.IsDropoff,
+                    Badge = loc.Badge
                 });
             }
 
-            // Nếu không có POI nào khớp, trả về rỗng thay vì ném lỗi để FE xử lý
-            return result.OrderBy(r => !r.IsPickup).ThenBy(r => r.Name);
+            return result;
         }
 
-        public async Task<IEnumerable<TripDto>> SearchTripsAsync(string? origin, string? destination, DateTime? date)
+        public async Task<IEnumerable<TripDto>> SearchTripsAsync(
+            string? origin, string? destination, DateTime? date)
         {
             var trips = await _tripRepository.SearchAsync(origin, destination, date);
             return trips.Select(MapToDto);
         }
 
+        // ✅ SỬA: Thêm RouteStops vào response, dùng tên Location
         private TripDto MapToDto(Trip trip)
         {
             var availableSeats = 0;
             if (trip.Seats != null && trip.Seats.Any())
             {
                 var now = DateTime.UtcNow;
-                availableSeats = trip.Seats.Count(s => s.Status == Domain.Enums.SeatStatus.Available || (s.Status == Domain.Enums.SeatStatus.Locked && s.LockExpirationTime.HasValue && s.LockExpirationTime <= now));
+                availableSeats = trip.Seats.Count(s =>
+                    s.Status == Domain.Enums.SeatStatus.Available ||
+                    (s.Status == Domain.Enums.SeatStatus.Locked
+                        && s.LockExpirationTime.HasValue
+                        && s.LockExpirationTime <= now));
             }
 
             return new TripDto
             {
                 Id = trip.Id,
                 RouteId = trip.RouteId,
-                RouteName = trip.Route != null ? $"{trip.Route.Origin} - {trip.Route.Destination}" : "N/A",
+                RouteName = trip.Route != null
+                    ? $"{trip.Route.Origin} - {trip.Route.Destination}"
+                    : "N/A",
                 BusId = trip.BusId,
                 BusPlate = trip.Bus?.PlateNumber ?? "N/A",
                 BusTypeName = trip.Bus?.BusType?.Name ?? "N/A",
@@ -307,9 +293,27 @@ namespace Infrastructure.Services
                 Status = trip.Status.ToString(),
                 AvailableSeats = availableSeats,
                 CreatedAt = trip.CreatedAt,
-                UpdatedAt = trip.UpdatedAt
+                UpdatedAt = trip.UpdatedAt,
+
+                // ✅ Thêm mới: map RouteStops dùng tên Location
+                RouteStops = trip.Route?.RouteStops?
+                    .OrderBy(rs => rs.OrderIndex)
+                    .Select(rs => new RouteStopDto
+                    {
+                        Id = rs.Id,
+                        OrderIndex = rs.OrderIndex,
+                        OffsetMinutes = rs.OffsetMinutes,
+                        DistanceFromOriginKm = rs.DistanceFromOriginKm,
+                        StopPointId = rs.Location?.Id ?? Guid.Empty,
+                        StopPointName = rs.Location?.Name,
+                        StopPointAddress = rs.Location?.Address,
+                        Badge = rs.Location?.Badge,
+                        IsPickup = rs.Location?.IsPickup ?? false,
+                        IsDropoff = rs.Location?.IsDropoff ?? false,
+                        IsDefault = rs.Location?.IsDefault ?? false,
+                        ExpectedTime = trip.DepartureTime.AddMinutes(rs.OffsetMinutes)
+                    }).ToList() ?? new List<RouteStopDto>()
             };
         }
     }
 }
-

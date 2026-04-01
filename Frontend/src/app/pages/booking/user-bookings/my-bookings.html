@@ -75,6 +75,8 @@
                 <p class="ticket__id">Mã vé: #{{ b.id }}</p>
               </div>
               <span class="pill" [ngClass]="statusClass(b.bookingStatus)">
+                <i class="fas fa-check-circle" *ngIf="b.bookingStatus === 'Paid'" style="margin-right: 4px;"></i>
+                <i class="fas fa-clock" *ngIf="b.bookingStatus === 'Pending'" style="margin-right: 4px;"></i>
                 {{ statusLabel(b.bookingStatus) }}
               </span>
             </header>

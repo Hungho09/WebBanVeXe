@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using Application.DTOs.Invoice;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace Api.Controllers
 {
@@ -18,6 +21,7 @@ namespace Api.Controllers
         public InvoicesController(IInvoiceService invoiceService)
         {
             _invoiceService = invoiceService;
+            QuestPDF.Settings.License = LicenseType.Community;
         }
 
         [HttpGet]
@@ -97,61 +101,63 @@ namespace Api.Controllers
                 return NotFound();
             }
 
-            // Create simple PDF content (you can use a proper PDF library like iTextSharp or PdfSharp)
-            var pdfContent = GeneratePdfContent(invoice);
-            var bytes = System.Text.Encoding.UTF8.GetBytes(pdfContent);
+            var pdfBytes = GeneratePdfContent(invoice);
             
-            return File(bytes, "application/pdf", $"invoice_{invoice.InvoiceNumber}.pdf");
+            return File(pdfBytes, "application/pdf", $"invoice_{invoice.InvoiceNumber}.pdf");
         }
 
-        private string GeneratePdfContent(InvoiceDto invoice)
+        private byte[] GeneratePdfContent(InvoiceDto invoice)
         {
-            // Simple HTML-to-PDF content (for demo)
-            // In production, use proper PDF library
-            var html = $@"
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset='utf-8'>
-    <title>Hóa đơn {invoice.InvoiceNumber}</title>
-    <style>
-        body {{ font-family: Arial, sans-serif; margin: 20px; }}
-        .header {{ border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }}
-        .invoice-info {{ margin-bottom: 20px; }}
-        .customer-info {{ margin-bottom: 20px; }}
-        .items {{ margin-bottom: 20px; }}
-        .total {{ font-weight: bold; font-size: 18px; }}
-        table {{ border-collapse: collapse; width: 100%; }}
-        th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
-        th {{ background-color: #f2f2f22; }}
-    </style>
-</head>
-<body>
-    <div class='header'>
-        <h1>HÓA ĐƠN</h1>
-        <p><strong>Mã hóa đơn:</strong> {invoice.InvoiceNumber}</p>
-        <p><strong>Ngày tạo:</strong> {invoice.CreatedAt:dd/MM/yyyy HH:mm}</p>
-    </div>
-    
-    <div class='customer-info'>
-        <h2>Thông tin khách hàng</h2>
-        <p><strong>Họ tên:</strong> {invoice.CustomerName}</p>
-        <p><strong>Email:</strong> {invoice.CustomerEmail}</p>
-    </div>
-    
-    <div class='invoice-info'>
-        <h2>Thông tin hóa đơn</h2>
-        <p><strong>Mã đặt vé:</strong> {invoice.BookingId}</p>
-        <p><strong>Tổng tiền:</strong> {invoice.TotalAmount:N0} VNĐ</p>
-        <p><strong>Trạng thái:</strong> {invoice.Status}</p>
-    </div>
-    
-    <div class='total'>
-        <p><strong>TỔNG CỘNG: {invoice.TotalAmount:N0} VNĐ</strong></p>
-    </div>
-</body>
-</html>";
-            return html;
+            var document = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(2, Unit.Centimetre);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(12).FontFamily(Fonts.Arial));
+
+                    page.Header().Element(header => 
+                    {
+                        header.Row(row =>
+                        {
+                            row.RelativeItem().Column(col =>
+                            {
+                                col.Item().Text("HÓA ĐƠN GIAO DỊCH").FontSize(20).SemiBold().FontColor(Colors.Blue.Darken2);
+                                col.Item().Text($"Mã hóa đơn: {invoice.InvoiceNumber}").FontSize(14);
+                                col.Item().Text($"Ngày tạo: {invoice.CreatedAt:dd/MM/yyyy HH:mm}");
+                            });
+                        });
+                    });
+
+                    page.Content().PaddingVertical(1, Unit.Centimetre).Column(col =>
+                    {
+                        col.Item().PaddingBottom(10).Text("Thông tin khách hàng").SemiBold().FontSize(14);
+                        col.Item().Text($"Họ tên: {invoice.CustomerName}");
+                        col.Item().Text($"Email: {invoice.CustomerEmail}");
+                        
+                        col.Item().PaddingTop(20).PaddingBottom(10).Text("Thông tin đặt vé").SemiBold().FontSize(14);
+                        col.Item().Text($"Mã đặt vé: {invoice.BookingId}");
+                        col.Item().Text($"Trạng thái: {invoice.Status}");
+                        
+                        col.Item().PaddingTop(30).Row(row => 
+                        {
+                            row.RelativeItem().Text("TỔNG CỘNG:").SemiBold().FontSize(16).AlignRight();
+                            row.ConstantItem(150).Text($"{invoice.TotalAmount:N0} VNĐ").SemiBold().FontSize(16).AlignRight().FontColor(Colors.Red.Medium);
+                        });
+                    });
+
+                    page.Footer().AlignCenter().Text(x =>
+                    {
+                        x.Span("Cảm ơn quý khách đã sử dụng dịch vụ - Trang ");
+                        x.CurrentPageNumber();
+                        x.Span(" / ");
+                        x.TotalPages();
+                    });
+                });
+            });
+
+            return document.GeneratePdf();
         }
     }
 

@@ -173,3 +173,23 @@
 
 .text-success { color: #059669; }
 .text-danger { color: #dc2626; }
+.text-warning { color: #d97706; }
+.text-info { color: #0284c7; }
+
+/* Paid status button-like label */
+.btn-paid-status {
+    background-color: #dcfce7;
+    color: #166534;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #86efac;
+}
+
+.btn-paid-status i {
+    font-size: 0.9rem;
+}
