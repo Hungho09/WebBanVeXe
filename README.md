@@ -13,7 +13,10 @@ A professional, enterprise-grade full-stack web application designed to streamli
 ![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)
 
 ---
+### 📊 GitHub Analytics
+[![GitHub Stats](https://github-readme-stats.vercel.app/api?username=Hungho09&show_icons=true&theme=radical)](https://github.com/Hungho09)
 
+---
 ## 📝 About The Project
 
 The **Bus Ticket Management System** (Web Bán Vé Xe) is a robust full-stack web application designed to streamline intercity bus ticket booking and fleet management using the MVC architectural pattern. The system delivers a seamless booking experience for passengers and provides administrators with powerful back-office controls to manage scheduling, pricing, and bus configurations. By leveraging a modern Clean Architecture style on the backend and Angular on the frontend, it ensures long-term maintainability, reliability, and high performance.
